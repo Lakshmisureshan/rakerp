@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using WebApplication1.Models.Domain;
 namespace WebApplication1.Data
 {
@@ -22,7 +23,15 @@ namespace WebApplication1.Data
 
         public DbSet<Currency> Currency { get; set; }
         public DbSet<Job> Job { get; set; }
+        public DbSet<Product> Product { get; set; }
         public DbSet<UOM> UOM { get; set; }
+
+        public DbSet<Warehouse> Warehouse { get; set; }
+        public  DbSet<BudgettHeader> BudgettHeader { get; set; }
+
+        public DbSet<ProductionStages> ProductionStages { get; set; }
+
+        public DbSet<Bom> Bom { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -277,6 +286,40 @@ ConcurrencyStamp =tradeuserRoleID
         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
         .HasForeignKey(pd => pd.standarduomid )
         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<Bom>()
+         .HasOne(pd => pd.Product)
+         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+         .HasForeignKey(pd => pd.itemid)
+         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<Bom>()
+                 .HasOne(pd => pd.UOM)
+                 .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                 .HasForeignKey(pd => pd.bomuomid)
+                 .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Bom>()
+               .HasOne(pd => pd.Productionstages)
+               .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+               .HasForeignKey(pd => pd.prodstageid)
+               .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Bom>()
+            .HasOne(pd => pd.currency)
+            .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+            .HasForeignKey(pd => pd.currencyid)
+            .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
 

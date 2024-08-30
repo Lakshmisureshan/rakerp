@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240827083736_production stages")]
+    partial class productionstages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,15 +182,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bc735770-8690-4b17-b055-327ad14b32e3",
+                            ConcurrencyStamp = "6ed85da3-1143-4a13-bd08-5132a0f6a3c2",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEKlJNhRatei9+wTgrrRgEq15aJaTWVtszm3wpMS6P/CADajD16+Y1sP9bifCyUftIg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPs6iMQD79dtjNqUcegJUksod/FROgT8iS+dGDI0ndGoAk5KD3laMXT78gMtJTYd7g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ced3df64-c6f1-4661-add3-f6cf9f9fae79",
+                            SecurityStamp = "bda1f806-34a9-463e-b03c-17881f4c8a17",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com"
                         });
@@ -300,65 +302,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Bom", b =>
-                {
-                    b.Property<int>("bomid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("bomid"), 1L, 1);
-
-                    b.Property<DateTime>("RequiredDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("bomqty")
-                        .HasColumnType("float");
-
-                    b.Property<int>("bomuomid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("currencyid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("itemid")
-                        .HasColumnType("int");
-
-                    b.Property<double>("price")
-                        .HasColumnType("float");
-
-                    b.Property<int>("prodstageid")
-                        .HasColumnType("int");
-
-                    b.HasKey("bomid");
-
-                    b.HasIndex("bomuomid");
-
-                    b.HasIndex("currencyid");
-
-                    b.HasIndex("itemid");
-
-                    b.HasIndex("prodstageid");
-
-                    b.ToTable("Bom");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.BudgettHeader", b =>
-                {
-                    b.Property<int>("budgetheaderid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("budgetheaderid"), 1L, 1);
-
-                    b.Property<string>("budgetheadername")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("budgetheaderid");
-
-                    b.ToTable("BudgettHeader");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Country", b =>
@@ -815,41 +758,6 @@ namespace WebApplication1.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Bom", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.UOM", "UOM")
-                        .WithMany()
-                        .HasForeignKey("bomuomid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Currency", "currency")
-                        .WithMany()
-                        .HasForeignKey("currencyid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("itemid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.ProductionStages", "Productionstages")
-                        .WithMany()
-                        .HasForeignKey("prodstageid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Productionstages");
-
-                    b.Navigation("UOM");
-
-                    b.Navigation("currency");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Customer", b =>

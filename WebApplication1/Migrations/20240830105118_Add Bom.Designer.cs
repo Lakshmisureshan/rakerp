@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240830105118_Add Bom")]
+    partial class AddBom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,15 +182,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bc735770-8690-4b17-b055-327ad14b32e3",
+                            ConcurrencyStamp = "6f4549b9-1426-454f-a2e6-7b45a254f5ed",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEKlJNhRatei9+wTgrrRgEq15aJaTWVtszm3wpMS6P/CADajD16+Y1sP9bifCyUftIg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEfvbr1gIY5vjDvTu+juieofjG7SPychducmy91LqNtnP2hfG0uSntRicH9kmGhqtg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ced3df64-c6f1-4661-add3-f6cf9f9fae79",
+                            SecurityStamp = "61b7b7f5-ea6b-4cd2-80e2-8f64f51a02cb",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com"
                         });
@@ -319,9 +321,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("bomuomid")
                         .HasColumnType("int");
 
-                    b.Property<int>("currencyid")
-                        .HasColumnType("int");
-
                     b.Property<int>("itemid")
                         .HasColumnType("int");
 
@@ -334,8 +333,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("bomid");
 
                     b.HasIndex("bomuomid");
-
-                    b.HasIndex("currencyid");
 
                     b.HasIndex("itemid");
 
@@ -825,12 +822,6 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.Currency", "currency")
-                        .WithMany()
-                        .HasForeignKey("currencyid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("WebApplication1.Models.Domain.Product", "Product")
                         .WithMany()
                         .HasForeignKey("itemid")
@@ -848,8 +839,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Productionstages");
 
                     b.Navigation("UOM");
-
-                    b.Navigation("currency");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Customer", b =>

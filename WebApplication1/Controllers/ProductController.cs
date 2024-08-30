@@ -28,19 +28,26 @@ namespace WebApplication1.Controllers
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> CreateProductMaster(Addp request)
+        [HttpPost("CreateProductMaster")]
+        public async Task<IActionResult> CreateProductMaster(AddProductdto request)
         {
-            var jobtype = new JobType
+            var product = new Product
             {
-                JobtypeName = request.JobtypeName,
+                itemcode = request.itemcode,    
+                itemdescription = request.itemdescription,  
+                itemname = request.itemname,    
+                standarduomid = request.standarduomid   
             };
-            await dbcontext.JobType.AddAsync(jobtype);
+            await dbcontext.Product.AddAsync(product);
             await dbcontext.SaveChangesAsync();
-            var response = new JobTypeDto
+            var response = new ProductDto
             {
-                jobtypeid = jobtype.jobtypeid,
-                JobtypeName = jobtype.JobtypeName,
+            itemcode= product.itemcode,
+            itemdescription= product.itemdescription,
+            standarduomid= product.standarduomid,
+            itemname= product.itemname, 
+            price = product.price   
+            
             };
 
             return Ok(response);
@@ -53,6 +60,13 @@ namespace WebApplication1.Controllers
 
 
 
+
+        [HttpGet("GetAllItems")]
+        public async Task<IActionResult> GetAllItems()
+        {
+            var product = await dbcontext.Product.ToListAsync();
+            return Ok(product);
+        }
 
 
 
