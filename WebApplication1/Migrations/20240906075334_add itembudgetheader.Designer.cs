@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240906075334_add itembudgetheader")]
+    partial class additembudgetheader
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,15 +182,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6cd890b8-6a23-448f-a177-2f8df2338573",
+                            ConcurrencyStamp = "d1be071a-8219-4ba6-8ba9-ce3b71b16eee",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAELUaHAzeqpkiSTQjO7ybdxtRJPebVWJUkwoijkY+RNodxDwjeq7v4VkXJ3qUo1BmXw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELYxRwHQ0bH2+wykstG02pG+hOMFmlMsIAKBY7xEE1CmWQbaBp8wI2GqPVLpl3i6Ow==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "84a66c1a-1e4c-4254-91bf-5ec850c84b71",
+                            SecurityStamp = "bde058bf-9ac5-4ce4-84eb-dd5a7053f42f",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com"
                         });

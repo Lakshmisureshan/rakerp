@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WebApplication1.Models.Domain;
 
 namespace WebApplication1.Models.DTO
 {
@@ -19,5 +20,7 @@ namespace WebApplication1.Models.DTO
 
 
         public int currencyid { get; set; }
+     
+        public int jobid { get; set; }
     }
 }

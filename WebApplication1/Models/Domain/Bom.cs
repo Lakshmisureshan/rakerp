@@ -9,8 +9,7 @@ namespace WebApplication1.Models.Domain
         public Product Product { get; set; }
         public int itemid { get; set; }
         public double  bomqty { get; set; }
-    
-        public UOM UOM { get; set; }
+            public UOM UOM { get; set; }
         public int bomuomid { get; set; }
         public double   price { get; set; }
         public ProductionStages Productionstages { get; set; }
@@ -19,5 +18,12 @@ namespace WebApplication1.Models.Domain
 
         public Currency currency { get; set; }
         public int currencyid { get; set; }
+
+        public Job Job { get; set; }
+        public int jobid { get; set; }
+        public int bomrevno { get; set; } = 0;
+        public int bomstatus { get; set; } = 0;
+        public double prcreatedqty { get; set; } = 0;
+
     }
 }

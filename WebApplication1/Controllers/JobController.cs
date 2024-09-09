@@ -146,7 +146,28 @@ namespace WebApplication1.Controllers
         }
 
 
+        [HttpGet("GetJobDetailsbyjobid")]
+        public async Task<ActionResult<Job>> GetJobDetailsbyjobid(int jobId)
+        {
+            // Query the database for a job with the specified jobId
+            var job = await dbcontext.Job
+                            .Include(j => j.Customer)
+                            .Include(j => j.JobType).
+                            Include(j => j.ManufacturingBay).
+                             Include(j => j.ProjectCategory).
+                              Include(j => j.QualityLevel).
+                              Include(j => j.Currency)
+                            .SingleOrDefaultAsync(j => j.Jobid == jobId);
 
+            // Check if the job was found
+            if (job == null)
+            {
+                return NotFound(); // Return a 404 response if the job is not found
+            }
+
+            // Return the job details with a 200 OK response
+            return Ok(job);
+        }
 
 
 

@@ -101,9 +101,14 @@ namespace WebApplication1.Controllers
             var users = await userManager1.Users.ToListAsync();
             return Ok(users);
         }
-    
 
+        [HttpGet("GetUsernameByIdAsync")]
+        public async Task<string> GetUsernameByIdAsync(string userId)
+        {
+            // Fetch the user by ID using the UserManager service
+            var user = await userManager1.FindByIdAsync(userId);
+            return user.UserName; // Return the username or null if user not found
+        }
 
-
-}
+    }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240901141456_Add bomstatus")]
+    partial class Addbomstatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,15 +182,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6cd890b8-6a23-448f-a177-2f8df2338573",
+                            ConcurrencyStamp = "e69530ab-af98-4987-8184-08bef8609f90",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAELUaHAzeqpkiSTQjO7ybdxtRJPebVWJUkwoijkY+RNodxDwjeq7v4VkXJ3qUo1BmXw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECbuylbQjqXxoic2QJHg/YAPUwRyHN7cRzVb/yEeFNXSI92hRNGCZ6BeU4zPyaI6fw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "84a66c1a-1e4c-4254-91bf-5ec850c84b71",
+                            SecurityStamp = "884a352f-cd9f-417a-b6b5-38362d512915",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com"
                         });
@@ -333,9 +335,6 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("jobid")
                         .HasColumnType("int");
-
-                    b.Property<double>("prcreatedqty")
-                        .HasColumnType("float");
 
                     b.Property<double>("price")
                         .HasColumnType("float");
@@ -633,59 +632,6 @@ namespace WebApplication1.Migrations
                     b.ToTable("ManufacturingBay");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Domain.PR", b =>
-                {
-                    b.Property<int>("PRID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Prdate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("jobid")
-                        .HasColumnType("int");
-
-                    b.Property<string>("remarks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PRID");
-
-                    b.HasIndex("jobid");
-
-                    b.ToTable("PR");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.PRDetails", b =>
-                {
-                    b.Property<int>("prtblid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("prtblid"), 1L, 1);
-
-                    b.Property<int>("bomid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("prid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("pritemid")
-                        .HasColumnType("int");
-
-                    b.Property<float>("prqty")
-                        .HasColumnType("real");
-
-                    b.HasKey("prtblid");
-
-                    b.HasIndex("bomid");
-
-                    b.HasIndex("prid");
-
-                    b.HasIndex("pritemid");
-
-                    b.ToTable("PRDetails");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Domain.Product", b =>
                 {
                     b.Property<int>("itemid")
@@ -693,9 +639,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("itemid"), 1L, 1);
-
-                    b.Property<int>("itembudgetheaderid")
-                        .HasColumnType("int");
 
                     b.Property<string>("itemcode")
                         .IsRequired()
@@ -716,8 +659,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("itemid");
-
-                    b.HasIndex("itembudgetheaderid");
 
                     b.HasIndex("standarduomid");
 
@@ -1024,59 +965,13 @@ namespace WebApplication1.Migrations
                     b.Navigation("isldapp");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Domain.PR", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("jobid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Job");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.PRDetails", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.Bom", "Bom")
-                        .WithMany()
-                        .HasForeignKey("bomid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.PR", "PR")
-                        .WithMany()
-                        .HasForeignKey("prid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("pritemid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Bom");
-
-                    b.Navigation("PR");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Domain.Product", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Domain.BudgettHeader", "BudgettHeader")
-                        .WithMany()
-                        .HasForeignKey("itembudgetheaderid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("WebApplication1.Models.Domain.UOM", "UOM")
                         .WithMany()
                         .HasForeignKey("standarduomid")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("BudgettHeader");
 
                     b.Navigation("UOM");
                 });

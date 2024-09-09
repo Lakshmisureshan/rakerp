@@ -26,7 +26,12 @@ namespace WebApplication1.Controllers
             return Ok(uom);
         }
 
-
+        [HttpGet("GetAllBudgetheaders")]
+        public async Task<IActionResult> GetAllBudgetheaders()
+        {
+            var budgetheader = await dbcontext.BudgettHeader.ToListAsync();
+            return Ok(budgetheader);
+        }
 
         [HttpPost("CreateProductMaster")]
         public async Task<IActionResult> CreateProductMaster(AddProductdto request)
@@ -36,7 +41,10 @@ namespace WebApplication1.Controllers
                 itemcode = request.itemcode,    
                 itemdescription = request.itemdescription,  
                 itemname = request.itemname,    
-                standarduomid = request.standarduomid   
+                standarduomid = request.standarduomid ,
+                itembudgetheaderid = request.itembudgetheaderid ,   
+                
+                
             };
             await dbcontext.Product.AddAsync(product);
             await dbcontext.SaveChangesAsync();

@@ -51,20 +51,16 @@ namespace WebApplication1.Models.Domain
 
 
         public Currency Currency { get; set; }
-
         public int currencyid { get; set; }
-
-
         public double  exchangerate { get; set; }
         public double ordervalue { get; set; }
-
-
         public double ordervaluebasecurrency { get; set; }
-
         public string projectname  { get; set; }
         public string paymentterms { get; set; }
         public string warrantyterms { get; set; }
         public string deliveryterms { get; set; }
+        public int bomjobrevno { get; set; } = 0;
+        public int bomjobstatusid { get; set; } = 0;
 
     }
 }

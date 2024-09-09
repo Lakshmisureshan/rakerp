@@ -1,0 +1,135 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebApplication1.Data;
+using WebApplication1.Models.Domain;
+using WebApplication1.Models.DTO;
+
+namespace WebApplication1.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PRController : ControllerBase
+    {
+        private readonly ApplicationDBContext dbcontext;
+
+        public PRController(ApplicationDBContext dbcontext)
+        {
+            this.dbcontext = dbcontext;
+        }
+
+
+
+        [HttpGet("GetMaxPridAsync")]
+        public async Task<int?> GetMaxPridAsync()
+        {
+            // Get the maximum PR ID from the PurchaseRequest table
+            int maxPridPlusOne = (await dbcontext.PR.MaxAsync(pr => (int?)pr.PRID) ?? 1000) + 1;
+
+            return maxPridPlusOne;
+        }
+
+
+
+
+
+
+
+
+        [HttpPost("AddPrheader")]
+        public async Task<IActionResult> AddPrheader(AddPrDto request)
+        {
+            var pr = new PR
+            {
+         jobid=request.jobid,
+         Prdate = request.Prdate,
+         PRID = request.PRID,
+         remarks=request.remarks
+
+         
+            };
+            await dbcontext.PR.AddAsync(pr);
+            await dbcontext.SaveChangesAsync();
+            var response = new PrDto
+            {
+              remarks = pr.remarks,
+              PRID=pr.PRID,
+              jobid=request.jobid,  
+              Prdate=request.Prdate,
+              
+
+
+
+            };
+
+            return Ok(response);
+        }
+
+
+
+
+
+        [HttpPost("AddPrDetails")]
+        public async Task<IActionResult> AddPrDetails(AddPrdetails request)
+        {
+            // Step 1: Create and add the PRDetails entity
+            var prdetails = new PRDetails
+            {
+                bomid = request.bomid,
+                prid = request.prid,
+                pritemid = request.pritemid,
+                prqty = request.prqty,
+            };
+
+            await dbcontext.PRDetails.AddAsync(prdetails);
+
+            // Step 2: Retrieve the corresponding BOM record
+            var bom = await dbcontext.Bom.FindAsync(request.bomid);
+
+            if (bom == null)
+            {
+                return NotFound(new { Message = "BOM not found" });
+            }
+
+            // Step 3: Update the BOM quantity
+            bom.prcreatedqty = request.prqty; // Assuming bomqty is the field you want to update
+
+            // Step 4: Save changes to both PRDetails and BOM table
+            await dbcontext.SaveChangesAsync();
+
+            // Step 5: Prepare the response DTO
+            var response = new PrdetailsDto
+            {
+                bomid = prdetails.bomid,
+                prid = prdetails.prid,
+                prqty = prdetails.prqty,
+                pritemid = prdetails.pritemid,
+            };
+
+            return Ok(response);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+}
