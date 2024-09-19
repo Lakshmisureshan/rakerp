@@ -17,9 +17,9 @@ namespace WebApplication1.Models.DTO
         public DateTime jobdate { get; set; }
         public DateTime lpodate { get; set; }
         public string lpono { get; set; }
-        public IdentityUser ProjectManager { get; set; }
+        public ApplicationUser ProjectManager { get; set; }
         public string projectmanagerid { get; set; }
-        public IdentityUser ProjectEngineer { get; set; }
+        public ApplicationUser ProjectEngineer { get; set; }
         public string projectengineerid { get; set; }
         public int totalnumber { get; set; }
 

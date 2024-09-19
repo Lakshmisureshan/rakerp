@@ -21,6 +21,7 @@ namespace WebApplication1.Models.DTO
         public Country country { get; set; }
         public int countryid { get; set; }
         public string remarks { get; set; }
+        public string address { get; set; }
 
 
 

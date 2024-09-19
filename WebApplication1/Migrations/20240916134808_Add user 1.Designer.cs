@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240916134808_Add user 1")]
+    partial class Adduser1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -293,15 +295,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f42279bd-4e8c-4f07-9cf8-dc6161837752",
+                            ConcurrencyStamp = "1ba0aa86-1542-485f-a5a4-0cc7e7318ad5",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJ8DLj8DoaxZSu9P3kK6cPCM1NwjxpQcwhn+ZvNJhq7h93pR5t/GphIMaYlpxTaVfg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMOOI6mrNTRkqyA9qaMTr35u3RbB5wjDwfjqqarrJE27WlJlyNv5ZZxxzzhdbwoRrA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "18c415a5-5744-49b0-9bbd-753d9748069b",
+                            SecurityStamp = "fc99cd7f-818d-4d85-ac85-95932277b827",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -446,10 +448,6 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ccode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -530,9 +528,6 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("enduserid")
-                        .HasColumnType("int");
-
                     b.Property<double>("exchangerate")
                         .HasColumnType("float");
 
@@ -602,8 +597,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("currencyid");
 
                     b.HasIndex("customerid");
-
-                    b.HasIndex("enduserid");
 
                     b.HasIndex("isldapplicable");
 
@@ -1023,12 +1016,6 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.Customer", "Enduser")
-                        .WithMany()
-                        .HasForeignKey("enduserid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("WebApplication1.Models.Domain.IsLDApplicable", "isldapp")
                         .WithMany()
                         .HasForeignKey("isldapplicable")
@@ -1074,8 +1061,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Currency");
 
                     b.Navigation("Customer");
-
-                    b.Navigation("Enduser");
 
                     b.Navigation("JobType");
 

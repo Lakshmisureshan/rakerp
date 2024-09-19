@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
-using WebApplication1.Migrations;
+
 using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
 namespace WebApplication1.Controllers
@@ -20,6 +21,7 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet("GetProductionStages")]
+      
         public async Task<IActionResult> GetProductionStages()
         {
             var stages = await dbcontext.ProductionStages.ToListAsync();
@@ -79,24 +81,7 @@ namespace WebApplication1.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+       
 
 
         [HttpPost("AddBom")]
@@ -141,7 +126,8 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> GetAllBOMbyJobid(int jobid)
         {
             var bom = await dbcontext.Bom
-    .Include(b => b.UOM)  // Eager load the UOM related entity
+    .Include(b => b.UOM) .
+    Include(c=>c.currency)// Eager load the UOM related entity
     .Where(p => p.jobid == jobid)
     .ToListAsync();
 
@@ -164,14 +150,16 @@ namespace WebApplication1.Controllers
                 // Return a NotFound result if the job is not found
                 return NotFound($"Job with ID {jobid} not found.");
             }
+
             var boms = await dbcontext.Bom
-      .Where(b => b.jobid == jobid)
-      .ToListAsync();
+                .Where(b => b.jobid == jobid)
+                .ToListAsync();
 
             foreach (var bom in boms)
             {
                 bom.bomstatus = 1;  // Set bomstatus to 1
             }
+
             // Increment the revision number in the job table
             job.bomjobrevno += 1;
 
@@ -189,10 +177,9 @@ namespace WebApplication1.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
 
-            // Return a success result
-            return Ok("Job has been frozen successfully.");
+            // Return a success result with JSON response
+            return Ok(new { message = "Job has been frozen successfully", jobid });
         }
-
 
         [HttpGet("IsJobFrozenAsync")]
         public async Task<bool> IsJobFrozenAsync(int jobid)
@@ -282,7 +269,7 @@ namespace WebApplication1.Controllers
             }
 
             // Return a success result
-            return Ok("Job has been Un frozen successfully.");
+            return Ok(new { message = "Job has been Un frozen successfully", jobid });
         }
 
 
@@ -357,6 +344,143 @@ namespace WebApplication1.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpDelete("DeleteBom/{bomid}")]
+        public async Task<IActionResult> DeleteBom(string bomid)
+        {
+            // Find the BOM by ID
+            var bom = await dbcontext.Bom.FindAsync(bomid);
+            if (bom == null)
+            {
+                return NotFound();
+            }
+
+            // Remove the BOM from the database
+            dbcontext.Bom.Remove(bom);
+            await dbcontext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+
+
+
+
+
+
+
+
+        [HttpDelete("DeletePrdetails/{prtblid}")]
+        public async Task<IActionResult> DeletePrdetails(int prtblid)
+        {
+        // Find the BOM by ID
+            var prdetails = await dbcontext.PRDetails
+         .FirstOrDefaultAsync(pr => pr.prtblid == prtblid);
+            if (prdetails == null)
+            {
+                return NotFound();
+            }
+
+            var bom = await dbcontext.Bom.FirstOrDefaultAsync(b => b.bomid == prdetails.bomid);
+            if (bom != null)
+            {
+                // Update the BOM quantity
+                bom.prcreatedqty -= prdetails.prqty; // Adjust the quantity update logic as per your requirement
+                dbcontext.Bom.Update(bom);
+            }
+
+
+
+
+            // Remove the BOM from the database
+            dbcontext.PRDetails.Remove(prdetails);
+            await dbcontext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+
+
+
+
+        [HttpPut("UpdatePRAsync")]
+
+        public async Task<updateprdto> UpdatePRAsync(int prId, updateprdto pr)
+        {
+            var existingPr = await dbcontext.PR.FindAsync(prId);
+            if (existingPr == null)
+            {
+                throw new KeyNotFoundException("PR not found.");
+            }
+
+            existingPr.Prdate = pr.Prdate;
+            existingPr.remarks = pr.remarks;
+          
+
+            dbcontext.PR.Update(existingPr);
+            await dbcontext.SaveChangesAsync();
+
+            return pr;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("update-status")]
+        public async Task<IActionResult> UpdatePrStatus(int prid)
+        {
+            // Find the existing PR by its ID
+            var existingPr = await dbcontext.PR.FindAsync(prid);
+
+            // Check if the PR exists
+            if (existingPr == null)
+            {
+                // Return a NotFound response if the PR does not exist
+                return NotFound(new { Message = "PR not found." });
+            }
+
+            // Update the prstatusid to 2
+            existingPr.prstatusid = 2;
+
+            // Save the changes to the database
+            try
+            {
+                await dbcontext.SaveChangesAsync();
+                // Return an Ok response indicating success
+                return Ok(new { Message = "PR status updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Handle potential errors and return an error response
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while updating the PR status.", Error = ex.Message });
+            }
+        }   
+
+
+
+
 
 
     }

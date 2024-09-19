@@ -15,10 +15,10 @@ namespace WebApplication1.Models.Domain
         public DateTime jobdate { get; set; }
         public DateTime lpodate { get; set; }
         public string  lpono { get; set; }
-        public IdentityUser ProjectManager { get; set; }
+        public ApplicationUser ProjectManager { get; set; }
         public string   projectmanagerid { get; set; }
 
-        public IdentityUser ProjectEngineer { get; set; }
+        public ApplicationUser ProjectEngineer { get; set; }
         public string  projectengineerid { get; set; }
 
         public int totalnumber { get; set; }
@@ -61,6 +61,9 @@ namespace WebApplication1.Models.Domain
         public string deliveryterms { get; set; }
         public int bomjobrevno { get; set; } = 0;
         public int bomjobstatusid { get; set; } = 0;
+
+        public Customer Enduser { get; set; }
+        public int enduserid { get; set; }
 
     }
 }

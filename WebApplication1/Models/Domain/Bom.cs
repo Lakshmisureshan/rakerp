@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication1.Models.Domain
 {
@@ -9,7 +10,7 @@ namespace WebApplication1.Models.Domain
         public Product Product { get; set; }
         public int itemid { get; set; }
         public double  bomqty { get; set; }
-            public UOM UOM { get; set; }
+        public UOM UOM { get; set; }
         public int bomuomid { get; set; }
         public double   price { get; set; }
         public ProductionStages Productionstages { get; set; }
@@ -24,6 +25,23 @@ namespace WebApplication1.Models.Domain
         public int bomrevno { get; set; } = 0;
         public int bomstatus { get; set; } = 0;
         public double prcreatedqty { get; set; } = 0;
+        public ApplicationUser? Bomcreatedby { get; set; }
+        public string? bomcreatedbyid { get; set; }
+
+        public DateTime? BomcreatedDate { get; set; }
+     
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }

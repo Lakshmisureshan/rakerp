@@ -88,8 +88,12 @@ namespace WebApplication1.Controllers
          projectname = request.projectname ,
          paymentterms = request.paymentterms,
          projectcategoryid = request.projectcategoryid  ,
-         qualitylevelid = request.qualitylevelid    ,
-         warrantyterms = request.warrantyterms  
+         qualitylevelid = request.qualitylevelid
+         ,
+         warrantyterms = request.warrantyterms  ,
+
+
+         enduserid =2
             
 
 
@@ -145,6 +149,15 @@ namespace WebApplication1.Controllers
             return Ok(jobs);
         }
 
+
+        [HttpGet("GetAllcustomernames")]
+        public async Task<IActionResult> GetAllcustomernames()
+        {
+      var customers = await dbcontext.Customer
+    
+      .ToListAsync();
+       return Ok(customers);
+        }
 
         [HttpGet("GetJobDetailsbyjobid")]
         public async Task<ActionResult<Job>> GetJobDetailsbyjobid(int jobId)

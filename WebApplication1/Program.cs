@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
+using WebApplication1.Models.Domain;
+using WebApplication1.Repositories.Implementation;
+using WebApplication1.Repositories.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +18,35 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
     options.UseSqlServer(builder.Configuration.GetConnectionString("CodePlusConnectionStrings"));
 });
+
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+       .AddEntityFrameworkStores<ApplicationDBContext>()
+       .AddDefaultTokenProviders();
+
+
+
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddDataProtection();
-builder.Services.AddIdentityCore<IdentityUser>().AddRoles<IdentityRole>().AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("trading").AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
+builder.Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>().AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>("trading").AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+
+.AddUserManager<UserManager<ApplicationUser>>()
+.AddEntityFrameworkStores<ApplicationDBContext>();
+
+
+
+builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDBContext>();
+
+
+
+
+
 builder.Services.Configure<IdentityOptions>(options => {
 
     options.Password.RequireDigit = false;

@@ -32,7 +32,8 @@ namespace WebApplication1.Controllers
              web = request.web  ,
              phone = request.phone ,    
              pobox = request.pobox ,    
-             Trnno = request.Trnno  
+             Trnno = request.Trnno , 
+             address = request.address ,
              
             };
             await dbcontext.Customer.AddAsync(customer);
@@ -51,6 +52,7 @@ namespace WebApplication1.Controllers
               countryid= customer.countryid,    
               Customername = customer.Customername ,
               email= customer.email ,   
+              address= customer.address ,
             };
 
             return Ok(response);

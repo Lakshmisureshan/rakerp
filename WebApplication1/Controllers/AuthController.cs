@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
+using WebApplication1.Repositories.Implementation;
+using WebApplication1.Repositories.Interface;
 
 namespace WebApplication1.Controllers
 {
@@ -10,13 +13,18 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager1;
+        private readonly UserManager<ApplicationUser> userManager1;
         private readonly IConfiguration configuration1;
+        private readonly ITokenRepository tokenrepository;
 
-        public AuthController(UserManager<IdentityUser> userManager1,  IConfiguration configuration1)
+        public ILogger<AuthController> Logger { get; }
+
+        public AuthController(UserManager<ApplicationUser> userManager1,  IConfiguration configuration1,ITokenRepository  tokenrepository, ILogger<AuthController> logger)
         {
             this.userManager1 = userManager1;
             this.configuration1 = configuration1;
+            this.tokenrepository = tokenrepository;
+            Logger = logger;
         }
 
 
@@ -24,7 +32,7 @@ namespace WebApplication1.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
-            var user = new IdentityUser
+            var user = new ApplicationUser
             {
                 UserName = request.Email?.Trim(),
                 Email = request.Email?.Trim(),
@@ -109,6 +117,62 @@ namespace WebApplication1.Controllers
             var user = await userManager1.FindByIdAsync(userId);
             return user.UserName; // Return the username or null if user not found
         }
+
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody]  LoginRequestDto  request)
+        {
+          var identityUser = await userManager1.FindByEmailAsync(request.Email);
+         
+            if (identityUser is not null)
+            {
+
+                var checkpasswordresult = await userManager1.CheckPasswordAsync(identityUser, request.Password);
+                Logger.LogInformation($"Password check result: {checkpasswordresult}");
+
+                if (checkpasswordresult)
+                {
+
+
+                    
+
+
+
+                    var roles = await userManager1.GetRolesAsync(identityUser);
+                  var jwttoken=  tokenrepository.CreateJwttoken(identityUser, roles.ToList());
+                    var response = new LoginResponseDto
+                    {
+                        Email = request.Email,
+                        Roles = roles.ToList(),
+                        Token= jwttoken
+
+
+
+                    };
+
+                    return Ok(response);
+                }
+
+            }
+            ModelState.AddModelError("","Email or Password is incorrect");
+
+            return ValidationProblem(ModelState);
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }

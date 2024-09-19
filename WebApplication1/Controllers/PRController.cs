@@ -119,7 +119,17 @@ namespace WebApplication1.Controllers
 
 
 
-
+        [HttpGet("GetPRheader")]
+        public async Task<IActionResult> GetPRheader()
+        {
+            var PR = await dbcontext.PR.ToListAsync();
+            // Apply multiple conditions
+            if (PR == null)
+            {
+                return NotFound("PR  not found");
+            }
+            return Ok(PR);
+        }
 
 
 

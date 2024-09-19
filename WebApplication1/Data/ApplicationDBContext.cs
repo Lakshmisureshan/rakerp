@@ -5,7 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using WebApplication1.Models.Domain;
 namespace WebApplication1.Data
 {
-    public class ApplicationDBContext : IdentityDbContext
+    public class ApplicationDBContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
@@ -36,7 +36,7 @@ namespace WebApplication1.Data
 
         public DbSet<PR> PR { get; set; }
         public DbSet<PRDetails> PRDetails { get; set; }
-
+        public DbSet<PRstatus> PRstatus { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -102,16 +102,17 @@ ConcurrencyStamp =tradeuserRoleID
             modelBuilder.Entity<IdentityRole>().HasData(roles);
             var adminUserid = "356ff228-0e5f-436a-9ac5-2d760b997dd5";
             //create admin user
-            var admin = new IdentityUser
+            var admin = new ApplicationUser
             {
                 Id = adminUserid,
                 UserName = "admin@trading.com",
                 Email = "admin@trading.com",
                 NormalizedEmail = "admin@trading.com".ToUpper(),
-                NormalizedUserName = "admin@trading.com".ToUpper()
+                NormalizedUserName = "admin@trading.com".ToUpper(),
+                passcode ="123456"
             };
-            admin.PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(admin, "Admin@123");
-            modelBuilder.Entity<IdentityUser>().HasData(admin);
+            admin.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(admin, "Admin@123");
+            modelBuilder.Entity<ApplicationUser>().HasData(admin);
             //give roles to admin user
             var adminRoles = new List<IdentityUserRole<string>>()
             {
@@ -254,7 +255,12 @@ ConcurrencyStamp =tradeuserRoleID
            .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
-
+            modelBuilder.Entity<Job>()
+        .HasOne(pd => pd.Enduser)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.enduserid)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
             modelBuilder.Entity<UomMultiplyingFactor>()
@@ -380,6 +386,42 @@ ConcurrencyStamp =tradeuserRoleID
                     .HasForeignKey(pd => pd.itembudgetheaderid)
                     .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<PR>()
+               .HasOne(pd => pd.verifiedby)
+               .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+               .HasForeignKey(pd => pd.verifiedbyid)
+               .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<PR>()
+                     .HasOne(pd => pd.PRstatus)
+                     .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                     .HasForeignKey(pd => pd.prstatusid)
+                     .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<Bom>()
+                   .HasOne(pd => pd.Bomcreatedby)
+                   .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                   .HasForeignKey(pd => pd.bomcreatedbyid)
+                   .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.Property(e => e.passcode).HasMaxLength(100); // Example configuration
+            });
+
+
 
 
         }
