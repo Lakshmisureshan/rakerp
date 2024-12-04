@@ -43,6 +43,8 @@ namespace WebApplication1.Controllers
                 itemname = request.itemname,    
                 standarduomid = request.standarduomid ,
                 itembudgetheaderid = request.itembudgetheaderid ,   
+                productcode = request.productcode ,
+                price = request.price ,
                 
                 
             };
@@ -54,7 +56,9 @@ namespace WebApplication1.Controllers
             itemdescription= product.itemdescription,
             standarduomid= product.standarduomid,
             itemname= product.itemname, 
-            price = product.price   
+            price = product.price ,
+            productcode= product.productcode 
+            
             
             };
 
@@ -81,7 +85,16 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetMaxProductCodeAsync")]
+        public async Task<int> GetMaxProductCodeAsync()
+        {
+            // Get the maximum product code from the database
+            var maxProductCode = await dbcontext.Product
+                .MaxAsync(p => (int?)p.productcode); // Use nullable int to handle no records case
 
+            // Return the maximum product code or 10001 if no products exist
+            return maxProductCode+1 ?? 10000 + 1; // Return 10001 if maxProductCode is null
+        }
 
 
 

@@ -6,7 +6,7 @@ namespace WebApplication1.Models.DTO
     {
         public int itemid { get; set; }
 
-
+        public int productcode { get; set; }
         public string itemcode { get; set; }
 
         public string itemname { get; set; }

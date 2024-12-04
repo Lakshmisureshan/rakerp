@@ -35,34 +35,39 @@ namespace WebApplication1.Controllers
 
 
 
-
         [HttpPost("AddPrheader")]
         public async Task<IActionResult> AddPrheader(AddPrDto request)
         {
-            var pr = new PR
+            try
             {
-         jobid=request.jobid,
-         Prdate = request.Prdate,
-         PRID = request.PRID,
-         remarks=request.remarks
+                var pr = new PR
+                {
+                    jobid = request.jobid,
+                    Prdate = request.Prdate,
+                    PRID = request.PRID,
+                    remarks = request.remarks
+                };
 
-         
-            };
-            await dbcontext.PR.AddAsync(pr);
-            await dbcontext.SaveChangesAsync();
-            var response = new PrDto
+                await dbcontext.PR.AddAsync(pr);
+                await dbcontext.SaveChangesAsync();
+
+                var response = new PrDto
+                {
+                    remarks = pr.remarks,
+                    PRID = pr.PRID,
+                    jobid = request.jobid,
+                    Prdate = request.Prdate,
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
             {
-              remarks = pr.remarks,
-              PRID=pr.PRID,
-              jobid=request.jobid,  
-              Prdate=request.Prdate,
-              
+                // Log the exception (optional)
+                // e.g., logger.LogError(ex, "An error occurred while adding PR header");
 
-
-
-            };
-
-            return Ok(response);
+                return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+            }
         }
 
 

@@ -115,6 +115,78 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetAllSuppliers")]
+        public async Task<IActionResult> GetAllSuppliers()
+        {
+            var response = new List<SupplierDto>();
+            var suppliers = await dbcontext.Supplier.ToListAsync();
+            foreach (var item in suppliers)
+            {
+                response.Add(new SupplierDto
+                {
+                   supplierid = item.supplierid,
+                   suppliername=item.suppliername,  
+
+                });
+
+            }
+            return Ok(response);
+        }
+
+
+        [HttpGet("GetSupplierContactbySupplierid")]
+        public async Task<IActionResult> GetSupplierContactbySupplierid( int supplierid )
+        {
+            var suppliercontact = await dbcontext.SupplierContact.Where (x=>x.supplierid == supplierid).ToListAsync();
+            if ( suppliercontact == null )
+            {
+                return BadRequest();
+            }
+           return Ok(suppliercontact);
+        }
+
+
+
+
+        [HttpGet("GetSupplierDetailsbySupplierid")]
+        public async Task<IActionResult> GetSupplierDetailsbySupplierid(int supplierid)
+        {
+            if (supplierid <= 0)
+            {
+                return BadRequest("Invalid supplier ID");
+            }
+
+            var supplierdetails = await dbcontext.Supplier
+                                                 .FirstOrDefaultAsync(x => x.supplierid == supplierid);
+
+            if (supplierdetails == null)
+            {
+                return NotFound("Supplier not found");
+            }
+
+            return Ok(supplierdetails);
+        }
+
+
+
+
+
+        [HttpGet("GetCurrencyDetailsbyCurrencyid")]
+        public async Task<IActionResult> GetCurrencyDetailsbyCurrencyid(int currencyid)
+        {
+            if (currencyid <= 0)
+            {
+                return BadRequest("Invalid Currency");
+            }
+            var currencydetails = await dbcontext.Currency
+             .FirstOrDefaultAsync(x => x.currencyid == currencyid);
+
+            if (currencydetails == null)
+            {
+                return NotFound("Currency not found");
+            }
+            return Ok(currencydetails);
+        }
 
 
 
@@ -125,6 +197,59 @@ namespace WebApplication1.Controllers
 
 
 
+
+
+
+
+
+
+
+
+        [HttpGet("GetMaxPONumber")]
+        public async Task<IActionResult> GetMaxPONumber()
+        {
+            var maxPoNumber = await dbcontext.PO.MaxAsync(po => (int?)po.Orderid) ?? 0;
+            var nextPoNumber = maxPoNumber + 1;
+            return Ok(nextPoNumber);
+        }
+
+        [HttpGet("GetJobDetails")]
+        public async Task<IActionResult> GetJobDetails()
+        {
+            var jobdetails = await dbcontext.Job.ToListAsync();
+        
+            return Ok(jobdetails);
+        }
+
+        [HttpGet("GetPOdeliveryterms")]
+        public async Task<IActionResult> GetPOdeliveryterms()
+        {
+            var pODeliveryTerms = await dbcontext.PODeliveryTerms.ToListAsync();
+            return Ok(pODeliveryTerms);
+        }
+
+
+        [HttpGet("GetPOPaymentTerms")]
+        public async Task<IActionResult> GetPOPaymentTerms()
+        {
+            var pODeliveryTerms = await dbcontext.POPaymentterms.ToListAsync();
+            return Ok(pODeliveryTerms);
+        }
+
+
+        [HttpGet("GetPOPaymentDays")]
+        public async Task<IActionResult> GetPOPaymentDays()
+        {
+            var POPaymentDays = await dbcontext.PaymenttermsDays.ToListAsync();
+            return Ok(POPaymentDays);
+        }
+
+        [HttpGet("GetPOPaymentTerms2")]
+        public async Task<IActionResult> GetPOPaymentTerms2()
+        {
+            var POPaymentDays2 = await dbcontext.Popaymentterms2.ToListAsync();
+            return Ok(POPaymentDays2);
+        }
 
 
 

@@ -33,7 +33,7 @@ namespace WebApplication1.Models.DTO
         public DateTime podeliverydate { get; set; }
 
 
-    
+        public int enduserid { get; set; }
 
         public int projectcategoryid { get; set; }
 

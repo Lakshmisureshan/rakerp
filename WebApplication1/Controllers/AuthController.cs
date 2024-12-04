@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Data;
 using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
 using WebApplication1.Repositories.Implementation;
@@ -13,14 +14,16 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly ApplicationDBContext dbcontext;
         private readonly UserManager<ApplicationUser> userManager1;
         private readonly IConfiguration configuration1;
         private readonly ITokenRepository tokenrepository;
 
         public ILogger<AuthController> Logger { get; }
 
-        public AuthController(UserManager<ApplicationUser> userManager1,  IConfiguration configuration1,ITokenRepository  tokenrepository, ILogger<AuthController> logger)
+        public AuthController(ApplicationDBContext dbcontext,UserManager<ApplicationUser> userManager1,  IConfiguration configuration1,ITokenRepository  tokenrepository, ILogger<AuthController> logger)
         {
+            this.dbcontext = dbcontext;
             this.userManager1 = userManager1;
             this.configuration1 = configuration1;
             this.tokenrepository = tokenrepository;
@@ -36,6 +39,7 @@ namespace WebApplication1.Controllers
             {
                 UserName = request.Email?.Trim(),
                 Email = request.Email?.Trim(),
+                passcode = request.passcode.Trim(),
             };
             var identityResult = await userManager1.CreateAsync(user, request.Password);
             if (identityResult.Succeeded)
@@ -117,8 +121,17 @@ namespace WebApplication1.Controllers
             var user = await userManager1.FindByIdAsync(userId);
             return user.UserName; // Return the username or null if user not found
         }
-
-
+        [HttpGet("GetUserIdByEmail")]
+        public async Task<IActionResult> GetUserIdByEmail(string email)
+        {
+            var user = await userManager1.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var userId = user.Id; // Access the user ID
+                return Ok(new { userId }); // Return as a JSON object
+            }
+            return NotFound("User not found");
+        }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]  LoginRequestDto  request)
         {
@@ -132,9 +145,7 @@ namespace WebApplication1.Controllers
 
                 if (checkpasswordresult)
                 {
-
-
-                    
+               
 
 
 
@@ -161,6 +172,397 @@ namespace WebApplication1.Controllers
         }
 
 
+
+        [HttpPost("VerifyPR")]
+        public async Task<IActionResult> Authorize([FromBody] VerifyPRRequestDTO request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.passcode) || string.IsNullOrEmpty(request.userid))
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            // Find the user by UserId or Email
+            var user = await userManager1.FindByIdAsync(request.userid) ??
+                       await userManager1.FindByEmailAsync(request.userid);
+
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Check the passcode
+            if (user.passcode != request.passcode)
+            {
+                return Unauthorized("Invalid password or passcode.");
+            }
+
+            // Find the PR header
+            var prheader = await dbcontext.PR.FirstOrDefaultAsync(p => p.PRID == request.prid);
+
+            if (prheader == null)
+            {
+                return NotFound("PR header not found.");
+            }
+
+            // Update the PR status
+            prheader.prstatusid = 3;
+            prheader.verifiedbyid = request.userid;
+            prheader.prverificationdate = DateTime.Now; 
+            await dbcontext.SaveChangesAsync();
+
+            return Ok(new { message = "verified" });
+        }
+
+
+        [HttpGet("GetUserRoles")]
+
+        public async Task<ActionResult<List<string>>> GetUserRoles(string userId)
+        
+        {
+            var user = await userManager1.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var roles = await userManager1.GetRolesAsync(user);
+            return Ok(roles);
+        }
+
+
+
+        public class VerifyPORequest
+        {
+            public string UserId { get; set; }
+            public string passcode { get; set; }    
+            public List<int> ForderId { get; set; }
+        }
+        [HttpPost("VerifyPOs")]
+        public async Task<IActionResult> VerifyPOs([FromBody] VerifyPORequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.UserId) || request.ForderId == null || request.ForderId.Count == 0)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+
+            var user = await userManager1.FindByIdAsync(request.UserId) ??
+                    await userManager1.FindByEmailAsync(request.UserId);
+
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Check the passcode
+            if (user.passcode != request.passcode)
+            {
+                return Unauthorized("Invalid password or passcode.");
+            }
+
+
+
+            bool isVerified;
+            // Perform the PO verification logic here
+            try
+            {
+                var pos = await dbcontext.PO.Where(po => request.ForderId.Contains(po.Orderid)).ToListAsync();
+
+                foreach (var po in pos)
+                {
+                    po.poverifiedbyid = request.UserId;
+                    po.postatusid = 2;
+                    po.poverifiedDate = DateTime.Now;
+                }
+
+                await dbcontext.SaveChangesAsync();
+                isVerified = true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and handle errors
+                // logger.LogError(ex, "Error verifying POs");
+                isVerified = false;
+            }
+
+            if (isVerified)
+            {
+                return Ok(new { message = "verified" });
+            }
+            else
+            {
+                return StatusCode(500, "An error occurred while verifying POs.");
+            }
+        }
+
+        [HttpPost("authorizePOs")]
+        public async Task<IActionResult> authorizePOs([FromBody] VerifyPORequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.UserId) || request.ForderId == null || request.ForderId.Count == 0)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            var user = await userManager1.FindByIdAsync(request.UserId) ??
+                    await userManager1.FindByEmailAsync(request.UserId);
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Check the passcode
+            if (user.passcode != request.passcode)
+            {
+                return Unauthorized("Invalid password or passcode.");
+            }
+
+
+
+            bool isauthorised;
+            // Perform the PO verification logic here
+            try
+            {
+                var pos = await dbcontext.PO.Where(po => request.ForderId.Contains(po.Orderid)).ToListAsync();
+
+                foreach (var po in pos)
+                {
+                    po.PoAuthorizedbyid = request.UserId;
+                    po.postatusid =3;
+                    po.poauthorizedDate = DateTime.Now;
+                }
+
+                await dbcontext.SaveChangesAsync();
+                isauthorised = true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and handle errors
+                // logger.LogError(ex, "Error verifying POs");
+                isauthorised = false;
+            }
+
+            if (isauthorised)
+            {
+                return Ok(new { message = "authorized" });
+            }
+            else
+            {
+                return StatusCode(500, "An error occurred while authorizing POs.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("RegisterRE")]
+        public async Task<IActionResult> RegisterRE([FromBody] RegisterREclass request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.UserId))
+            {
+                return BadRequest("Invalid request data");
+            }
+
+            var user = await userManager1.FindByIdAsync(request.UserId) ??
+                       await userManager1.FindByEmailAsync(request.UserId);
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Assuming you have a context object to interact with the database
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    foreach (var entry in request.redetails)
+                    {
+                        // Retrieve the purchase details based on potblid
+                        var purchaseDetails = await dbcontext.Purchasedetails
+                                                             .FirstOrDefaultAsync(pd => pd.potblid == entry.potblid);
+
+                        if (purchaseDetails == null)
+                        {
+                            return NotFound($"Purchase details not found for potblid {entry.potblid}.");
+                        }
+
+                        // Update the received quantity
+                        purchaseDetails.receivedentryqty = entry.receivedqty;
+
+                        // Retrieve the received header based on rtblid
+                        var receivedHeader = await dbcontext.ReceivedEntry
+                                                            .FirstOrDefaultAsync(rh => rh.pono == request.reno);
+
+                        if (receivedHeader == null)
+                        {
+                            return NotFound($"Received header not found for rtblid {entry.rtblid}.");
+                        }
+
+                        // Update the isregistered field
+                        receivedHeader.isregistered = 1;
+                    }
+
+                    // Save changes to the database
+                    await dbcontext.SaveChangesAsync();
+
+                    // Commit the transaction
+                    await transaction.CommitAsync();
+
+                    return Ok("Purchase details and received headers updated successfully.");
+                }
+                catch (Exception ex)
+                {
+                    // Roll back the transaction if any error occurs
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
+                }
+            }
+        }
+
+
+
+        [HttpPost("RegisterGRN")]
+        public async Task<IActionResult> RegisterGRN([FromBody] RegisterGRNclass request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.UserId))
+            {
+                return BadRequest("Invalid request data");
+            }
+
+            var user = await userManager1.FindByIdAsync(request.UserId) ??
+                       await userManager1.FindByEmailAsync(request.UserId);
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+
+
+            var grnheader = await dbcontext.GRNHeader
+          .Include(po => po.PO) // Include the Supplier related entity
+          .Where(po => po.grnno == request.grnno)
+          .FirstOrDefaultAsync();
+            if (grnheader == null)
+            {
+                return Unauthorized("User not found.");
+            }
+            else
+            {
+                using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+                {
+                    try
+                    {
+
+
+
+
+
+                        foreach (var entry in request.details)
+                        {
+                            // Retrieve the purchase details based on potblid
+                            var purchaseDetails = await dbcontext.Purchasedetails
+                                                                 .FirstOrDefaultAsync(pd => pd.poitemid == entry.itemcode && pd.orderid == grnheader.pono);
+
+                            if (purchaseDetails == null)
+                            {
+                                return NotFound($"Purchase details not found for potblid {grnheader.pono}.");
+                            }
+
+                            // Update the received quantity
+                            purchaseDetails.grncreatedqty = entry.grnqty;
+
+                            // Retrieve the received header based on rtblid
+                            
+
+                            // Update the isregistered field
+                            grnheader.isregistered = 1;
+
+
+
+
+
+
+
+
+
+
+                        }
+
+                        // Save changes to the database
+                        await dbcontext.SaveChangesAsync();
+
+                        // Commit the transaction
+                        await transaction.CommitAsync();
+
+                        return Ok("Purchase details and received headers updated successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Roll back the transaction if any error occurs
+                        await transaction.RollbackAsync();
+                        return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
+                    }
+                }
+
+            }
+
+            // Assuming you have a context object to interact with the database
+          
+        }
+
+        public class receivedentrysummary
+        {
+
+            public int potblid { get; set; }
+            public int rtblid { get; set; }
+            public decimal receivedqty { get; set; }
+
+        }
+
+
+
+  
+
+
+
+
+        public class RegisterREclass
+        {
+            public int reno { get; set; }
+            public string UserId { get; set; }
+ 
+            public List<receivedentrysummary> redetails { get; set; }
+
+        }
+
+        public class RegisterGRNclass
+        {
+            public int grnno { get; set; }
+            public string UserId { get; set; }
+
+            public List<grnsummary> details { get; set; }
+
+        }
+
+
+
+        public class grnsummary
+        {
+
+            public int grntblid { get; set; }
+            public decimal  grnqty { get; set; }
+            public int pouomid { get; set; }
+            public int inventoryuomid { get; set; }
+            public double  multiplyingfactor { get; set; }
+            public int itemcode { get; set; }
+
+        }
 
 
 

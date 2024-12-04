@@ -65,5 +65,10 @@ namespace WebApplication1.Models.Domain
         public Customer Enduser { get; set; }
         public int enduserid { get; set; }
 
+
+        public int mainjobid { get; set; } = 0;
+
+        public DateTime expecteddeliverydate { get; set; }
+
     }
 }

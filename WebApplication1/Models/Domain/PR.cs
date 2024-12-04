@@ -25,7 +25,7 @@ namespace WebApplication1.Models.Domain
 
         public int prstatusid{ get; set; } = 1;
 
-
+        
 
         public DateTime? prverificationdate { get; set; }
 

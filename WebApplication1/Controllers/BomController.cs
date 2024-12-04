@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
@@ -78,10 +79,8 @@ namespace WebApplication1.Controllers
             return Ok(bom);
            
         }
+     
 
-
-
-       
 
 
         [HttpPost("AddBom")]
@@ -307,17 +306,18 @@ namespace WebApplication1.Controllers
         public async Task<ActionResult<PR>> GetPRDetailsbyPRID(int prid)
         {
             // Query the database for a job with the specified jobId
-            var PR = await dbcontext.PR
-                            .SingleOrDefaultAsync(j => j.PRID == prid);
+            var pr = await dbcontext.PR
+                                  .Include(p => p.verifiedby) // Include the related ApplicationUser
+                                  .SingleOrDefaultAsync(j => j.PRID == prid);
 
             // Check if the job was found
-            if (PR == null)
+            if (pr == null)
             {
                 return NotFound(); // Return a 404 response if the job is not found
             }
 
             // Return the job details with a 200 OK response
-            return Ok(PR);
+            return Ok(pr);
         }
 
 
@@ -357,10 +357,12 @@ namespace WebApplication1.Controllers
 
 
         [HttpDelete("DeleteBom/{bomid}")]
-        public async Task<IActionResult> DeleteBom(string bomid)
+        public async Task<IActionResult> DeleteBom(int bomid)
         {
             // Find the BOM by ID
-            var bom = await dbcontext.Bom.FindAsync(bomid);
+            var bom = await dbcontext.Bom
+                            .Where(b => b.bomid == bomid)
+                            .FirstOrDefaultAsync();
             if (bom == null)
             {
                 return NotFound();

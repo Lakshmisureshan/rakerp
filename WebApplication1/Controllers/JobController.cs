@@ -64,79 +64,74 @@ namespace WebApplication1.Controllers
         [HttpPost("AddJob")]
         public async Task<IActionResult> AddJob(AddJobDto request)
         {
-            var job = new Job
+            try
             {
-                isldapplicable = request.isldapplicable,
-                customerid = request.customerid,    
-                deliveryterms = request.deliveryterms,  
-                currencyid = request.currencyid,
-                exchangerate = request.exchangerate ,
-                jobdate = request.jobdate   ,
-                jobtypeid = request.jobtypeid   ,
-                ldpercent = request.ldpercent   ,
-                Jobid = request.Jobid , 
-                lpono = request.lpono   ,
-                manufacturingbayid = request.manufacturingbayid,
-                lpodate  = request.lpodate ,    
-            ordervalue= request.ordervalue ,    
-            ordervaluebasecurrency = request.ordervaluebasecurrency ,
+                var job = new Job
+                {
+                    isldapplicable = request.isldapplicable,
+                    customerid = request.customerid,
+                    deliveryterms = request.deliveryterms,
+                    currencyid = request.currencyid,
+                    exchangerate = request.exchangerate,
+                    jobdate = request.jobdate,
+                    jobtypeid = request.jobtypeid,
+                    ldpercent = request.ldpercent,
+                    Jobid = request.Jobid,
+                    lpono = request.lpono,
+                    manufacturingbayid = request.manufacturingbayid,
+                    lpodate = request.lpodate,
+                    ordervalue = request.ordervalue,
+                    ordervaluebasecurrency = request.ordervaluebasecurrency,
+                    podeliverydate = request.podeliverydate,
+                    totalnumber = request.totalnumber,
+                    projectengineerid = request.projectengineerid,
+                    projectmanagerid = request.projectmanagerid,
+                    projectname = request.projectname,
+                    paymentterms = request.paymentterms,
+                    projectcategoryid = request.projectcategoryid,
+                    qualitylevelid = request.qualitylevelid,
+                    warrantyterms = request.warrantyterms,
+                    enduserid = request.enduserid
+                };
 
-         podeliverydate = request.podeliverydate    ,
-         totalnumber = request.totalnumber ,    
-         projectengineerid = request.projectengineerid ,    
-         projectmanagerid = request.projectmanagerid ,  
-         projectname = request.projectname ,
-         paymentterms = request.paymentterms,
-         projectcategoryid = request.projectcategoryid  ,
-         qualitylevelid = request.qualitylevelid
-         ,
-         warrantyterms = request.warrantyterms  ,
+                await dbcontext.Job.AddAsync(job);
+                await dbcontext.SaveChangesAsync();
 
+                var response = new JobDto
+                {
+                    projectengineerid = job.projectengineerid,
+                    projectmanagerid = job.projectmanagerid,
+                    warrantyterms = job.warrantyterms,
+                    qualitylevelid = job.qualitylevelid,
+                    projectcategoryid = job.projectcategoryid,
+                    paymentterms = job.paymentterms,
+                    projectname = job.projectname,
+                    currencyid = job.currencyid,
+                    customerid = job.customerid,
+                    deliveryterms = job.deliveryterms,
+                    exchangerate = job.exchangerate,
+                    isldapplicable = job.isldapplicable,
+                    jobdate = job.jobdate,
+                    jobtypeid = job.jobtypeid,
+                    Jobid = job.Jobid,
+                    lpono = job.lpono,
+                    ldpercent = job.ldpercent,
+                    lpodate = job.lpodate,
+                    manufacturingbayid = job.manufacturingbayid,
+                    ordervalue = job.ordervalue,
+                    ordervaluebasecurrency = job.ordervaluebasecurrency,
+                    podeliverydate = job.podeliverydate,
+                    totalnumber = job.totalnumber
+                };
 
-         enduserid =2
-            
-
-
-
-
-
-            };
-            await dbcontext.Job.AddAsync(job);
-            await dbcontext.SaveChangesAsync();
-            var response = new JobDto
+                return Ok(response);
+            }
+            catch (Exception ex)
             {
-          projectengineerid =job.projectengineerid, 
-          projectmanagerid =job.projectmanagerid,
-          warrantyterms=job.warrantyterms,
-          qualitylevelid=job.qualitylevelid,
-          projectcategoryid=job.projectcategoryid,
-          paymentterms=job.paymentterms,
-          projectname=job.projectname ,
-          currencyid = job.currencyid   ,
-          customerid = job.customerid   ,
-          deliveryterms = job.deliveryterms ,   
-          exchangerate = job.exchangerate , 
-          isldapplicable = job.isldapplicable , 
-          jobdate = job.jobdate ,   
-          jobtypeid = job.jobtypeid ,   
-          Jobid = job.Jobid ,   
-          lpono = job.lpono ,
-          ldpercent = job.ldpercent ,   
-          lpodate = job.lpodate ,   
-          manufacturingbayid = job.manufacturingbayid , 
-          ordervalue = job.ordervalue   ,
-          ordervaluebasecurrency = job.ordervaluebasecurrency   ,
-          podeliverydate = job.podeliverydate,
-          totalnumber = job.totalnumber ,
-          
-          
-
-          
-            };
-
-            return Ok(response);
+                // Log the exception (you can use a logging framework)
+                return StatusCode(500, new { Message = "An error occurred while processing your request.", Details = ex.Message });
+            }
         }
-
 
 
         [HttpGet("GetAllJob")]

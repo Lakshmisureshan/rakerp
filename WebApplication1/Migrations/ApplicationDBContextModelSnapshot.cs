@@ -83,6 +83,27 @@ namespace WebApplication1.Migrations
                             ConcurrencyStamp = "b52de381-7ff6-4d7f-a385-51fa28f43aaa",
                             Name = "TradeUser",
                             NormalizedName = "TRADEUSER"
+                        },
+                        new
+                        {
+                            Id = "5e648847-b462-464d-8e1e-aa20a7947bef",
+                            ConcurrencyStamp = "5e648847-b462-464d-8e1e-aa20a7947bef",
+                            Name = "POVerification",
+                            NormalizedName = "POVERIFICATION"
+                        },
+                        new
+                        {
+                            Id = "333559dc-c729-403c-a80e-77250b8a0592",
+                            ConcurrencyStamp = "333559dc-c729-403c-a80e-77250b8a0592",
+                            Name = "POAuthorization",
+                            NormalizedName = "POAUTHORIZATION"
+                        },
+                        new
+                        {
+                            Id = "e05d3da2-24c8-43fb-859f-cdbee6ac2a73",
+                            ConcurrencyStamp = "e05d3da2-24c8-43fb-859f-cdbee6ac2a73",
+                            Name = "GRNRegistration",
+                            NormalizedName = "GRNREGISTRATION"
                         });
                 });
 
@@ -197,6 +218,21 @@ namespace WebApplication1.Migrations
                         {
                             UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             RoleId = "b52de381-7ff6-4d7f-a385-51fa28f43aaa"
+                        },
+                        new
+                        {
+                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
+                            RoleId = "5e648847-b462-464d-8e1e-aa20a7947bef"
+                        },
+                        new
+                        {
+                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
+                            RoleId = "333559dc-c729-403c-a80e-77250b8a0592"
+                        },
+                        new
+                        {
+                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
+                            RoleId = "e05d3da2-24c8-43fb-859f-cdbee6ac2a73"
                         });
                 });
 
@@ -293,15 +329,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f42279bd-4e8c-4f07-9cf8-dc6161837752",
+                            ConcurrencyStamp = "a77a2b3e-957f-4c27-9c12-57c78e29b86e",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJ8DLj8DoaxZSu9P3kK6cPCM1NwjxpQcwhn+ZvNJhq7h93pR5t/GphIMaYlpxTaVfg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEL8vX7Rw6Qpbw5IwxmR55Ewq9zlJYEiVFqFWM7EC0zQvGopoSt1Jq5FW/hE8bv+XTA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "18c415a5-5744-49b0-9bbd-753d9748069b",
+                            SecurityStamp = "2ee5df6e-b5c6-426b-830c-1da5b2c66223",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -492,6 +528,108 @@ namespace WebApplication1.Migrations
                     b.ToTable("Customer");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.GRNDetails", b =>
+                {
+                    b.Property<int>("grntblid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("grntblid"), 1L, 1);
+
+                    b.Property<int>("grnno")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("grnqty")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("inventoryuomid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("itemcode")
+                        .HasColumnType("int");
+
+                    b.Property<double>("multiplyingfactor")
+                        .HasColumnType("float");
+
+                    b.Property<int>("pouomid")
+                        .HasColumnType("int");
+
+                    b.HasKey("grntblid");
+
+                    b.HasIndex("grnno");
+
+                    b.HasIndex("inventoryuomid");
+
+                    b.HasIndex("itemcode");
+
+                    b.HasIndex("pouomid");
+
+                    b.ToTable("GRNDetails");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.GRNHeader", b =>
+                {
+                    b.Property<int>("grnno")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("grndate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("isregistered")
+                        .HasColumnType("int");
+
+                    b.Property<int>("pono")
+                        .HasColumnType("int");
+
+                    b.HasKey("grnno");
+
+                    b.HasIndex("pono");
+
+                    b.ToTable("GRNHeader");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Inventory", b =>
+                {
+                    b.Property<int>("invid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("invid"), 1L, 1);
+
+                    b.Property<DateTime>("Entrydate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("batchid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("jobid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("pono")
+                        .HasColumnType("int");
+
+                    b.Property<int>("productid")
+                        .HasColumnType("int");
+
+                    b.Property<double>("quantity")
+                        .HasColumnType("float");
+
+                    b.Property<int>("uomid")
+                        .HasColumnType("int");
+
+                    b.HasKey("invid");
+
+                    b.HasIndex("jobid");
+
+                    b.HasIndex("pono");
+
+                    b.HasIndex("productid");
+
+                    b.HasIndex("uomid");
+
+                    b.ToTable("Inventory");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.IsLDApplicable", b =>
                 {
                     b.Property<int>("ldid")
@@ -536,6 +674,9 @@ namespace WebApplication1.Migrations
                     b.Property<double>("exchangerate")
                         .HasColumnType("float");
 
+                    b.Property<DateTime>("expecteddeliverydate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("isldapplicable")
                         .HasColumnType("int");
 
@@ -555,6 +696,9 @@ namespace WebApplication1.Migrations
                     b.Property<string>("lpono")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("mainjobid")
+                        .HasColumnType("int");
 
                     b.Property<int>("manufacturingbayid")
                         .HasColumnType("int");
@@ -634,6 +778,10 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("startingseries")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("jobtypeid");
 
                     b.ToTable("JobType");
@@ -654,6 +802,238 @@ namespace WebApplication1.Migrations
                     b.HasKey("BayId");
 
                     b.ToTable("ManufacturingBay");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.PaymenttermsDays", b =>
+                {
+                    b.Property<int>("paydaysid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("paydaysid"), 1L, 1);
+
+                    b.Property<string>("paydaynames")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("paydaysid");
+
+                    b.ToTable("PaymenttermsDays");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.PO", b =>
+                {
+                    b.Property<int>("Orderid")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Mtcrequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Others")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("POPaymentterms2id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymenttermsDaysid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PoAuthorizedbyid")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Podate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Qtndate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Qtnref")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("approveddrawings")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("chineseorgin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("coorequired")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("createdbyid")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("createddate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("deliverydate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("extendedwarraty3years")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("jobid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("modifiedbyid")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("mtcpriortodispatch")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("poauthorizedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("pocurrencyid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("podeliverytermsid")
+                        .HasColumnType("int");
+
+                    b.Property<double>("poexchangerate")
+                        .HasColumnType("float");
+
+                    b.Property<int>("popaymenttermsid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("postatusid")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("poverifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("poverifiedbyid")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("predispatchinspection")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("qtnattached")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("qtnshippingdocs")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("supplieraddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("suppliercontactid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("supplierid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("suppliertrnno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("updateddate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("warranty")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Orderid");
+
+                    b.HasIndex("POPaymentterms2id");
+
+                    b.HasIndex("PaymenttermsDaysid");
+
+                    b.HasIndex("PoAuthorizedbyid");
+
+                    b.HasIndex("createdbyid");
+
+                    b.HasIndex("jobid");
+
+                    b.HasIndex("modifiedbyid");
+
+                    b.HasIndex("pocurrencyid");
+
+                    b.HasIndex("podeliverytermsid");
+
+                    b.HasIndex("popaymenttermsid");
+
+                    b.HasIndex("postatusid");
+
+                    b.HasIndex("poverifiedbyid");
+
+                    b.HasIndex("suppliercontactid");
+
+                    b.HasIndex("supplierid");
+
+                    b.ToTable("PO");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.PODeliveryTerms", b =>
+                {
+                    b.Property<int>("deliveryid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("deliveryid"), 1L, 1);
+
+                    b.Property<string>("deliveryterms")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("deliveryid");
+
+                    b.ToTable("PODeliveryTerms");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.POPaymentterms", b =>
+                {
+                    b.Property<int>("paytermsid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("paytermsid"), 1L, 1);
+
+                    b.Property<string>("paymenttermsname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("paytermsid");
+
+                    b.ToTable("POPaymentterms");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Popaymentterms2", b =>
+                {
+                    b.Property<int>("paytermsid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("paytermsid"), 1L, 1);
+
+                    b.Property<string>("paymenttermsname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("paytermsid");
+
+                    b.ToTable("Popaymentterms2");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.POStatus", b =>
+                {
+                    b.Property<int>("postatusid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("postatusid"), 1L, 1);
+
+                    b.Property<string>("postatusname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("postatusid");
+
+                    b.ToTable("postatus");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.PR", b =>
@@ -702,6 +1082,9 @@ namespace WebApplication1.Migrations
                     b.Property<int>("bomid")
                         .HasColumnType("int");
 
+                    b.Property<float>("pocreatedqty")
+                        .HasColumnType("real");
+
                     b.Property<int>("prid")
                         .HasColumnType("int");
 
@@ -711,6 +1094,9 @@ namespace WebApplication1.Migrations
                     b.Property<float>("prqty")
                         .HasColumnType("real");
 
+                    b.Property<int>("pruomid")
+                        .HasColumnType("int");
+
                     b.HasKey("prtblid");
 
                     b.HasIndex("bomid");
@@ -718,6 +1104,8 @@ namespace WebApplication1.Migrations
                     b.HasIndex("prid");
 
                     b.HasIndex("pritemid");
+
+                    b.HasIndex("pruomid");
 
                     b.ToTable("PRDetails");
                 });
@@ -747,6 +1135,9 @@ namespace WebApplication1.Migrations
 
                     b.Property<float>("price")
                         .HasColumnType("real");
+
+                    b.Property<int>("productcode")
+                        .HasColumnType("int");
 
                     b.Property<int>("standarduomid")
                         .HasColumnType("int");
@@ -794,6 +1185,29 @@ namespace WebApplication1.Migrations
                     b.ToTable("ProjectCategory");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.PRPO", b =>
+                {
+                    b.Property<int>("prpotblid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("prpotblid"), 1L, 1);
+
+                    b.Property<int>("Purchasedetailspotblid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("prdetailsprtblid")
+                        .HasColumnType("int");
+
+                    b.HasKey("prpotblid");
+
+                    b.HasIndex("Purchasedetailspotblid");
+
+                    b.HasIndex("prdetailsprtblid");
+
+                    b.ToTable("PRPO", (string)null);
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.PRstatus", b =>
                 {
                     b.Property<int>("prstatusid")
@@ -811,6 +1225,53 @@ namespace WebApplication1.Migrations
                     b.ToTable("PRstatus");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.Purchasedetails", b =>
+                {
+                    b.Property<int>("potblid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("potblid"), 1L, 1);
+
+                    b.Property<decimal>("grncreatedqty")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("inspacceptedqty")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("make")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("orderid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("poitemid")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("poquantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("pounitprice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("pouomid")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("receivedentryqty")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("potblid");
+
+                    b.HasIndex("orderid");
+
+                    b.HasIndex("poitemid");
+
+                    b.HasIndex("pouomid");
+
+                    b.ToTable("Purchasedetails");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.QualityLevel", b =>
                 {
                     b.Property<int>("qualitylevelid")
@@ -826,6 +1287,111 @@ namespace WebApplication1.Migrations
                     b.HasKey("qualitylevelid");
 
                     b.ToTable("QualityLevel");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.ReceivedEntry", b =>
+                {
+                    b.Property<int>("REID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("REDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("isregistered")
+                        .HasColumnType("int");
+
+                    b.Property<string>("location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("pono")
+                        .HasColumnType("int");
+
+                    b.HasKey("REID");
+
+                    b.HasIndex("pono");
+
+                    b.ToTable("ReceivedEntry");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.ReceivedEntryDetails", b =>
+                {
+                    b.Property<int>("rtblid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("rtblid"), 1L, 1);
+
+                    b.Property<int>("RENO")
+                        .HasColumnType("int");
+
+                    b.Property<int>("itemid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("potblid")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("receivedqty")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("rtblid");
+
+                    b.HasIndex("RENO");
+
+                    b.HasIndex("itemid");
+
+                    b.HasIndex("potblid");
+
+                    b.ToTable("ReceivedEntryDetails");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Supplier", b =>
+                {
+                    b.Property<int>("supplierid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("supplierid"), 1L, 1);
+
+                    b.Property<string>("supplieraddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("suppliername")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("suppliertrnno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("supplierid");
+
+                    b.ToTable("Supplier");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.SupplierContact", b =>
+                {
+                    b.Property<int>("suppliercontectid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("suppliercontectid"), 1L, 1);
+
+                    b.Property<string>("suppliercontactname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("supplierid")
+                        .HasColumnType("int");
+
+                    b.HasKey("suppliercontectid");
+
+                    b.HasIndex("supplierid");
+
+                    b.ToTable("SupplierContact");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.UOM", b =>
@@ -1009,6 +1575,87 @@ namespace WebApplication1.Migrations
                     b.Navigation("country");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.GRNDetails", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.GRNHeader", "GRNHeader")
+                        .WithMany()
+                        .HasForeignKey("grnno")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.UOM", "Inventoryuom")
+                        .WithMany()
+                        .HasForeignKey("inventoryuomid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("itemcode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.UOM", "POUOM")
+                        .WithMany()
+                        .HasForeignKey("pouomid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("GRNHeader");
+
+                    b.Navigation("Inventoryuom");
+
+                    b.Navigation("POUOM");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.GRNHeader", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.PO", "PO")
+                        .WithMany()
+                        .HasForeignKey("pono")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("PO");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Inventory", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("jobid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.PO", "PO")
+                        .WithMany()
+                        .HasForeignKey("pono")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("productid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.UOM", "UOM")
+                        .WithMany()
+                        .HasForeignKey("uomid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+
+                    b.Navigation("PO");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("UOM");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.Job", b =>
                 {
                     b.HasOne("WebApplication1.Models.Domain.Currency", "Currency")
@@ -1092,6 +1739,110 @@ namespace WebApplication1.Migrations
                     b.Navigation("isldapp");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.PO", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.Popaymentterms2", "POPaymentterms2")
+                        .WithMany()
+                        .HasForeignKey("POPaymentterms2id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.PaymenttermsDays", "PaymenttermsDays")
+                        .WithMany()
+                        .HasForeignKey("PaymenttermsDaysid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "PoAuthorizedby")
+                        .WithMany()
+                        .HasForeignKey("PoAuthorizedbyid")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "createdby")
+                        .WithMany()
+                        .HasForeignKey("createdbyid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("jobid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "modifiedby")
+                        .WithMany()
+                        .HasForeignKey("modifiedbyid")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("WebApplication1.Models.Domain.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("pocurrencyid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.PODeliveryTerms", "PODeliveryTerms")
+                        .WithMany()
+                        .HasForeignKey("podeliverytermsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.POPaymentterms", "POPaymentterms")
+                        .WithMany()
+                        .HasForeignKey("popaymenttermsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.POStatus", "postatus")
+                        .WithMany()
+                        .HasForeignKey("postatusid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "Poverifiedby")
+                        .WithMany()
+                        .HasForeignKey("poverifiedbyid")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("WebApplication1.Models.Domain.SupplierContact", "SupplierContact")
+                        .WithMany()
+                        .HasForeignKey("suppliercontactid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("supplierid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("Job");
+
+                    b.Navigation("PODeliveryTerms");
+
+                    b.Navigation("POPaymentterms");
+
+                    b.Navigation("POPaymentterms2");
+
+                    b.Navigation("PaymenttermsDays");
+
+                    b.Navigation("PoAuthorizedby");
+
+                    b.Navigation("Poverifiedby");
+
+                    b.Navigation("Supplier");
+
+                    b.Navigation("SupplierContact");
+
+                    b.Navigation("createdby");
+
+                    b.Navigation("modifiedby");
+
+                    b.Navigation("postatus");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.PR", b =>
                 {
                     b.HasOne("WebApplication1.Models.Domain.Job", "Job")
@@ -1138,11 +1889,19 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("WebApplication1.Models.Domain.UOM", "UOM")
+                        .WithMany()
+                        .HasForeignKey("pruomid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Bom");
 
                     b.Navigation("PR");
 
                     b.Navigation("Product");
+
+                    b.Navigation("UOM");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Product", b =>
@@ -1162,6 +1921,101 @@ namespace WebApplication1.Migrations
                     b.Navigation("BudgettHeader");
 
                     b.Navigation("UOM");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.PRPO", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.Purchasedetails", "Purchasedetails")
+                        .WithMany("PRPOs")
+                        .HasForeignKey("Purchasedetailspotblid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.PRDetails", "Prdetails")
+                        .WithMany("PRPOs")
+                        .HasForeignKey("prdetailsprtblid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prdetails");
+
+                    b.Navigation("Purchasedetails");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Purchasedetails", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.PO", "PO")
+                        .WithMany()
+                        .HasForeignKey("orderid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Product", "product")
+                        .WithMany()
+                        .HasForeignKey("poitemid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.UOM", "UOM")
+                        .WithMany()
+                        .HasForeignKey("pouomid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("PO");
+
+                    b.Navigation("UOM");
+
+                    b.Navigation("product");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.ReceivedEntry", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.PO", "PO")
+                        .WithMany()
+                        .HasForeignKey("pono")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("PO");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.ReceivedEntryDetails", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.ReceivedEntry", "ReceivedEntry")
+                        .WithMany()
+                        .HasForeignKey("RENO")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("itemid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Purchasedetails", "Purchasedetails")
+                        .WithMany()
+                        .HasForeignKey("potblid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Purchasedetails");
+
+                    b.Navigation("ReceivedEntry");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.SupplierContact", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("supplierid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.UomMultiplyingFactor", b =>
@@ -1189,6 +2043,16 @@ namespace WebApplication1.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("TOUOM");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.PRDetails", b =>
+                {
+                    b.Navigation("PRPOs");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Purchasedetails", b =>
+                {
+                    b.Navigation("PRPOs");
                 });
 #pragma warning restore 612, 618
         }

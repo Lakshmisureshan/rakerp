@@ -5,6 +5,7 @@ namespace WebApplication1.Models.Domain
     {
         [Key]
         public int itemid { get; set; }
+        public int  productcode { get; set; }
         public string itemcode { get; set; }
         public string itemname { get; set; }
         public string itemdescription { get; set; }

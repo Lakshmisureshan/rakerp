@@ -8,5 +8,6 @@ namespace WebApplication1.Models.Domain
         [Key]
         public int jobtypeid { get; set; }
         public string   JobtypeName { get; set; }
+        public string startingseries { get; set; }  
     }
 }
