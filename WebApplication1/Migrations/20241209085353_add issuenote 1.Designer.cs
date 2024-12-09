@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241209085353_add issuenote 1")]
+    partial class addissuenote1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -329,15 +331,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3241079f-2051-4d9b-ae54-63708802b864",
+                            ConcurrencyStamp = "ab9176f6-4c73-4fec-a663-ba7b4e5b71b4",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJznPvHhUXaBKw5JE+DKUsTewEU5KkL2ZXRgmkCF7lhmEdVboVs4uakz7xLtT+ofrA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKSXuoYJgURVq5aspwN2L5vonYO/0Qvsyp4uB1zdDYGbtyysIqxskZzHtHHAQYAOBA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "3e711b0d-ee69-4b07-8c37-1253db70291a",
+                            SecurityStamp = "e95ab56e-b3a5-4972-bc5d-d9a1bf75fc01",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -647,36 +649,13 @@ namespace WebApplication1.Migrations
                     b.ToTable("IsLDApplicable");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Domain.Issuenotedetails", b =>
-                {
-                    b.Property<int>("issuedetailid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("issuedetailid"), 1L, 1);
-
-                    b.Property<int>("issuenoteref")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("issueqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("itemid")
-                        .HasColumnType("int");
-
-                    b.HasKey("issuedetailid");
-
-                    b.HasIndex("issuenoteref");
-
-                    b.HasIndex("itemid");
-
-                    b.ToTable("Issuenotedetails");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Domain.IssueNoteheader", b =>
                 {
                     b.Property<int>("issueref")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("issueref"), 1L, 1);
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -1701,25 +1680,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("UOM");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Issuenotedetails", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.IssueNoteheader", "IssueNoteheader")
-                        .WithMany()
-                        .HasForeignKey("issuenoteref")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("itemid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("IssueNoteheader");
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.IssueNoteheader", b =>

@@ -130,7 +130,8 @@ namespace WebApplication1.Controllers
                              prDetail.pocreatedqty,
                              prDetail.prtblid,
                              prDetail.bomid,
-                             prDetail.Product
+                             prDetail.Product,
+                             prDetail.pruomid
                              // Add other properties as needed
                          };
 
@@ -265,7 +266,10 @@ namespace WebApplication1.Controllers
 
                                          pouomname=  pou.uomname  ,
                                          invuomname =invuom.uomname,
-                                        po.multiplyingfactor
+                                        po.multiplyingfactor,
+                                        po.pouomid,
+                                        po.inventoryuomid,
+                                        po.itemcode
 
 
                                              // You can include other fields from PRPO if needed
@@ -1188,7 +1192,8 @@ namespace WebApplication1.Controllers
                         TotalQuantity = g.Sum(x => x.poquantity), // Sum the quantities for items with the same poitemid
                         UnitPrice = g.First().pounitprice,
                         Make = g.First().make,
-                        orderid = g.First().orderid
+                        orderid = g.First().orderid,
+                        pouomid = g.First().pouomid,
                     }).ToList();
 
                 // Group items by poitemid and prtblid to sum the quantities
@@ -1201,7 +1206,8 @@ namespace WebApplication1.Controllers
                         TotalQuantity = g.Sum(x => x.poquantity),
                         UnitPrice = g.First().pounitprice,
                         Make = g.First().make,
-                        orderid = g.First().orderid
+                        orderid = g.First().orderid,
+                        pouomid = g.First().pouomid,
                     }).ToList();
 
                 // Save purchase details or update existing ones
@@ -1227,7 +1233,8 @@ namespace WebApplication1.Controllers
                             poitemid = item.PoItemId,
                             poquantity = (decimal)item.TotalQuantity,
                             pounitprice = (decimal)item.UnitPrice,
-                            make = item.Make
+                            make = item.Make,
+                            pouomid = item.pouomid,
                         };
 
                         await dbcontext.Purchasedetails.AddAsync(purchaseDetails);
@@ -1446,18 +1453,14 @@ namespace WebApplication1.Controllers
                                            where rh.pono == pono // Filter ReceivedEntryHeader by PONO
                                            select red.itemid)  // Select ItemCode from ReceivedEntryDetails
                                 .ToListAsync();
-            var purchasedetails = await dbcontext.Purchasedetails
-     .Where(p => p.orderid == pono && p.poquantity > p.receivedentryqty && !receivedItemCodes.Contains(p.poitemid))
-     .Include(p => p.product) // Assuming 'Product' is the navigation property in 'Purchasedetail'
-     .ToListAsync();
-
-
-        
-
-
-
-
-
+      var purchasedetails = await dbcontext.Purchasedetails
+    .Where(p => p.orderid == pono 
+                && p.poquantity > p.receivedentryqty 
+                && !receivedItemCodes.Contains(p.poitemid)
+                && p.PO.postatusid == 3) // Assuming 'PO' is the navigation property for the PO table
+    .Include(p => p.product) // Including the 'Product' navigation property
+    .Include(p => p.PO) // Including the PO to filter based on postatusid
+    .ToListAsync();
             return Ok(purchasedetails);
         }
 
@@ -1662,6 +1665,7 @@ namespace WebApplication1.Controllers
                 .Include(p => p.PO)
                 .Include(p => p.product)
                 .Include(p => p.UOM)
+                .Include(p => p.product.UOM)
                 // Include related PurchaseOrder data
                 .Where(p => p.PO.postatusid==3) // Filter only authorized PurchaseOrders
                 .ToListAsync();
@@ -1780,7 +1784,7 @@ namespace WebApplication1.Controllers
 
         [HttpGet("GetGRNHeaderDetailsbygrnno")]
         public async Task<IActionResult> GetGRNHeaderDetailsbygrnno(int grnno)
-        {
+       {
 
             try
             {
@@ -1833,7 +1837,26 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetPOItemtobeissuedbyjobid")]
+        public async Task<IActionResult> GetPOItemtobeissuedbyjobid([FromQuery] int jobid)
+        {
+            var poitemsissuedbyjobid = await (
+      from rh in dbcontext.Inventory
+      join red in dbcontext.Product on rh.productid equals red.itemid
+      where rh.jobid == jobid
+      group rh by red.itemid into grouped
+      select new
+      {
+          ItemId = grouped.Key,
+          ItemName = grouped.Select(g => g.Product.itemname).FirstOrDefault(),
+      
 
+        TotalQty = (double)grouped.Sum(x => x.quantity )
+      }
+  ).ToListAsync();
+
+            return Ok(poitemsissuedbyjobid);
+        }
 
 
 

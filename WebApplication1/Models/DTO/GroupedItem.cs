@@ -9,6 +9,7 @@
             public string Make { get; set; }
 
         public int prtblid { get; set; }
+        public int pouomid { get; set; }
 
     }
 }

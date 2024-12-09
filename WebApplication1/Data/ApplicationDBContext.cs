@@ -50,6 +50,8 @@ namespace WebApplication1.Data
         public DbSet<GRNHeader> GRNHeader { get; set; }
         public DbSet<ReceivedEntryDetails> ReceivedEntryDetails { get; set; }
         public DbSet<GRNDetails> GRNDetails { get; set; }
+
+        public DbSet<Inventory> Inventory { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -586,6 +588,48 @@ base.OnModelCreating(modelBuilder);
           .HasForeignKey(pd => pd.pruomid)
           .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<IssueNoteheader>()
+      .HasOne(pd => pd.job)
+      .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+      .HasForeignKey(pd => pd.jobid)
+      .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Issuenotedetails>()
+                 .HasOne(pd => pd.Product)
+                 .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                 .HasForeignKey(pd => pd.itemid)
+                 .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Issuenotedetails>()
+              .HasOne(pd => pd.IssueNoteheader)
+              .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+              .HasForeignKey(pd => pd.issuenoteref)
+              .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

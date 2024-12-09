@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241209123824_trpp")]
+    partial class trpp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -329,15 +331,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3241079f-2051-4d9b-ae54-63708802b864",
+                            ConcurrencyStamp = "42527613-f2c8-44df-915c-b29dee36d94f",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJznPvHhUXaBKw5JE+DKUsTewEU5KkL2ZXRgmkCF7lhmEdVboVs4uakz7xLtT+ofrA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJ8OgM1EIVbv6NCz3m/r9FG2x7hqGtGSE+pOjbEf/A9CcnxW1I/H5Nh8VRlJerP8tQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "3e711b0d-ee69-4b07-8c37-1253db70291a",
+                            SecurityStamp = "aac81e22-833e-46fb-94a4-04046057244a",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -655,9 +657,6 @@ namespace WebApplication1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("issuedetailid"), 1L, 1);
 
-                    b.Property<int>("issuenoteref")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("issueqty")
                         .HasColumnType("decimal(18,2)");
 
@@ -665,8 +664,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("issuedetailid");
-
-                    b.HasIndex("issuenoteref");
 
                     b.HasIndex("itemid");
 
@@ -1705,19 +1702,11 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Issuenotedetails", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Domain.IssueNoteheader", "IssueNoteheader")
-                        .WithMany()
-                        .HasForeignKey("issuenoteref")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("WebApplication1.Models.Domain.Product", "Product")
                         .WithMany()
                         .HasForeignKey("itemid")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("IssueNoteheader");
 
                     b.Navigation("Product");
                 });

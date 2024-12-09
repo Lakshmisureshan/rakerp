@@ -13,7 +13,7 @@ namespace WebApplication1.Models.Domain
         public int jobid { get; set; }
         public PO PO { get; set; }
         public int pono { get; set; }
-        public double  quantity { get; set; }
+        public decimal  quantity { get; set; }
         public DateTime  Entrydate  { get; set; }
 
         public UOM UOM { get; set; }

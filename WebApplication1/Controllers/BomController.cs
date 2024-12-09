@@ -125,7 +125,8 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> GetAllBOMbyJobid(int jobid)
         {
             var bom = await dbcontext.Bom
-    .Include(b => b.UOM) .
+    .Include(b => b.UOM) 
+     .Include(b => b.Product).
     Include(c=>c.currency)// Eager load the UOM related entity
     .Where(p => p.jobid == jobid)
     .ToListAsync();

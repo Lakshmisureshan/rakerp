@@ -14,5 +14,8 @@ namespace WebApplication1.Models.DTO
 
         public int prtblid { get; set; }
         public int prid { get; set; }
+
+        public int pouomid { get; set; }
+
     }
 }

@@ -84,6 +84,9 @@ namespace WebApplication1.Controllers
                 prid = request.prid,
                 pritemid = request.pritemid,
                 prqty = request.prqty,
+                pruomid=request.pruomid
+
+
             };
 
             await dbcontext.PRDetails.AddAsync(prdetails);
