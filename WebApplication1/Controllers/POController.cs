@@ -131,7 +131,8 @@ namespace WebApplication1.Controllers
                              prDetail.prtblid,
                              prDetail.bomid,
                              prDetail.Product,
-                             prDetail.pruomid
+                             prDetail.pruomid,
+                          
                              // Add other properties as needed
                          };
 
@@ -269,7 +270,8 @@ namespace WebApplication1.Controllers
                                         po.multiplyingfactor,
                                         po.pouomid,
                                         po.inventoryuomid,
-                                        po.itemcode
+                                        po.itemcode,
+                                        po.pounitprice
 
 
                                              // You can include other fields from PRPO if needed
@@ -1723,7 +1725,7 @@ namespace WebApplication1.Controllers
                     existingEntry.pono = dto.pono;
                     existingEntry.grnno = dto.grnno;
                     existingEntry.grndate = dto.grndate;
-                    
+                    existingEntry.currencyid = dto.currencyid;
                     dbcontext.GRNHeader.Update(existingEntry);
                 }
                 else
@@ -1735,6 +1737,7 @@ namespace WebApplication1.Controllers
                         pono = dto.pono,
                         grndate = dto.grndate,
                         grnno = dto.grnno,
+                        currencyid = dto.currencyid,    
                       
                     };
 
@@ -1757,7 +1760,8 @@ namespace WebApplication1.Controllers
 
                         pouomid = item.pouomid,
                         inventoryuomid=item.inuomid,
-                        multiplyingfactor=item.mf
+                        multiplyingfactor=item.mf,
+                        pounitprice=item.pounitprice
 
                     };
 
@@ -1785,15 +1789,14 @@ namespace WebApplication1.Controllers
         [HttpGet("GetGRNHeaderDetailsbygrnno")]
         public async Task<IActionResult> GetGRNHeaderDetailsbygrnno(int grnno)
        {
-
             try
             {
 
                 var grnheader  = await dbcontext.GRNHeader
-      .Include(po => po.PO) // Include the Supplier related entity
+      .Include(po => po.PO)
+      .Include(po => po.Currency)// Include the Supplier related entity
       .Where(po => po.grnno == grnno)
       .FirstOrDefaultAsync();
-
                 if (grnheader == null)
                 {
                     return NotFound();
@@ -1857,6 +1860,419 @@ namespace WebApplication1.Controllers
 
             return Ok(poitemsissuedbyjobid);
         }
+
+
+
+        [HttpGet("GetissueHeaderDetailsbyissuenref")]
+        public async Task<IActionResult> GetissueHeaderDetailsbyissuenref(int issueref)
+       {
+
+            try
+            {
+
+        var issueheader = await dbcontext.IssueNoteheader
+      .Where(po => po.issueref == issueref)
+      .FirstOrDefaultAsync();
+                if (issueheader == null)
+                {
+                    return NotFound();
+                }
+                return Ok(issueheader);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+            }
+        }
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetMaxIssuenoteno")]
+        public async Task<int?> GetMaxIssuenoteno()
+        {
+            // Get the maximum PR ID from the PurchaseRequest table
+            int maxissuenoPlusOne = (await dbcontext.IssueNoteheader.MaxAsync(pr => (int?)pr.issueref) ?? 5000) + 1;
+            return maxissuenoPlusOne;
+        }
+
+
+
+        [HttpPost("Addorupdateissuenote")]
+        public async Task<IActionResult> Addorupdateissuenote(AddorupdateIssuenotedetails dto)
+        {
+            try
+            {
+                var unregisteredIssueNotes = await dbcontext.IssueNoteheader
+      .Where(e => e.isregistered == 0 && e.issueref != dto.issueref && e.jobid == dto.jobid)
+      .ToListAsync();
+
+                if (unregisteredIssueNotes.Any())
+                {
+                    // Return unregistered Issue Notes in the response and stop further processing
+                    return Ok(new { Message = "UnregisteredIssuenote" });
+                }
+
+
+                // Find existing received entry
+                var existingEntry = await dbcontext.IssueNoteheader
+                    .FirstOrDefaultAsync(e => e.issueref == dto.issueref);
+
+                if (existingEntry != null)
+                {
+                    // Update existing entry
+                    existingEntry.issueref = dto.issueref;
+                    existingEntry.jobid = dto.jobid;
+                    existingEntry.issuedate = dto.issuedate;
+                    existingEntry.Remarks = dto.Remarks;
+                    existingEntry.issuedto = dto.issuedto;
+                    dbcontext.IssueNoteheader.Update(existingEntry);
+                }
+                else
+                {
+                    // Create a new received entry
+                    existingEntry = new IssueNoteheader
+                    {
+                        // Assuming REID is generated elsewhere or provided
+                       issueref = dto.issueref,
+                   jobid = dto.jobid,
+                    issuedate = dto.issuedate,
+                   Remarks = dto.Remarks,
+                    issuedto = dto.issuedto
+                  
+
+                };
+
+                    await dbcontext.IssueNoteheader.AddAsync(existingEntry);
+                }
+
+                await dbcontext.SaveChangesAsync();
+
+                // Insert or update details
+                foreach (var item in dto.issuedetails)
+                {
+                    var detail = new Issuenotedetails
+                    {
+
+
+                        issuenoteref = dto.issueref,
+                        // Associate with the received entry
+                        itemid = item.itemid,
+                        issueqty = item.issueqty,
+
+                    
+                    };
+
+                    await dbcontext.Issuenotedetails.AddAsync(detail);
+                }
+
+                await dbcontext.SaveChangesAsync();
+
+                return Ok(new { Message = "Issue note  entry and details saved successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Log the error for debugging purposes
+                // Log.Error(ex, "An error occurred while processing the received entry details.");
+
+                // Return a generic error message to the client
+                return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetIssuenotedetailsbyissueno")]
+        public async Task<IActionResult> GetIssuenotedetailsbyissueno(int issueref)
+        {
+            var issuedetails = await (from po in dbcontext.Issuenotedetails
+                                        join ii in dbcontext.Product on po.itemid equals ii.itemid
+                                       
+
+                                        where po.issuenoteref == issueref
+                                        select new
+                                        {
+                                            po.issuedetailid,
+                                            po.Product.itemname,
+                                            po.issueqty,
+                                            po.itemid
+
+                                        
+
+
+                                            // You can include other fields from PRPO if needed
+                                        }).ToListAsync();
+            if (issuedetails == null)
+            {
+                return NotFound();
+            }
+            return Ok(issuedetails);
+        }
+
+
+
+
+
+        public class DeductInventoryRequest
+        {
+            public int ItemId { get; set; }
+            public decimal RequestedQuantity { get; set; }
+            public int Jobid { get; set; }
+            public int issueref { get; set; }
+        }
+
+
+   
+
+        [HttpPost("DeductInventory")]
+        public IActionResult DeductInventory([FromBody] DeductInventoryRequest request)
+        {
+            using (var transaction = dbcontext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var batches = new List<Batch>();
+                    var remainingQuantity = request.RequestedQuantity;
+
+                    var inventoryItems = dbcontext.Inventory
+                        .Where(i => i.productid == request.ItemId && i.jobid == request.Jobid)
+                        .OrderBy(i => i.Entrydate)
+                        .ToList();
+
+                    foreach (var item in inventoryItems)
+                    {
+                        batches.Add(new Batch(item.batchid, item.quantity));
+                    }
+
+                    foreach (var batch in batches)
+                    {
+                        if (remainingQuantity <= 0) break;
+
+                        var quantityToDeduct = Math.Min(remainingQuantity, batch.Quantity);
+                        DeductFromBatch(request.ItemId, batch.BatchID, quantityToDeduct, request.Jobid);
+                        remainingQuantity -= quantityToDeduct;
+                    }
+
+                    var issuenoteheader = dbcontext.IssueNoteheader
+                        .FirstOrDefault(i => i.issueref == request.issueref);
+
+                    if (issuenoteheader != null)
+                    {
+                        issuenoteheader.isregistered = 1;
+                    }
+
+                    dbcontext.SaveChanges();
+                    transaction.Commit();
+
+
+                    return Ok(new { Message = "Issue Note Registered" });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return StatusCode(500, $"Internal server error: {ex.Message}");
+                }
+            }
+        }
+
+        private void DeductFromBatch(int itemId, int batchId, decimal quantity, int jobid)
+        {
+            var inventoryItem = dbcontext.Inventory
+                .FirstOrDefault(i => i.productid == itemId && i.batchid == batchId && i.jobid == jobid);
+
+            if (inventoryItem != null)
+            {
+                inventoryItem.quantity -= quantity;
+
+                if (inventoryItem.quantity <= 0)
+                {
+                    dbcontext.Inventory.Remove(inventoryItem);
+                }
+
+                dbcontext.SaveChanges();
+            }
+        }
+
+
+
+
+
+        [HttpGet("GetCategorydetailsbyBudgetheaderid")]
+        public async Task<IActionResult> GetCategorydetailsbyBudgetheaderid(int budgetheaderid)
+        {
+            if (budgetheaderid <= 0)
+            {
+                return BadRequest("Invalid Budgetheaderid");
+            }
+            var categorydetails = await dbcontext.Category
+       .Where(x => x.budgetheaderid == budgetheaderid)
+       .ToListAsync();
+
+            if (categorydetails == null)
+            {
+                return NotFound("Currency not found");
+            }
+            return Ok(categorydetails);
+
+           }
+
+
+
+
+
+
+
+        [HttpGet("GetCurrencyfromPO")]
+        public async Task<IActionResult> GetCurrencyfromPO(int pono)
+        
+        {
+            if (pono <= 0)
+            {
+                return BadRequest("Invalid");
+            }
+            var podetails = await dbcontext.PO
+                .Include(po => po.Currency)
+       .Where(x => x.Orderid == pono)
+       .FirstOrDefaultAsync();
+
+            if (podetails == null)
+            {
+                return NotFound("Currency not found");
+            }
+            return Ok(podetails);
+
+        }
+
+
+
+        [HttpGet("GetPRPendingList")]
+        public async Task<IActionResult> GetPRPendingList()
+       {
+            var prpendinglist = await (from rh in dbcontext.PR
+                                           join red in dbcontext.PRDetails on rh.PRID equals red.prid
+                                           join ii in  dbcontext.Product on  red.pritemid equals ii.itemid
+                                       join uu in dbcontext.UOM on red.pruomid equals uu.uomid
+                                       where rh.prstatusid ==3 && red.prqty > red.pocreatedqty
+                                           select new
+                                   {
+                                       rh.PRID,  // You may include other fields from PR as required
+                                       ii.itemname,  // Example, adjust to your actual column names
+                                       ii.productcode,  // Assuming ItemCode is in PRDetails
+                                       red.prqty,  // Total quantity requested
+                                       red.pocreatedqty,
+                                       uu.uomname,// Quantity already created
+                                       PendingQty = red.prqty - red.pocreatedqty  ,
+                                       rh.jobid,
+                                       red.prtblid// Calculate pending quantity
+
+
+
+
+
+                                   }).ToListAsync();
+            return Ok(prpendinglist);
+        }
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetPrdetailsbyprtblid")]
+        public async Task<IActionResult> GetPrdetailsbyprtblid(int prtblid)
+        {
+            var prdetails = await (from po in dbcontext.PRDetails
+                                        join ii in dbcontext.Product on po.pritemid equals ii.itemid
+                                        join pou in dbcontext.UOM on po.pruomid equals pou.uomid
+                                        join pr in dbcontext.PR on po.prid equals pr. PRID 
+                                         where po.prtblid == prtblid
+                                   select new
+                                        {
+                                       pr.PRID,
+                                       pr.jobid,
+                                            po.prtblid,
+                                            po.Product.itemname,
+                                            po.prqty,
+                                            pouomname = pou.uomname,
+                                            po.prstockqty,
+                                            po.pocreatedqty,
+                                                                                   // You can include other fields from PRPO if needed
+                                        }).ToListAsync();
+            if (prdetails == null)
+            {
+                return NotFound();
+            }
+            return Ok(prdetails);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

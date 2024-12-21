@@ -15,5 +15,6 @@ namespace WebApplication1.Models.Domain
         public UOM Inventoryuom { get; set; }
         public int inventoryuomid { get; set; }
         public double  multiplyingfactor  { get; set; }
+        public decimal pounitprice { get; set; }
     }
 }

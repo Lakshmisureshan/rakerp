@@ -20,5 +20,7 @@ namespace WebApplication1.Models.Domain
 
         public int pruomid { get; set; }
 
+        public decimal prstockqty { get; set; } = 0;
+
     }
 }

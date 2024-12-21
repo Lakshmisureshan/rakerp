@@ -15,5 +15,14 @@ namespace WebApplication1.Models.Domain
         public BudgettHeader BudgettHeader { get; set; }
         public int itembudgetheaderid { get; set; }
 
+
+
+        public Category Category { get; set; }
+        public int categoryid { get; set; }
+
+
+
+
+
     }
 }

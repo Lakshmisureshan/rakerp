@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace WebApplication1.Models.Domain
 {
     public class IssueNoteheader
@@ -11,8 +10,9 @@ namespace WebApplication1.Models.Domain
         public DateTime issuedate  { get; set; }
         public Job job { get; set; }
         public int  jobid  { get; set; }
-
         public string?  Remarks { get; set; }
+        public string? issuedto { get; set; }
+        public int isregistered { get; set; } = 0;
 
     }
 }

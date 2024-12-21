@@ -19,7 +19,11 @@ namespace WebApplication1.Models.Domain
         public UOM UOM { get; set; }
         public int uomid { get; set; }
 
+        public Currency Currency { get; set; }
+        public int invcurrencyid { get; set; }
+        public decimal  invprice { get; set; }
 
+        public decimal reservedqty { get; set; }
 
     }
 }

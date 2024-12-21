@@ -45,6 +45,7 @@ namespace WebApplication1.Controllers
                 itembudgetheaderid = request.itembudgetheaderid ,   
                 productcode = request.productcode ,
                 price = request.price ,
+                categoryid = request.categoryid ,
                 
                 
             };

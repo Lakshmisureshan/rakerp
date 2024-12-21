@@ -599,10 +599,12 @@ namespace WebApplication1.Controllers
                             jobid = purchaseheader.jobid, // Assuming jobid is part of the entry details
                             pono = grnheader.pono,
                             quantity = entry.grnqty * (decimal)entry.multiplyingfactor,
-
-                       
-                        Entrydate = DateTime.UtcNow,
-                            uomid = entry.inventoryuomid // Assuming pouomid is part of the purchase details
+                     
+                            Entrydate = DateTime.UtcNow,
+                            uomid = entry.inventoryuomid ,
+                            invcurrencyid=request.invcurrencyid ,
+                            invprice=entry.pounitprice
+                            // Assuming pouomid is part of the purchase details
                         };
 
                         // Add the Inventory object to the context
@@ -679,7 +681,7 @@ namespace WebApplication1.Controllers
         {
             public int grnno { get; set; }
             public string UserId { get; set; }
-
+            public int invcurrencyid { get; set; }
             public List<grnsummary> details { get; set; }
 
         }
@@ -695,6 +697,7 @@ namespace WebApplication1.Controllers
             public int inventoryuomid { get; set; }
             public double  multiplyingfactor { get; set; }
             public int itemcode { get; set; }
+            public decimal pounitprice { get; set; }
 
         }
 

@@ -13,10 +13,9 @@ namespace WebApplication1.Models
         public int itemid { get; set; }
         public int inuomid { get; set; }
         public int pouomid { get; set; }
-
         public double  mf { get; set; }
-
         public decimal grnqty { get; set; }
         public int uomid { get; set; }
+        public decimal pounitprice { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241220083654_add prstock qty in prdetails")]
+    partial class addprstockqtyinprdetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -329,15 +331,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ae5eaec0-ec33-49d2-9c7d-1cf30302f304",
+                            ConcurrencyStamp = "a2d135f4-2527-44ac-80d6-d18571beeb09",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEB0ZWXN/niPjKjE6DrtytZ8Lu9IolCz5/+3BvzTqxmFb3OCibL1DoG5p/ItaIHwLJA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGq9ZfXDLZvn0mZQtWceqNYzbp1TU5CpRnFQrBZMIsxzL9TESIXy/YmzflferSC0LA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cd0323f8-b81d-4c36-bf56-32cc5994a295",
+                            SecurityStamp = "5e898580-1769-472d-8d05-59e3a1de77b9",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -669,47 +671,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("uomid");
 
                     b.ToTable("Inventory");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Inventoryreservation", b =>
-                {
-                    b.Property<int>("RId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RId"), 1L, 1);
-
-                    b.Property<int>("fromjobid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("inventoryid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("productid")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("reservedqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("tojobid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("uomid")
-                        .HasColumnType("int");
-
-                    b.HasKey("RId");
-
-                    b.HasIndex("fromjobid");
-
-                    b.HasIndex("inventoryid");
-
-                    b.HasIndex("productid");
-
-                    b.HasIndex("tojobid");
-
-                    b.HasIndex("uomid");
-
-                    b.ToTable("Inventoryreservation");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.IsLDApplicable", b =>
@@ -1822,49 +1783,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("PO");
 
                     b.Navigation("Product");
-
-                    b.Navigation("UOM");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Inventoryreservation", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.Job", "FROMJob")
-                        .WithMany()
-                        .HasForeignKey("fromjobid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Inventory", "Inventory")
-                        .WithMany()
-                        .HasForeignKey("inventoryid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("productid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Job", "TOJob")
-                        .WithMany()
-                        .HasForeignKey("tojobid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.UOM", "UOM")
-                        .WithMany()
-                        .HasForeignKey("uomid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("FROMJob");
-
-                    b.Navigation("Inventory");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("TOJob");
 
                     b.Navigation("UOM");
                 });

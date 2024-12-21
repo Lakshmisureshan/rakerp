@@ -16,6 +16,8 @@ namespace WebApplication1.Models.DTO
      
         public int standarduomid { get; set; }
         public int itembudgetheaderid { get; set; }
-        
+
+        public int categoryid { get; set; }
+
     }
 }

@@ -85,13 +85,13 @@ namespace WebApplication1.Controllers
             // You can use a switch case or a dictionary for mapping
             return jobTypeId switch
             {
-                1 => 300000, // Example default value for job type 1
-                2 => 600000, // Example default value for job type 2
-                3 => 700000, // Example default value for job type 3
-                4 => 400000,
-                5 => 800000,
-                6 => 900000,
-                7 => 500000,
+                2 => 300000, // Example default value for job type 1
+                3 => 600000, // Example default value for job type 2
+               4 => 700000, // Example default value for job type 3
+                5 => 400000,
+                6 => 800000,
+                7 => 900000,
+                8 => 500000,
                 // Default value for other job types
             };
         }

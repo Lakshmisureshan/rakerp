@@ -9,7 +9,7 @@ namespace WebApplication1.Models.DTO
    
         public int pono { get; set; }
 
-
+        public int currencyid { get; set; }
 
         public ICollection<AddGrnDetails> grndetails { get; set; }
     }

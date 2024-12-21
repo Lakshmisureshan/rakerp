@@ -52,6 +52,18 @@ namespace WebApplication1.Data
         public DbSet<GRNDetails> GRNDetails { get; set; }
 
         public DbSet<Inventory> Inventory { get; set; }
+
+        public DbSet<IssueNoteheader> IssueNoteheader { get; set; }
+        public DbSet<Issuenotedetails> Issuenotedetails { get; set; }
+        public DbSet<Category> Category { get; set; }
+
+       
+
+
+
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -802,12 +814,54 @@ base.OnModelCreating(modelBuilder);
 
 
 
-  modelBuilder.Entity<SupplierContact>()
+
+
+            modelBuilder.Entity<Inventory>()
+.HasOne(pd => pd.Currency)
+.WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+.HasForeignKey(pd => pd.invcurrencyid)
+.OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+            modelBuilder.Entity<SupplierContact>()
 .HasOne(pd => pd.Supplier)
 .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
 .HasForeignKey(pd => pd.supplierid)
 .OnDelete(DeleteBehavior.NoAction);
  base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Category>()
+          .HasOne(pd => pd.BudgettHeader)
+          .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+          .HasForeignKey(pd => pd.budgetheaderid)
+          .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -820,9 +874,52 @@ base.OnModelCreating(modelBuilder);
 
 
 
+            modelBuilder.Entity<Product>()
+        .HasOne(pd => pd.Category)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.categoryid)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
+
+
+        modelBuilder.Entity<Inventoryreservation>()
+       .HasOne(pd => pd.Product)
+       .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+       .HasForeignKey(pd => pd.productid)
+       .OnDelete(DeleteBehavior.NoAction);
+       base.OnModelCreating(modelBuilder);
+
+
+       modelBuilder.Entity<Inventoryreservation>()
+      .HasOne(pd => pd.FROMJob)
+      .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+      .HasForeignKey(pd => pd.fromjobid)
+      .OnDelete(DeleteBehavior.NoAction);
+       base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Inventoryreservation>()
+                .HasOne(pd => pd.TOJob)
+                .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                .HasForeignKey(pd => pd.tojobid)
+                .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Inventoryreservation>()
+              .HasOne(pd => pd.Inventory)
+              .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+              .HasForeignKey(pd => pd.inventoryid)
+              .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Inventoryreservation>()
+         .HasOne(pd => pd.UOM)
+         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+         .HasForeignKey(pd => pd.uomid)
+         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
