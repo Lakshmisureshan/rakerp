@@ -69,6 +69,17 @@ namespace WebApplication1.Models.Domain
         public int mainjobid { get; set; } = 0;
 
         public DateTime expecteddeliverydate { get; set; }
+        public string jobdescription { get; set; }
+
+
+        public int bomjobrevno2 { get; set; } = 0;
+        public int bomjobstatusid2 { get; set; } = 0;
+
+
+
+
+
+
 
     }
 }

@@ -324,11 +324,12 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet("GetPRlineDetailsbyPRID")]
-        public async Task<ActionResult<PRDetails>> GetPRlineDetailsbyPRID(int prid)
+        public async Task<ActionResult> GetPRlineDetailsbyPRID(int prid)
         {
             try
             {
                 var prdetails = await dbcontext.PRDetails.Include(i=>i.Product)
+                    .Include(i => i.Bom)
                                               .Where(pr => pr.prid == prid)
                                               .ToListAsync();
 

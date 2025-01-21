@@ -91,7 +91,8 @@ namespace WebApplication1.Controllers
                     projectcategoryid = request.projectcategoryid,
                     qualitylevelid = request.qualitylevelid,
                     warrantyterms = request.warrantyterms,
-                    enduserid = request.enduserid
+                    enduserid = request.enduserid,
+                    jobdescription = request.jobdescription,
                 };
 
                 await dbcontext.Job.AddAsync(job);

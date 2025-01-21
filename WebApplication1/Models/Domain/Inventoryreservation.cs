@@ -16,9 +16,13 @@ namespace WebApplication1.Models.Domain
         public int  productid { get; set; }
         public UOM UOM { get; set; }
         public int uomid { get; set; }
-
-
-
+        public decimal issuecreatedqty { get; set; }
+        public decimal invunitprice { get; set; }
+        public  DateTime  reservationtime { get; set; }
+        public PRDetails PRDetails { get; set; }
+        public int prtblid { get; set; }
+        public Currency Currency { get; set; }
+        public int invrcurrencyid { get; set; }
 
 
     }

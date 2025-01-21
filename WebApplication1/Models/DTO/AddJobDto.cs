@@ -62,6 +62,7 @@ namespace WebApplication1.Models.DTO
         public string paymentterms { get; set; }
         public string warrantyterms { get; set; }
         public string deliveryterms { get; set; }
-    
-}
+        public string jobdescription { get; set; }
+
+    }
 }

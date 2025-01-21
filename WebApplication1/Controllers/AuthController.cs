@@ -609,7 +609,90 @@ namespace WebApplication1.Controllers
 
                         // Add the Inventory object to the context
                         dbcontext.Inventory.Add(inventory);
+
+
+
+
+                        await dbcontext.SaveChangesAsync();
+
+                        // Retrieve the invid after saving
+                        var inventoryWithId = await dbcontext.Inventory
+                                                               .Where(inv => inv.productid == entry.itemcode && inv.pono == grnheader.pono)
+                                                               .OrderByDescending(inv => inv.Entrydate)
+                                                               .FirstOrDefaultAsync();
+
+                        if (inventoryWithId == null)
+                        {
+                            return StatusCode(500, "Failed to retrieve the generated inventory ID.");
+                        }
+
+                        // Now use the generated invid for the grntrack
+                        var grntrack = new grntracking
+                        {
+                            productid = entry.itemcode,
+                            jobid = purchaseheader.jobid, // Assuming jobid is part of the entry details
+                            grnno = grnheader.grnno,
+                            grnqty = entry.grnqty * (decimal)entry.multiplyingfactor,
+                            grndate = DateTime.UtcNow.Date,
+                            invid = inventoryWithId.invid ,
+                            grnuomid = entry.inventoryuomid,
+                            grncurrencyid = request.invcurrencyid,
+                            grnunitprice = entry.pounitprice
+
+
+                            // Assign the retrieved invid here
+                        };
+
+
+
+                        dbcontext.grntracking.Add(grntrack);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                     // Save changes to the database
                     await dbcontext.SaveChangesAsync();
@@ -688,6 +771,60 @@ namespace WebApplication1.Controllers
 
 
 
+
+
+
+
+
+
+        public class RegisterIssuereturnclass
+        {
+           public int issuereturnref { get; set; }
+           public List<issuereturnsummary> details { get; set; }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public class issuereturnsummary
+        {
+            public int fromjobid { get; set; }
+            public int irtblid { get; set; }
+            public int productid { get; set; }
+            public string itemname { get; set; }
+            public int quantityreturned { get; set; }
+            public int tojobid { get; set; }
+
+            public int ircurrencyid { get; set; }
+
+
+            public int iruomid { get; set; }
+            public decimal irunitprice { get; set; }
+
+
+        }
+
+
+
+
+
+
+
+
+
+
         public class grnsummary
         {
 
@@ -700,6 +837,201 @@ namespace WebApplication1.Controllers
             public decimal pounitprice { get; set; }
 
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("Registerissuereturn")]
+        public async Task<IActionResult> Registerissuereturn([FromBody] RegisterIssuereturnclass request)
+        {
+           
+
+          
+
+            var issuereturnheader = await dbcontext.Issuereturn
+               // Include the Supplier related entity
+                .Where(po => po.issuereturnref == request.issuereturnref)
+                .FirstOrDefaultAsync();
+
+            if (issuereturnheader == null)
+            {
+                return NotFound("Issue Return not found.");
+            }
+
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    foreach (var entry in request.details)
+                    {
+                       // Update the isregistered field
+                        issuereturnheader.isregistered = 1;
+                        var inventory = new Inventory
+                        {
+                            productid = entry.productid,
+                            batchid = 1, // Assuming batchid is part of the entry details
+                            jobid = entry.fromjobid, // Assuming jobid is part of the entry details
+                            pono = 2,
+                            quantity = entry.quantityreturned,
+
+                            Entrydate = DateTime.UtcNow,
+                            uomid = entry.iruomid,
+                            invcurrencyid = entry.ircurrencyid,
+                            invprice = entry.irunitprice,
+
+                            type="RETURN"
+                            // Assuming pouomid is part of the purchase details
+                        };
+
+                        // Add the Inventory object to the context
+                        dbcontext.Inventory.Add(inventory);
+                        await dbcontext.SaveChangesAsync();
+                        // Retrieve the invid after saving
+                        //var inventoryWithId = await dbcontext.Inventory
+                        //                                       .Where(inv => inv.productid == entry.productid && inv.pono == 2)
+                        //                                       .OrderByDescending(inv => inv.Entrydate)
+                        //                                       .FirstOrDefaultAsync();
+
+                        //if (inventoryWithId == null)
+                        //{
+                        //    return StatusCode(500, "Failed to retrieve the generated inventory ID.");
+                        //}
+
+                        //// Now use the generated invid for the grntrack
+                        ////var grntrack = new grntracking
+                        ////{
+                        ////    productid = entry.productid,
+                        ////    jobid = entry.fromjobid, // Assuming jobid is part of the entry details
+                        ////    grnno = grnheader.grnno,
+                        ////    grnqty = entry.grnqty * (decimal)entry.multiplyingfactor,
+                        ////    grndate = DateTime.UtcNow.Date,
+                        ////    invid = inventoryWithId.invid,
+                        ////    grnuomid = entry.inventoryuomid,
+                        ////    grncurrencyid = request.invcurrencyid,
+                        ////    grnunitprice = entry.pounitprice
+
+
+                        ////    // Assign the retrieved invid here
+                        ////};
+
+
+
+                        ////dbcontext.grntracking.Add(grntrack);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    // Save changes to the database
+                    await dbcontext.SaveChangesAsync();
+
+                    // Commit the transaction
+                    await transaction.CommitAsync();
+
+                    return Ok(new { Message = "Purchase details and received headers updated successfully.", Success = true });
+                }
+                catch (Exception ex)
+                {
+                    // Roll back the transaction if any error occurs
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

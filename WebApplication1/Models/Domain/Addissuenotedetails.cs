@@ -5,18 +5,6 @@
 
 
         public int itemid { get; set; }
-
-
         public decimal issueqty { get; set; }
-
-
-
-
-
-
-
-
-
-
     }
 }
