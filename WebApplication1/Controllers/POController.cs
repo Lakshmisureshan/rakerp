@@ -121,7 +121,9 @@ namespace WebApplication1.Controllers
         {
             var result = from prHeader in dbcontext.PR
                          join prDetail in dbcontext.PRDetails on prHeader.PRID equals prDetail.prid
-                         where prDetail.pocreatedqty < prDetail.prqty && prHeader.prstatusid == 3 && prHeader.jobid == jobid
+                         where ((decimal)(prDetail.pocreatedqty ) + (decimal)(prDetail.prstockqty)) < (decimal)prDetail.prqty
+                         && prHeader.prstatusid == 3 && prHeader.jobid == jobid
+
                          select new
                          {
                              prHeader.PRID,
@@ -221,9 +223,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> GetPOLinedetailsbyPOid(int pono)
         {
             var POlinedetails = await (from po in dbcontext.Purchasedetails
-
                                        join ii in dbcontext.Product on po.poitemid equals ii.itemid
-
                                        where po.orderid == pono
                                        select new
                                        {
@@ -1328,24 +1328,110 @@ namespace WebApplication1.Controllers
 
 
 
+        //[HttpDelete("Deletepoline/{potblid}")]
+        //public async Task<IActionResult> DeletePoline(int potblid)
+        //{
+        //    // Check if the POLine item exists
+        //    var purchaseDetail = await dbcontext.Purchasedetails.FindAsync(potblid);
+        //    if (purchaseDetail == null)
+        //    {
+        //        return NotFound(new { Message = $"The POLine item with id {potblid} does not exist." });
+        //    }
+
+        //    // Remove the item
+        //    dbcontext.Purchasedetails.Remove(purchaseDetail);
+
+        //    // Save changes to the database
+        //    await dbcontext.SaveChangesAsync();
+
+        //    return NoContent(); // 204 No Content response
+        //}
+
+
+
+
+
+
+
+
+
+
         [HttpDelete("Deletepoline/{potblid}")]
         public async Task<IActionResult> DeletePoline(int potblid)
         {
-            // Check if the POLine item exists
-            var purchaseDetail = await dbcontext.Purchasedetails.FindAsync(potblid);
-            if (purchaseDetail == null)
+            using var transaction = await dbcontext.Database.BeginTransactionAsync();
+            try
             {
-                return NotFound(new { Message = $"The POLine item with id {potblid} does not exist." });
+                // Step 1: Find the POLine item (Purchase Order Line)
+                var purchaseDetail = await dbcontext.Purchasedetails.FindAsync(potblid);
+                if (purchaseDetail == null)
+                {
+                    return NotFound(new { Message = $"The POLine item with ID {potblid} does not exist." });
+                }
+
+                // Step 2: Find all related PRPO entries linked to `potblid`
+                var prpoEntries = await dbcontext.PRPO.Where(p => p.Purchasedetailspotblid == potblid).ToListAsync();
+                if (!prpoEntries.Any())
+                {
+                    return NotFound(new { Message = $"No PRPO entries found for POLine ID {potblid}." });
+                }
+
+                // Step 3: Process each PRPO entry and update PRDetails
+                foreach (var prpoEntry in prpoEntries)
+                {
+                    // Find the related PRDetail using `prtblid` from PRPO
+                    var prDetail = await dbcontext.PRDetails.FindAsync(prpoEntry.prdetailsprtblid);
+                    if (prDetail != null)
+                    {
+                        // Subtract the `poquantity` from `pocreatedqty`
+                        prDetail.pocreatedqty -= (float)purchaseDetail.poquantity;
+                    }
+                }
+                // Step 4: Remove the POLine entry
+                dbcontext.Purchasedetails.Remove(purchaseDetail);
+
+                // Step 5: Save changes to both tables
+                await dbcontext.SaveChangesAsync();
+
+                // Step 6: Commit transaction
+                await transaction.CommitAsync();
+
+                return NoContent(); // 204 No Content response
             }
-
-            // Remove the item
-            dbcontext.Purchasedetails.Remove(purchaseDetail);
-
-            // Save changes to the database
-            await dbcontext.SaveChangesAsync();
-
-            return NoContent(); // 204 No Content response
+            catch (Exception ex)
+            {
+                // Step 7: Rollback transaction in case of failure
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { Message = "An error occurred while deleting the POLine.", Error = ex.Message });
+            }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1746,33 +1832,17 @@ namespace WebApplication1.Controllers
         [HttpPost("AddOrUpdategrn")]
         public async Task<IActionResult> AddOrUpdategrn(AddorUpdateGRNDetails dto)
         {
+            using var transaction = await dbcontext.Database.BeginTransactionAsync();
             try
             {
-
-
                 var unregisteredGRNs = await dbcontext.GRNHeader
-                    .Where(e => e.isregistered ==0  && e.grnno != dto.grnno)
+                    .Where(e => e.isregistered == 0 && e.grnno != dto.grnno)
                     .ToListAsync();
 
                 if (unregisteredGRNs.Any())
                 {
-                    // Return an error response if any unregistered GRNs are found
                     return BadRequest(new { Message = "Cannot save GRN because there are unregistered GRNs with the same GRN number." });
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 // Find existing received entry
                 var existingEntry = await dbcontext.GRNHeader
@@ -1782,7 +1852,6 @@ namespace WebApplication1.Controllers
                 {
                     // Update existing entry
                     existingEntry.pono = dto.pono;
-                    existingEntry.grnno = dto.grnno;
                     existingEntry.grndate = dto.grndate;
                     existingEntry.currencyid = dto.currencyid;
                     dbcontext.GRNHeader.Update(existingEntry);
@@ -1792,12 +1861,10 @@ namespace WebApplication1.Controllers
                     // Create a new received entry
                     existingEntry = new GRNHeader
                     {
-                        // Assuming REID is generated elsewhere or provided
                         pono = dto.pono,
                         grndate = dto.grndate,
                         grnno = dto.grnno,
-                        currencyid = dto.currencyid,    
-                      
+                        currencyid = dto.currencyid,
                     };
 
                     await dbcontext.GRNHeader.AddAsync(existingEntry);
@@ -1810,18 +1877,13 @@ namespace WebApplication1.Controllers
                 {
                     var detail = new GRNDetails
                     {
-
-                        
                         grnno = dto.grnno,
-                        // Associate with the received entry
                         itemcode = item.itemid,
                         grnqty = item.grnqty,
-
                         pouomid = item.pouomid,
-                        inventoryuomid=item.inuomid,
-                        multiplyingfactor=item.mf,
-                        pounitprice=item.pounitprice
-
+                        inventoryuomid = item.inuomid,
+                        multiplyingfactor = item.mf,
+                        pounitprice = item.pounitprice
                     };
 
                     await dbcontext.GRNDetails.AddAsync(detail);
@@ -1829,14 +1891,17 @@ namespace WebApplication1.Controllers
 
                 await dbcontext.SaveChangesAsync();
 
+                // Commit transaction after all operations succeed
+                await transaction.CommitAsync();
+
                 return Ok(new { Message = "GRN entry and details saved successfully." });
             }
             catch (Exception ex)
             {
-                // Log the error for debugging purposes
-                // Log.Error(ex, "An error occurred while processing the received entry details.");
+                // Rollback transaction in case of an error
+                await transaction.RollbackAsync();
 
-                // Return a generic error message to the client
+                // Log the error for debugging purposes
                 return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
             }
         }
@@ -2577,11 +2642,14 @@ namespace WebApplication1.Controllers
 
         public class InventoryResult
         {
-            public int ? Invid { get; set; }
-            public decimal Inventory { get; set; }
-            public decimal Price { get; set; }
-            public string  Uom { get; set; }
-            public string  Currency { get; set; }
+            public int ? invid { get; set; }
+            public decimal inventory { get; set; }
+            public decimal price { get; set; }
+            public string  uom { get; set; }
+            public string  currency { get; set; }
+            public string itemname { get; set; }
+
+            public double rate { get; set; }
         }
 
 
@@ -2590,15 +2658,101 @@ namespace WebApplication1.Controllers
 
 
 
+        //[HttpGet("GetInventoryAsOfDate")]
+        //public async Task<List<InventoryResult>> GetInventoryAsOfDate(DateTime targetDate)
+        //{
+        //    var totalReceived = await (from grn in dbcontext.grntracking
+        //                               join product in dbcontext.Product on grn.productid equals product.itemid
+        //                               join currency in dbcontext.Currency on grn.grncurrencyid equals currency.currencyid
+        //                               join uom in dbcontext.UOM on grn.grnuomid equals uom.uomid
+        //                               where  grn.grndate <= targetDate
+        //                               group grn by new { grn.invid, grn.grnunitprice, grn.grnuomid, grn.grncurrencyid, product.itemname, currency.currencyname, uom.uomname, currency.exchangerate } into g
+        //                               select new
+        //                               {
+        //                                   Invid = g.Key.invid,
+        //                                   TotalGrnQty = g.Sum(grn => grn.grnqty),
+        //                                   Price = g.Key.grnunitprice,
+        //                                   Uom = g.Key.uomname,
+        //                                   Currency = g.Key.currencyname,
+        //                                   Itemname = g.Key.itemname, 
+        //                                   rate=g.Key.exchangerate, 
+        //                               }).ToListAsync();
+
+        //    var totalIssued = await (from issue in dbcontext.Issuetracking
+        //                             join product in dbcontext.Product on issue.productid equals product.itemid
+        //                             join currency in dbcontext.Currency on issue.issuecurrencyid equals currency.currencyid
+        //                             join uom in dbcontext.UOM on issue.issueuomid equals uom.uomid
+        //                             where  issue.issuedate <= targetDate
+        //                             group issue by new { issue.invid, issue.issueunitprice, issue.issueuomid, issue.issuecurrencyid, product.itemname, currency.currencyname, uom.uomname, currency.exchangerate } into g
+        //                             select new
+        //                             {
+        //                                 Invid = g.Key.invid,
+        //                                 TotalissueQty = g.Sum(grn => grn.issueqty),
+        //                                 Price = g.Key.issueunitprice,
+        //                                 Uom = g.Key.uomname,
+        //                                 Currency = g.Key.currencyname,
+        //                                 Itemname = g.Key.itemname,
+        //                                 rate = g.Key.exchangerate,
+        //                             }).ToListAsync();
+
+        //    var inventory = totalReceived
+        //        .GroupJoin(totalIssued,
+        //            r => r.Invid,
+        //            i => i.Invid,
+        //            (r, i) => new { Received = r, Issued = i.DefaultIfEmpty() })
+        //        .SelectMany(
+        //            x => x.Issued.Select(i => new InventoryResult
+        //            {
+        //                invid = x.Received.Invid,
+        //                inventory = x.Received.TotalGrnQty - (i?.TotalissueQty ?? 0),
+        //                price = x.Received.Price,
+        //                uom = x.Received.Uom,
+        //                currency = x.Received.Currency,
+        //                itemname = x.Received.Itemname,
+        //                rate=x.Received.rate
+
+
+        //            }))
+        //        .Union(totalIssued
+        //            .Where(i => !totalReceived.Any(r => r.Invid == i.Invid))
+        //            .Select(i => new InventoryResult
+        //            {
+        //                invid= i.Invid,
+        //                inventory = 0 - i.TotalissueQty,
+        //                price = i.Price,
+        //                uom = i.Uom,
+        //                currency = i.Currency,
+        //                itemname = i.Itemname,
+        //                rate = i.rate
+        //            }))
+        //        .OrderBy(result => result.invid)
+        //        .ToList();
+
+        //    return inventory;
+        //}
+
+
+
         [HttpGet("GetInventoryAsOfDate")]
         public async Task<List<InventoryResult>> GetInventoryAsOfDate(DateTime targetDate)
         {
+            // Total Received Quantities
             var totalReceived = await (from grn in dbcontext.grntracking
                                        join product in dbcontext.Product on grn.productid equals product.itemid
                                        join currency in dbcontext.Currency on grn.grncurrencyid equals currency.currencyid
                                        join uom in dbcontext.UOM on grn.grnuomid equals uom.uomid
-                                       where  grn.grndate <= targetDate
-                                       group grn by new { grn.invid, grn.grnunitprice, grn.grnuomid, grn.grncurrencyid, product.itemname, currency.currencyname, uom.uomname } into g
+                                       where grn.grndate <= targetDate
+                                       group grn by new
+                                       {
+                                           grn.invid,
+                                           grn.grnunitprice,
+                                           grn.grnuomid,
+                                           grn.grncurrencyid,
+                                           product.itemname,
+                                           currency.currencyname,
+                                           uom.uomname,
+                                           currency.exchangerate
+                                       } into g
                                        select new
                                        {
                                            Invid = g.Key.invid,
@@ -2606,58 +2760,137 @@ namespace WebApplication1.Controllers
                                            Price = g.Key.grnunitprice,
                                            Uom = g.Key.uomname,
                                            Currency = g.Key.currencyname,
-                                           Itemname = g.Key.itemname
+                                           Itemname = g.Key.itemname,
+                                           Rate = g.Key.exchangerate
                                        }).ToListAsync();
 
+            // Total Issued Quantities
             var totalIssued = await (from issue in dbcontext.Issuetracking
                                      join product in dbcontext.Product on issue.productid equals product.itemid
                                      join currency in dbcontext.Currency on issue.issuecurrencyid equals currency.currencyid
                                      join uom in dbcontext.UOM on issue.issueuomid equals uom.uomid
-                                     where  issue.issuedate <= targetDate
-                                     group issue by new { issue.invid, issue.issueunitprice, issue.issueuomid, issue.issuecurrencyid, product.itemname, currency.currencyname, uom.uomname } into g
+                                     where issue.issuedate <= targetDate
+                                     group issue by new
+                                     {
+                                         issue.invid,
+                                         issue.issueunitprice,
+                                         issue.issueuomid,
+                                         issue.issuecurrencyid,
+                                         product.itemname,
+                                         currency.currencyname,
+                                         uom.uomname,
+                                         currency.exchangerate
+                                     } into g
                                      select new
                                      {
                                          Invid = g.Key.invid,
-                                         TotalissueQty = g.Sum(grn => grn.issueqty),
+                                         TotalIssueQty = g.Sum(issue => issue.issueqty),
                                          Price = g.Key.issueunitprice,
                                          Uom = g.Key.uomname,
                                          Currency = g.Key.currencyname,
-                                         Itemname = g.Key.itemname
+                                         Itemname = g.Key.itemname,
+                                         Rate = g.Key.exchangerate
                                      }).ToListAsync();
 
+            // Total Returned Quantities
+            var totalReturned = await (from returnTrack in dbcontext.issuereturntracking
+                                       join product in dbcontext.Product on returnTrack.productid equals product.itemid
+                                       join currency in dbcontext.Currency on returnTrack.issuecurrencyid equals currency.currencyid
+                                       join uom in dbcontext.UOM on returnTrack.uomid equals uom.uomid
+                                       where returnTrack.issuereturndate <= targetDate
+                                       group returnTrack by new
+                                       {
+                                           returnTrack.invid,
+                                           returnTrack.issuereturnunitprice,
+                                           returnTrack.uomid,
+                                           returnTrack.issuecurrencyid,
+                                           product.itemname,
+                                           currency.currencyname,
+                                           uom.uomname,
+                                           currency.exchangerate
+                                       } into g
+                                       select new
+                                       {
+                                           Invid = g.Key.invid,
+                                           TotalReturnQty = g.Sum(returnTrack => returnTrack.issuereturnqty),
+                                           Price = g.Key.issuereturnunitprice,
+                                           Uom = g.Key.uomname,
+                                           Currency = g.Key.currencyname,
+                                           Itemname = g.Key.itemname,
+                                           Rate = g.Key.exchangerate
+                                       }).ToListAsync();
+
+            // Adjust issued quantities by subtracting returned quantities
+            var adjustedIssued = totalIssued.GroupJoin(
+                totalReturned,
+                issue => issue.Invid,
+                returned => returned.Invid,
+                (issue, returns) => new
+                {
+                    issue.Invid,
+                    TotalAdjustedIssueQty = issue.TotalIssueQty - (returns?.Sum(r => r.TotalReturnQty) ?? 0),
+                    issue.Price,
+                    issue.Uom,
+                    issue.Currency,
+                    issue.Itemname,
+                    issue.Rate
+                }).ToList();
+
+            // Inventory Calculation
             var inventory = totalReceived
-                .GroupJoin(totalIssued,
+                .GroupJoin(adjustedIssued,
                     r => r.Invid,
                     i => i.Invid,
                     (r, i) => new { Received = r, Issued = i.DefaultIfEmpty() })
                 .SelectMany(
-                    x => x.Issued.Select(i => new InventoryResult
+                    x => x.Issued.Select(i => new
                     {
-                        Invid = x.Received.Invid,
-                        Inventory = x.Received.TotalGrnQty - (i?.TotalissueQty ?? 0),
-                        Price = x.Received.Price,
-                        Uom = x.Received.Uom,
-                        Currency = x.Received.Currency
+                        Received = x.Received,
+                        Issued = i,
+                        Returned = totalReturned.FirstOrDefault(ir => ir.Invid == x.Received.Invid) // Match issuereturn
                     }))
+                .Select(x => new InventoryResult
+                {
+                    invid = x.Received.Invid,
+                    inventory = x.Received.TotalGrnQty
+                                - (x.Issued?.TotalAdjustedIssueQty ?? 0)
+                                + (x.Returned?.TotalReturnQty ?? 0), // Calculate inventory including returns
+                    price = x.Received.Price,
+                    uom = x.Received.Uom,
+                    currency = x.Received.Currency,
+                    itemname = x.Received.Itemname,
+                    rate = x.Received.Rate
+                })
                 .Union(totalIssued
                     .Where(i => !totalReceived.Any(r => r.Invid == i.Invid))
                     .Select(i => new InventoryResult
                     {
-                        Invid= i.Invid,
-                        Inventory = 0 - i.TotalissueQty,
-                        Price = i.Price,
-                        Uom = i.Uom,
-                        Currency = i.Currency
+                        invid = i.Invid,
+                        inventory = 0 - i.TotalIssueQty
+                                    + (totalReturned.FirstOrDefault(ir => ir.Invid == i.Invid)?.TotalReturnQty ?? 0), // Handle returns for issued-only items
+                        price = i.Price,
+                        uom = i.Uom,
+                        currency = i.Currency,
+                        itemname = i.Itemname,
+                        rate = i.Rate
                     }))
-                .OrderBy(result => result.Invid)
+                .Union(totalReturned
+                    .Where(r => !totalReceived.Any(grn => grn.Invid == r.Invid) && !totalIssued.Any(issue => issue.Invid == r.Invid))
+                    .Select(r => new InventoryResult
+                    {
+                        invid = r.Invid,
+                        inventory = r.TotalReturnQty, // Only returns are present
+                        price = r.Price,
+                        uom = r.Uom,
+                        currency = r.Currency,
+                        itemname = r.Itemname,
+                        rate = r.Rate
+                    }))
+                .OrderBy(result => result.invid)
                 .ToList();
 
             return inventory;
         }
-
-
-
-
 
         [HttpGet("GetStockItemstobeissuedbyJobid")]
         public async Task<IActionResult> GetStockItemstobeissuedbyJobid([FromQuery] int jobid)
@@ -2686,7 +2919,44 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet("GetPendingPurchasedetailsbypono")]
-        public async Task<IActionResult> GetPendingPurchasedetailsbypono(int pono)
+        public async Task<IActionResult> GetPendingPurchasedetailsbypono(int grnno, int orderid)
+        {
+            var grndetails = await (
+         from gd in dbcontext.GRNDetails
+         join gh in dbcontext.GRNHeader on gd.grnno equals gh.grnno
+         where gd.grnno == grnno
+         select new
+         {
+             gh.pono,
+             gd.grnno,
+             gd.itemcode
+         }
+     ).ToListAsync();
+
+            var grnItemIds = grndetails.Select(g => g.itemcode).ToList(); // Extract item codes for comparison
+
+            var podetails = await dbcontext.Purchasedetails
+                .Where(p => p.inspacceptedqty > p.grncreatedqty) // Filter where inspacceptedqty is greater than grncreatedqty
+                .Include(p => p.PO)
+                .Include(p => p.product)
+                .Include(p => p.UOM)
+                .Include(p => p.product.UOM) // Include related PurchaseOrder data
+                .Where(p => p.PO.postatusid == 3 && p.PO.Orderid == orderid && !grnItemIds.Contains(p.poitemid)) // Corrected comparison
+                .ToListAsync();
+                 return Ok(podetails);
+
+
+
+        }
+
+
+
+
+
+
+
+        [HttpGet("Getremainingpotobeaddedtogrn")]
+        public async Task<IActionResult> Getremainingpotobeaddedtogrn(int pono)
         {
             var podetails = await dbcontext.Purchasedetails
                 .Where(p => p.inspacceptedqty > p.grncreatedqty) // Filter where inspacceptedqty is greater than grncreatedqty
@@ -2698,7 +2968,63 @@ namespace WebApplication1.Controllers
                  .Where(p => p.PO.postatusid == 3 && p.PO.Orderid == pono)  // Filter only authorized PurchaseOrders
                 .ToListAsync();
             return Ok(podetails);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3899,6 +4225,232 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetAllApprovedpolistforreceivedentry")]
+  
+ public async Task<IActionResult> GetAllApprovedpolistforreceivedentry()
+        {
+            var prdetails = await (from po in dbcontext.PO
+                                   join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
+
+                                   join pp in dbcontext.Purchasedetails on po.Orderid equals pp.orderid
+                                   where po.postatusid == 3 && pp.poquantity > pp.receivedentryqty
+                                   group po by new { po.Orderid, ss.suppliername, po.Podate } into grouped
+                                   select new
+                                   {
+                                       grouped.Key.Orderid,
+                                       grouped.Key.suppliername,
+                                       grouped.Key.Podate
+                                   }).ToListAsync();
+
+            if (prdetails == null || !prdetails.Any()) // Handle empty list
+            {
+                return NotFound();
+            }
+
+            return Ok(prdetails);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetPOIssuependingjobnos")]
+        public async Task<IActionResult> GetPOIssuependingjobnos()
+        {
+            // Define valid job type IDs dynamically
+            var validJobTypeIds = new List<int> { 1, 2, 5, 6, 7 };
+
+            // Fetch the details from the database
+            var prdetails = await (from inv in dbcontext.Inventory
+                                   join jj in dbcontext.Job on inv.jobid equals jj.Jobid
+                                   where validJobTypeIds.Contains(jj.jobtypeid) // Updated filtering logic
+                                   group inv by new
+                                   {
+                                       inv.jobid,
+                                       jj.jobdescription,
+                                       JobTypeName = jj.JobType.JobtypeName
+                                   } into grouped
+                                   select new
+                                   {
+                                       JobId = grouped.Key.jobid,
+                                       JobDescription = grouped.Key.jobdescription,
+                                       JobTypeName = grouped.Key.JobTypeName
+                                   }).ToListAsync();
+
+            // If no data is found, return a JSON object with an appropriate message
+            if (prdetails == null || !prdetails.Any())
+            {
+                return Ok(new
+                {
+                    Success = false,
+                    Message = "No pending job numbers found.",
+                    Data = new List<object>() // Empty data list
+                });
+            }
+
+            // Return the results if data exists
+            return Ok(new
+            {
+                Success = true,
+                Message = "Pending job numbers retrieved successfully.",
+                Data = prdetails
+            });
+        }
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetStockjobissuepending")]
+        public async Task<IActionResult> GetStockjobissuepending()
+        {
+            var poitemsissuedbyjobid = await (
+            from rh in dbcontext.Inventoryreservation
+            join jj in dbcontext.Job on rh.tojobid equals jj.Jobid
+            where  rh.reservedqty > rh.issuecreatedqty
+            group rh by new
+            {
+                rh.tojobid,
+                jj.jobdescription,
+                JobTypeName = jj.JobType.JobtypeName
+            } into grouped
+            select new
+            {
+                JobId = grouped.Key.tojobid,
+                JobDescription = grouped.Key.jobdescription,
+                JobTypeName = grouped.Key.JobTypeName
+            }).ToListAsync();
+            return Ok(poitemsissuedbyjobid);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("savereceivedentrydetails")]
+        public async Task<IActionResult> savereceivedentrydetails(Addorupdatereceivedentryheaderanddetails dto)
+        {
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync()) // Start a transaction
+            {
+                try
+                {
+                    var unregisteredreceivedentry = await dbcontext.ReceivedEntry
+                        .Where(e => e.isregistered == 0 && e.REID != dto.REID)
+                        .ToListAsync();
+
+                    if (unregisteredreceivedentry.Any())
+                    {
+                        return Ok(new { message = "unreg" });
+                    }
+
+                    // Find existing received entry
+                    var existingEntry = await dbcontext.ReceivedEntry
+                        .FirstOrDefaultAsync(e => e.REID == dto.REID);
+
+                    if (existingEntry != null)
+                    {
+                        // Update existing entry
+                        existingEntry.Remarks = dto.Remarks;
+                        existingEntry.pono = dto.pono;
+                        existingEntry.location = dto.location;
+                        existingEntry.REDate = dto.REDate;
+                        dbcontext.ReceivedEntry.Update(existingEntry);
+                    }
+                    else
+                    {    
+                        // Create a new received entry
+                        existingEntry = new ReceivedEntry
+                        {
+                            Remarks = dto.Remarks,
+                            REID = dto.REID,
+                            pono = dto.pono,
+                            location = dto.location,
+                            REDate = dto.REDate
+                        };
+
+                        await dbcontext.ReceivedEntry.AddAsync(existingEntry);
+                    }
+
+                    await dbcontext.SaveChangesAsync(); // Save received entry
+
+                    // Insert or update details
+                    foreach (var item in dto.receivedentrydetails)
+                    {
+                        var detail = new ReceivedEntryDetails
+                        {
+                            itemid = item.itemid,
+                            potblid = item.potblid,
+                            receivedqty = item.receivedqty,
+                            RENO = dto.REID
+                        };
+
+                        await dbcontext.ReceivedEntryDetails.AddAsync(detail);
+                    }
+
+                    await dbcontext.SaveChangesAsync(); // Save received entry details
+
+                    await transaction.CommitAsync(); // Commit transaction if everything succeeds
+
+                    return Ok(new { Message = "Received Entry and details saved successfully." });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(); // Rollback transaction on failure
+
+                    return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3920,5 +4472,5 @@ namespace WebApplication1.Controllers
 
 
 
-        }
+}
 

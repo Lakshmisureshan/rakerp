@@ -73,6 +73,10 @@ namespace WebApplication1.Data
         public DbSet<Issuereturndetails> Issuereturndetails { get; set; }
 
 
+  public DbSet<BaseCurrency> BaseCurrency { get; set; }
+
+        public DbSet<issuereturntracking> issuereturntracking { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -87,6 +91,8 @@ namespace WebApplication1.Data
             var poverificationrole = "5e648847-b462-464d-8e1e-aa20a7947bef";
             var poauthorizationrole = "333559dc-c729-403c-a80e-77250b8a0592";
             var grnregistrationrole = "e05d3da2-24c8-43fb-859f-cdbee6ac2a73";
+
+            var prverificationrole = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad";
 
             var roles = new List<IdentityRole>
 {
@@ -160,7 +166,13 @@ ConcurrencyStamp =grnregistrationrole
 
 
 
-
+  new IdentityRole ()
+{
+Id =prverificationrole,
+Name ="PRVerification",
+NormalizedName ="PRVerification".ToUpper(),
+ConcurrencyStamp =prverificationrole
+},
 
 
 
@@ -234,6 +246,15 @@ ConcurrencyStamp =grnregistrationrole
                 {
                     UserId = adminUserid,
                     RoleId  = grnregistrationrole
+
+                }
+
+
+                  ,
+                  new()
+                {
+                    UserId = adminUserid,
+                    RoleId  = prverificationrole
 
                 }
 
@@ -523,6 +544,14 @@ base.OnModelCreating(modelBuilder);
                .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
                .HasForeignKey(pd => pd.verifiedbyid)
                .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<PR>()
+                       .HasOne(pd => pd.prcreatedby)
+                       .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                       .HasForeignKey(pd => pd.prcreatedbyid)
+                       .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
 
@@ -1130,6 +1159,60 @@ base.OnModelCreating(modelBuilder);
 .HasForeignKey(pd => pd.issuecurrencyid)
 .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+            modelBuilder.Entity<issuereturntracking>()
+              .HasOne(pd => pd.Job)
+              .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+              .HasForeignKey(pd => pd.jobid)
+              .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<issuereturntracking>()
+             .HasOne(pd => pd.Issuereturn)
+             .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+             .HasForeignKey(pd => pd.issuereturnno)
+             .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<issuereturntracking>()
+             .HasOne(pd => pd.Product)
+             .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+             .HasForeignKey(pd => pd.productid)
+             .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+            modelBuilder.Entity<issuereturntracking>()
+          .HasOne(pd => pd.currency)
+          .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+          .HasForeignKey(pd => pd.issuecurrencyid)
+          .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<issuereturntracking>()
+        .HasOne(pd => pd.UOM)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.uomid)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
 
 
 

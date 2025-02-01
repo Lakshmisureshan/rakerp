@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250121123734_add bom number")]
+    partial class addbomnumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,13 +106,6 @@ namespace WebApplication1.Migrations
                             ConcurrencyStamp = "e05d3da2-24c8-43fb-859f-cdbee6ac2a73",
                             Name = "GRNRegistration",
                             NormalizedName = "GRNREGISTRATION"
-                        },
-                        new
-                        {
-                            Id = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad",
-                            ConcurrencyStamp = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad",
-                            Name = "PRVerification",
-                            NormalizedName = "PRVERIFICATION"
                         });
                 });
 
@@ -240,11 +235,6 @@ namespace WebApplication1.Migrations
                         {
                             UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             RoleId = "e05d3da2-24c8-43fb-859f-cdbee6ac2a73"
-                        },
-                        new
-                        {
-                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
-                            RoleId = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad"
                         });
                 });
 
@@ -341,36 +331,19 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b4e39832-3f91-4669-b510-e73c2e4067e7",
+                            ConcurrencyStamp = "b0b65614-5338-4d4f-b5df-c18e14301916",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJQpcpwJjAuodWHLiXfii03Ce7947gtKl8ZEmaEFlFpLrvphnOyV724sH6XkXzj8kQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEG0mnusH9JL6hewfv9ML2OfjvofQZdQkW7Fe9lv+w02ObUgUaoXQd3SXjbku7Q8bnw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f42c4057-f198-499a-9a9a-23022a128d8e",
+                            SecurityStamp = "3cf3c76f-d0d6-453c-9ef8-a14504d0b2af",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
                         });
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.BaseCurrency", b =>
-                {
-                    b.Property<int>("basecurrencyid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("basecurrencyid"), 1L, 1);
-
-                    b.Property<string>("basecurrency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("basecurrencyid");
-
-                    b.ToTable("BaseCurrency");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Bom", b =>
@@ -1002,56 +975,6 @@ namespace WebApplication1.Migrations
                     b.ToTable("Issuereturndetails");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Domain.issuereturntracking", b =>
-                {
-                    b.Property<int>("issuereturntrackid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("issuereturntrackid"), 1L, 1);
-
-                    b.Property<int>("invid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("issuecurrencyid")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("issuereturndate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("issuereturnno")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("issuereturnqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("issuereturnunitprice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("jobid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("productid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("uomid")
-                        .HasColumnType("int");
-
-                    b.HasKey("issuereturntrackid");
-
-                    b.HasIndex("issuecurrencyid");
-
-                    b.HasIndex("issuereturnno");
-
-                    b.HasIndex("jobid");
-
-                    b.HasIndex("productid");
-
-                    b.HasIndex("uomid");
-
-                    b.ToTable("issuereturntracking");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Domain.Issuetracking", b =>
                 {
                     b.Property<int>("issuetrackid")
@@ -1509,9 +1432,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("jobid")
                         .HasColumnType("int");
 
-                    b.Property<string>("prcreatedbyid")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("prstatusid")
                         .HasColumnType("int");
 
@@ -1528,8 +1448,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("PRID");
 
                     b.HasIndex("jobid");
-
-                    b.HasIndex("prcreatedbyid");
 
                     b.HasIndex("prstatusid");
 
@@ -2387,49 +2305,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("UOM");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Domain.issuereturntracking", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.Currency", "currency")
-                        .WithMany()
-                        .HasForeignKey("issuecurrencyid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Issuereturn", "Issuereturn")
-                        .WithMany()
-                        .HasForeignKey("issuereturnno")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("jobid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("productid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.UOM", "UOM")
-                        .WithMany()
-                        .HasForeignKey("uomid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Issuereturn");
-
-                    b.Navigation("Job");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("UOM");
-
-                    b.Navigation("currency");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Domain.Issuetracking", b =>
                 {
                     b.HasOne("WebApplication1.Models.Domain.Currency", "currency")
@@ -2668,11 +2543,6 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "prcreatedby")
-                        .WithMany()
-                        .HasForeignKey("prcreatedbyid")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("WebApplication1.Models.Domain.PRstatus", "PRstatus")
                         .WithMany()
                         .HasForeignKey("prstatusid")
@@ -2687,8 +2557,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Job");
 
                     b.Navigation("PRstatus");
-
-                    b.Navigation("prcreatedby");
 
                     b.Navigation("verifiedby");
                 });

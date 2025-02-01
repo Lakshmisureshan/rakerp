@@ -29,7 +29,8 @@ namespace WebApplication1.Models.Domain
 
         public DateTime? prverificationdate { get; set; }
 
-
+        public ApplicationUser? prcreatedby { get; set; }
+        public string? prcreatedbyid { get; set; }
 
 
 

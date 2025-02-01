@@ -174,7 +174,7 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost("VerifyPR")]
-        public async Task<IActionResult> Authorize([FromBody] VerifyPRRequestDTO request)
+        public async Task<IActionResult> VerifyPR([FromBody] VerifyPRRequestDTO request)
         {
             if (request == null || string.IsNullOrEmpty(request.passcode) || string.IsNullOrEmpty(request.userid))
             {
@@ -237,6 +237,39 @@ namespace WebApplication1.Controllers
             public string passcode { get; set; }    
             public List<int> ForderId { get; set; }
         }
+
+
+
+
+
+        public class VerifyPRRequest
+        {
+            public string userid { get; set; }
+            public string passcode { get; set; }
+            public List<int> prid { get; set; }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpPost("VerifyPOs")]
         public async Task<IActionResult> VerifyPOs([FromBody] VerifyPORequest request)
         {
@@ -924,82 +957,34 @@ namespace WebApplication1.Controllers
                         // Add the Inventory object to the context
                         dbcontext.Inventory.Add(inventory);
                         await dbcontext.SaveChangesAsync();
-                        // Retrieve the invid after saving
-                        //var inventoryWithId = await dbcontext.Inventory
-                        //                                       .Where(inv => inv.productid == entry.productid && inv.pono == 2)
-                        //                                       .OrderByDescending(inv => inv.Entrydate)
-                        //                                       .FirstOrDefaultAsync();
+                      
+                       var inventoryWithId = await dbcontext.Inventory
+                                                              .Where(inv => inv.productid == entry.productid && inv.pono == 2)
+                                                              .OrderByDescending(inv => inv.Entrydate)
+                                                              .FirstOrDefaultAsync();
 
-                        //if (inventoryWithId == null)
-                        //{
-                        //    return StatusCode(500, "Failed to retrieve the generated inventory ID.");
-                        //}
+                        if (inventoryWithId == null)
+                        {
+                            return StatusCode(500, "Failed to retrieve the generated inventory ID.");
+                        }
+                        // Now use the generated invid for the grntrack
+                        var issuetrack = new issuereturntracking
+                        {
+                            productid = entry.productid,
+                            jobid = entry.fromjobid, // Assuming jobid is part of the entry details
+                            issuereturnno = issuereturnheader.issuereturnref,
+                            issuereturnqty = entry.quantityreturned ,
+                            issuereturndate = DateTime.UtcNow.Date,
+                            invid = inventoryWithId.invid,
+                            uomid = entry.iruomid,
+                            issuecurrencyid = entry.ircurrencyid,
+                            issuereturnunitprice = entry.irunitprice
+                            // Assign the retrieved invid here
+                        };
 
-                        //// Now use the generated invid for the grntrack
-                        ////var grntrack = new grntracking
-                        ////{
-                        ////    productid = entry.productid,
-                        ////    jobid = entry.fromjobid, // Assuming jobid is part of the entry details
-                        ////    grnno = grnheader.grnno,
-                        ////    grnqty = entry.grnqty * (decimal)entry.multiplyingfactor,
-                        ////    grndate = DateTime.UtcNow.Date,
-                        ////    invid = inventoryWithId.invid,
-                        ////    grnuomid = entry.inventoryuomid,
-                        ////    grncurrencyid = request.invcurrencyid,
-                        ////    grnunitprice = entry.pounitprice
+                        dbcontext.issuereturntracking.Add(issuetrack);
 
-
-                        ////    // Assign the retrieved invid here
-                        ////};
-
-
-
-                        ////dbcontext.grntracking.Add(grntrack);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                  }
 
 
 
@@ -1044,6 +1029,63 @@ namespace WebApplication1.Controllers
 
 
 
+
+        [HttpPost("VerifyPRs")]
+        public async Task<IActionResult> VerifyPRs([FromBody] VerifyPRRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.passcode) || string.IsNullOrEmpty(request.userid))
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            // Find the user by UserId or Email
+            var user = await userManager1.FindByIdAsync(request.userid) ??
+                       await userManager1.FindByEmailAsync(request.userid);
+
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Check the passcode
+            if (user.passcode != request.passcode)
+            {
+                return Unauthorized("Invalid password or passcode.");
+            }
+
+            // Find the PR header
+            bool isVerified;
+            // Perform the PO verification logic here
+            try
+            {
+                var prs = await dbcontext.PR.Where(po => request.prid.Contains(po.PRID)).ToListAsync();
+
+                foreach (var pr1 in prs)
+                {
+                    pr1.verifiedbyid = request.userid;
+                    pr1.prstatusid = 3;
+                    pr1.prverificationdate = DateTime.Now;
+                }
+
+                await dbcontext.SaveChangesAsync();
+                isVerified = true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and handle errors
+                // logger.LogError(ex, "Error verifying POs");
+                isVerified = false;
+            }
+
+            if (isVerified)
+            {
+                return Ok(new { message = "verified" });
+            }
+            else
+            {
+                return StatusCode(500, "An error occurred while verifying POs.");
+            }
+        }
 
     }
 }

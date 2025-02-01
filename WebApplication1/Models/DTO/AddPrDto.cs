@@ -12,6 +12,6 @@ namespace WebApplication1.Models.DTO
 
         public string remarks { get; set; }
 
-
+        public string prcreatedbyid { get; set; }
     }
 }

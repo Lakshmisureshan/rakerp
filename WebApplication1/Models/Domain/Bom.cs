@@ -29,11 +29,11 @@ namespace WebApplication1.Models.Domain
         public string? bomcreatedbyid { get; set; }
 
         public DateTime? BomcreatedDate { get; set; }
-     
 
 
 
 
+        public int  bomnumber { get; set; }
 
 
 

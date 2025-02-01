@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250127124811_PR verification")]
+    partial class PRverification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b4e39832-3f91-4669-b510-e73c2e4067e7",
+                            ConcurrencyStamp = "a8c03e95-4f40-439e-8f1a-d61fc3bb2be2",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJQpcpwJjAuodWHLiXfii03Ce7947gtKl8ZEmaEFlFpLrvphnOyV724sH6XkXzj8kQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEA6QcRjyLOur0yQ2NZ9zqFXVqTcZvgl8zLnb8Car7lEhhEbuwAK+exwjPN5gXWswLw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f42c4057-f198-499a-9a9a-23022a128d8e",
+                            SecurityStamp = "aa30ace0-ff8c-4005-9699-e0cd853246b6",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1509,9 +1511,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("jobid")
                         .HasColumnType("int");
 
-                    b.Property<string>("prcreatedbyid")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("prstatusid")
                         .HasColumnType("int");
 
@@ -1528,8 +1527,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("PRID");
 
                     b.HasIndex("jobid");
-
-                    b.HasIndex("prcreatedbyid");
 
                     b.HasIndex("prstatusid");
 
@@ -2668,11 +2665,6 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "prcreatedby")
-                        .WithMany()
-                        .HasForeignKey("prcreatedbyid")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("WebApplication1.Models.Domain.PRstatus", "PRstatus")
                         .WithMany()
                         .HasForeignKey("prstatusid")
@@ -2687,8 +2679,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Job");
 
                     b.Navigation("PRstatus");
-
-                    b.Navigation("prcreatedby");
 
                     b.Navigation("verifiedby");
                 });

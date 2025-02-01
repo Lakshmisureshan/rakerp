@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using WebApplication1.Data;
 using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
@@ -45,7 +46,8 @@ namespace WebApplication1.Controllers
                     jobid = request.jobid,
                     Prdate = request.Prdate,
                     PRID = request.PRID,
-                    remarks = request.remarks
+                    remarks = request.remarks,
+                    prcreatedbyid =request.prcreatedbyid
                 };
 
                 await dbcontext.PR.AddAsync(pr);
@@ -127,27 +129,68 @@ namespace WebApplication1.Controllers
 
 
 
+    
+
+
+
+
         [HttpGet("GetPRheader")]
         public async Task<IActionResult> GetPRheader()
         {
-            var PR = await dbcontext.PR.ToListAsync();
+            var prheader = await (from pr1 in dbcontext.PR
+                                   join ps in dbcontext.PRstatus on pr1.prstatusid equals ps.prstatusid
+                                   join jj in dbcontext.Job on pr1.jobid equals jj.Jobid
+                              
+                                  select new
+                            {
+                               pr1.PRID,
+                            
+                               pr1.jobid,
+                               pr1.Prdate,
+                               pr1.PRstatus,
+                               ps.prstatusid,
+                               jj.projectname,
+                               pr1.prverificationdate,
+                               pr1.verifiedbyid,
+                               pr1.verifiedby,
+                               pr1.prcreatedby,
+                               pr1.prcreatedbyid
+                              
+                             
+
+                               
+                            }).ToListAsync();
+
             // Apply multiple conditions
-            if (PR == null)
+            if (prheader == null)
             {
                 return NotFound("PR  not found");
             }
-            return Ok(PR);
+            return Ok(prheader);
         }
 
 
 
 
+        [HttpGet("GetAllprstatus")]
+        public async Task<IActionResult> GetAllprstatus()
+        {
+            var prstatus = await (from pr1 in dbcontext.PRstatus
+                               
+                                  select new
+                                  {
+                                      pr1.prstatusid,
 
-
-
-
-
-
+                                      pr1.prstatusname,
+                                  
+                                  }).ToListAsync();
+            // Apply multiple conditions
+            if (prstatus == null)
+            {
+                return NotFound("PR  not found");
+            }
+            return Ok(prstatus);
+        }
 
     }
 }
