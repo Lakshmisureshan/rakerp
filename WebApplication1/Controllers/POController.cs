@@ -1356,63 +1356,179 @@ namespace WebApplication1.Controllers
 
 
 
+        // [HttpDelete("Deletepoline/{potblid}")]
+        //public async Task<IActionResult> DeletePoline(int potblid)
+        //{
+        //    using var transaction = await dbcontext.Database.BeginTransactionAsync();
+        //    try
+        //    {
+        //        // Step 1: Find the POLine item (Purchase Order Line)
+        //        var purchaseDetail = await dbcontext.Purchasedetails.FindAsync(potblid);
+        //        if (purchaseDetail == null)
+        //        {
+        //            return NotFound(new { Message = $"The POLine item with ID {potblid} does not exist." });
+        //        }
+
+        //        // Step 2: Find all related PRPO entries linked to `potblid`
+        //        var prpoEntries = await dbcontext.PRPO.Where(p => p.Purchasedetailspotblid == potblid).ToListAsync();
+        //        if (!prpoEntries.Any())
+        //        {
+        //            return NotFound(new { Message = $"No PRPO entries found for POLine ID {potblid}." });
+        //        }
+
+        //        // Step 3: Process each PRPO entry and update PRDetails
+        //        foreach (var prpoEntry in prpoEntries)
+        //        {
+        //            // Find the related PRDetail using `prtblid` from PRPO
+        //            var prDetail = await dbcontext.PRDetails.FindAsync(prpoEntry.prdetailsprtblid);
+        //            if (prDetail != null)
+        //            {
+        //                // Subtract the `poquantity` from `pocreatedqty`
+        //                prDetail.pocreatedqty -= (float)purchaseDetail.poquantity;
+        //            }
+        //        }
+        //        // Step 4: Remove the POLine entry
+        //        dbcontext.Purchasedetails.Remove(purchaseDetail);
+
+        //        // Step 5: Save changes to both tables
+        //        await dbcontext.SaveChangesAsync();
+
+        //        // Step 6: Commit transaction
+        //        await transaction.CommitAsync();
+
+        //        return NoContent(); // 204 No Content response
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Step 7: Rollback transaction in case of failure
+        //        await transaction.RollbackAsync();
+        //        return StatusCode(500, new { Message = "An error occurred while deleting the POLine.", Error = ex.Message });
+        //    }
+        //}
+
+
+        //[HttpDelete("Deletepoline/{potblid}")]
+        //public async Task<IActionResult> DeletePoline(int potblid)
+        //{
+        //    using var transaction = await dbcontext.Database.BeginTransactionAsync();
+        //    try
+        //    {
+        //        // Step 1: Find the POLine item (Purchase Order Line) with the given potblid
+        //        var purchaseDetail = await dbcontext.Purchasedetails.FindAsync(potblid);
+        //        if (purchaseDetail == null)
+        //        {
+        //            return NotFound(new { Message = $"The POLine item with ID {potblid} does not exist." });
+        //        }
+
+        //        // Step 2: Find all related PRPO entries linked to potblid
+        //        var prpoEntries = await dbcontext.PRPO.Where(p => p.Purchasedetailspotblid == potblid).ToListAsync();
+
+        //        // Step 3: Process each PRPO entry to update PRDetails before deletion
+        //        foreach (var prpoEntry in prpoEntries)
+        //        {
+        //            // Find the related PRDetail using `prdetailsprtblid`
+        //            var prDetail = await dbcontext.PRDetails.FindAsync(prpoEntry.prdetailsprtblid);
+        //            if (prDetail != null)
+        //            {
+        //                // Ensure the value doesn't go below zero
+        //                prDetail.pocreatedqty = Math.Max(0, prDetail.pocreatedqty - (float)purchaseDetail.poquantity);
+
+        //                // Mark as modified so it gets updated in the database
+        //                dbcontext.PRDetails.Update(prDetail);
+        //            }
+        //        }
+
+        //        // Step 4: Remove all related PRPO entries first
+        //        if (prpoEntries.Any())
+        //        {
+        //            dbcontext.PRPO.RemoveRange(prpoEntries);
+        //        }
+
+        //        // Step 5: Remove the specific Purchasedetails entry
+        //        dbcontext.Purchasedetails.Remove(purchaseDetail);
+
+        //        // Step 6: Save all changes
+        //        await dbcontext.SaveChangesAsync();
+
+        //        // Step 7: Commit the transaction
+        //        await transaction.CommitAsync();
+
+        //        return NoContent(); // Success (204 No Content)
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Step 8: Rollback transaction in case of failure
+        //        await transaction.RollbackAsync();
+        //        return StatusCode(500, new { Message = "An error occurred while deleting the POLine.", Error = ex.Message });
+        //    }
+        //}
+
+
+
+
+
         [HttpDelete("Deletepoline/{potblid}")]
         public async Task<IActionResult> DeletePoline(int potblid)
         {
             using var transaction = await dbcontext.Database.BeginTransactionAsync();
             try
             {
+                Console.WriteLine($"[DEBUG] Deleting POLine with ID: {potblid}");
+
                 // Step 1: Find the POLine item (Purchase Order Line)
                 var purchaseDetail = await dbcontext.Purchasedetails.FindAsync(potblid);
                 if (purchaseDetail == null)
                 {
+                    Console.WriteLine($"[DEBUG] No Purchasedetails found for ID: {potblid}");
                     return NotFound(new { Message = $"The POLine item with ID {potblid} does not exist." });
                 }
+                Console.WriteLine($"[DEBUG] Found Purchasedetail: {purchaseDetail.potblid}");
 
-                // Step 2: Find all related PRPO entries linked to `potblid`
+                // Step 2: Find related PRPO entries
                 var prpoEntries = await dbcontext.PRPO.Where(p => p.Purchasedetailspotblid == potblid).ToListAsync();
-                if (!prpoEntries.Any())
-                {
-                    return NotFound(new { Message = $"No PRPO entries found for POLine ID {potblid}." });
-                }
+                Console.WriteLine($"[DEBUG] Found {prpoEntries.Count} related PRPO entries for POLine ID: {potblid}");
 
-                // Step 3: Process each PRPO entry and update PRDetails
+                // Step 3: Update PRDetails before deleting PRPO
                 foreach (var prpoEntry in prpoEntries)
                 {
-                    // Find the related PRDetail using `prtblid` from PRPO
                     var prDetail = await dbcontext.PRDetails.FindAsync(prpoEntry.prdetailsprtblid);
                     if (prDetail != null)
                     {
-                        // Subtract the `poquantity` from `pocreatedqty`
-                        prDetail.pocreatedqty -= (float)purchaseDetail.poquantity;
+                        Console.WriteLine($"[DEBUG] Updating PRDetails ID: {prDetail.prtblid} | Old pocreatedqty: {prDetail.pocreatedqty}");
+                        prDetail.pocreatedqty = Math.Max(0, prDetail.pocreatedqty - (float)purchaseDetail.poquantity);
+                        Console.WriteLine($"[DEBUG] New pocreatedqty: {prDetail.pocreatedqty}");
+                        dbcontext.PRDetails.Update(prDetail);
                     }
                 }
-                // Step 4: Remove the POLine entry
+
+                // Step 4: Delete related PRPO records first
+                if (prpoEntries.Any())
+                {
+                    Console.WriteLine($"[DEBUG] Deleting PRPO records for potblid: {potblid}");
+                    dbcontext.PRPO.RemoveRange(prpoEntries);
+                }
+
+                // Step 5: Remove the specific Purchasedetails entry
+                Console.WriteLine($"[DEBUG] Deleting Purchasedetails with ID: {potblid}");
                 dbcontext.Purchasedetails.Remove(purchaseDetail);
 
-                // Step 5: Save changes to both tables
+                // Step 6: Save all changes
                 await dbcontext.SaveChangesAsync();
 
-                // Step 6: Commit transaction
+                // Step 7: Commit the transaction
                 await transaction.CommitAsync();
+                Console.WriteLine($"[DEBUG] Successfully deleted POLine {potblid}");
 
-                return NoContent(); // 204 No Content response
+                return NoContent(); // Success (204 No Content)
             }
             catch (Exception ex)
             {
-                // Step 7: Rollback transaction in case of failure
+                // Step 8: Rollback transaction in case of failure
                 await transaction.RollbackAsync();
+                Console.WriteLine($"[ERROR] Deletion failed: {ex.Message}");
                 return StatusCode(500, new { Message = "An error occurred while deleting the POLine.", Error = ex.Message });
             }
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -1551,6 +1667,48 @@ namespace WebApplication1.Controllers
     .ToListAsync();
             return Ok(purchasedetails);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetpodetailsbyPONO2")]
+        public async Task<IActionResult> GetpodetailsbyPONO2([FromQuery] int pono)
+        {
+
+         
+            var purchasedetails = await dbcontext.Purchasedetails
+          .Where(p => p.orderid == pono
+                      && p.poquantity > p.receivedentryqty
+                    
+                      && p.PO.postatusid == 3) // Assuming 'PO' is the navigation property for the PO table
+          .Include(p => p.product) // Including the 'Product' navigation property
+          .Include(p => p.PO) // Including the PO to filter based on postatusid
+          .ToListAsync();
+            return Ok(purchasedetails);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2012,6 +2170,27 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetListPOIssuenoteheader")]
+        public async Task<IActionResult> GetListPOIssuenoteheader()
+        
+        {
+            try
+            {
+
+                var issueheader = await dbcontext.IssueNoteheader
+              .Where(po => po.issuetype == "PO")
+              .ToListAsync();
+                if (issueheader == null)
+                {
+                    return NotFound();
+                }
+                return Ok(issueheader);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+            }
+        }
 
 
 
@@ -2067,7 +2246,8 @@ namespace WebApplication1.Controllers
                    jobid = dto.jobid,
                     issuedate = dto.issuedate,
                    Remarks = dto.Remarks,
-                    issuedto = dto.issuedto
+                    issuedto = dto.issuedto,
+                    issuetype="PO"
                   
 
                 };
@@ -2917,6 +3097,67 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetStockissuepending")]
+        public async Task<IActionResult> GetStockissuepending()
+        {
+            var stockitemsissuedbyjobid = await (
+        from rh in dbcontext.Inventoryreservation
+        join red in dbcontext.Product on rh.productid equals red.itemid
+      
+        select new
+        {
+            ItemId = rh.productid,
+            ItemName = red.itemname,
+            qty = rh.reservedqty,
+            fromjob = rh.fromjobid,
+            tojob = rh.tojobid
+        }
+    ).ToListAsync();
+
+            return Ok(stockitemsissuedbyjobid);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         [HttpGet("GetPendingPurchasedetailsbypono")]
         public async Task<IActionResult> GetPendingPurchasedetailsbypono(int grnno, int orderid)
@@ -2952,6 +3193,25 @@ namespace WebApplication1.Controllers
 
 
 
+
+        [HttpGet("GetPendingPurchasedetailsbyponos")]
+        public async Task<IActionResult> GetPendingPurchasedetailsbyponos( int pono)
+        {
+           
+
+            var podetails = await dbcontext.Purchasedetails
+                .Where(p => p.inspacceptedqty > p.grncreatedqty) // Filter where inspacceptedqty is greater than grncreatedqty
+                .Include(p => p.PO)
+                .Include(p => p.product)
+                .Include(p => p.UOM)
+                .Include(p => p.product.UOM) // Include related PurchaseOrder data
+                .Where(p => p.PO.postatusid == 3 && p.PO.Orderid == pono ) // Corrected comparison
+                .ToListAsync();
+            return Ok(podetails);
+
+
+
+        }
 
 
 
@@ -4294,14 +4554,15 @@ namespace WebApplication1.Controllers
                     Data = new List<object>() // Empty data list
                 });
             }
-
+            return Ok(prdetails);
+           
             // Return the results if data exists
-            return Ok(new
-            {
-                Success = true,
-                Message = "Pending job numbers retrieved successfully.",
-                Data = prdetails
-            });
+            //return Ok(new
+            //{
+            //    Success = true,
+            //    Message = "Pending job numbers retrieved successfully.",
+            //    Data = prdetails
+            //});
         }
 
 
@@ -4432,6 +4693,8 @@ namespace WebApplication1.Controllers
 
                     return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
                 }
+
+
             }
         }
 
@@ -4442,6 +4705,25 @@ namespace WebApplication1.Controllers
 
 
 
+
+        [HttpGet("GetSubCategorydetailsbycategoryid")]
+        public async Task<IActionResult> GetSubCategorydetailsbycategoryid(int categoryid)
+        {
+            if (categoryid <= 0)
+            {
+                return BadRequest("Invalid Category");
+            }
+            var subcategorydetails = await dbcontext.SubCategory 
+       .Where(x => x.categoryid == categoryid)
+       .ToListAsync();
+
+            if (subcategorydetails == null)
+            {
+                return NotFound("Subcategory not found");
+            }
+            return Ok(subcategorydetails);
+
+        }
 
 
 

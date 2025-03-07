@@ -666,7 +666,7 @@ namespace WebApplication1.Controllers
         [HttpGet("getAllBom2byJobId")]
         public async Task<IActionResult> getAllBom2byJobId(int jobid, int bomnumber)
         {
-            var bom = await dbcontext.Bom
+                var bom = await dbcontext.Bom
     .Include(b => b.UOM)
      .Include(b => b.Product).
     Include(c => c.currency)// Eager load the UOM related entity

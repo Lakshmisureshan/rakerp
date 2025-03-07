@@ -77,6 +77,9 @@ namespace WebApplication1.Data
 
         public DbSet<issuereturntracking> issuereturntracking { get; set; }
 
+
+        public DbSet<SubCategory> SubCategory { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -926,7 +929,12 @@ base.OnModelCreating(modelBuilder);
 
 
 
-
+            modelBuilder.Entity<SubCategory>()
+         .HasOne(pd => pd.Category)
+         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+         .HasForeignKey(pd => pd.categoryid)
+         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
@@ -953,11 +961,16 @@ base.OnModelCreating(modelBuilder);
         .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Product>()
+      .HasOne(pd => pd.SubCategory)
+      .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+      .HasForeignKey(pd => pd.subcategoryid)
+      .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
-
-        modelBuilder.Entity<Inventoryreservation>()
+            modelBuilder.Entity<Inventoryreservation>()
        .HasOne(pd => pd.Product)
        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
        .HasForeignKey(pd => pd.productid)

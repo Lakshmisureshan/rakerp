@@ -21,7 +21,8 @@ namespace WebApplication1.Models.Domain
         public int categoryid { get; set; }
 
 
-
+        public SubCategory SubCategory { get; set; }
+        public int subcategoryid { get; set; }
 
 
     }

@@ -13,6 +13,7 @@ namespace WebApplication1.Models.Domain
         public string?  Remarks { get; set; }
         public string? issuedto { get; set; }
         public int isregistered { get; set; } = 0;
+        public string  issuetype { get; set; } 
 
     }
 }

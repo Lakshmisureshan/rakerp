@@ -46,6 +46,7 @@ namespace WebApplication1.Controllers
                 productcode = request.productcode ,
                 price = request.price ,
                 categoryid = request.categoryid ,
+                subcategoryid=request.subcategoryid
                 
                 
             };
@@ -77,8 +78,13 @@ namespace WebApplication1.Controllers
         [HttpGet("GetAllItems")]
         public async Task<IActionResult> GetAllItems()
         {
-            var product = await dbcontext.Product.ToListAsync();
-            return Ok(product);
+            var products = await dbcontext.Product
+      .Include(p => p.Category)
+      .Include(c => c.SubCategory) // If Subcategory is inside Category
+      .Include(p => p.UOM) // Include Unit of Measurement (UOM)
+      .ToListAsync();
+
+            return Ok(products);
         }
 
 

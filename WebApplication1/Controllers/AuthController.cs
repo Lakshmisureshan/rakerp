@@ -426,7 +426,7 @@ namespace WebApplication1.Controllers
                         }
 
                         // Update the received quantity
-                        purchaseDetails.receivedentryqty = entry.receivedqty;
+                        purchaseDetails.receivedentryqty += entry.receivedqty;
 
                         // Retrieve the received header based on rtblid
                         var receivedHeader = await dbcontext.ReceivedEntry
@@ -572,6 +572,188 @@ namespace WebApplication1.Controllers
         //}
 
 
+        //[HttpPost("RegisterGRN")]
+        //public async Task<IActionResult> RegisterGRN([FromBody] RegisterGRNclass request)
+        //{
+        //    if (request == null || string.IsNullOrEmpty(request.UserId))
+        //    {
+        //        return BadRequest("Invalid request data");
+        //    }
+
+        //    var user = await userManager1.FindByIdAsync(request.UserId) ??
+        //               await userManager1.FindByEmailAsync(request.UserId);
+        //    if (user == null)
+        //    {
+        //        return Unauthorized("User not found.");
+        //    }
+
+        //    var grnheader = await dbcontext.GRNHeader
+        //        .Include(po => po.PO) // Include the Supplier related entity
+        //        .Where(po => po.grnno == request.grnno)
+        //        .FirstOrDefaultAsync();
+
+        //    if (grnheader == null)
+        //    {
+        //        return NotFound("GRN header not found.");
+        //    }
+
+        //    using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+        //    {
+        //        try
+        //        {
+        //            foreach (var entry in request.details)
+        //            {
+        //                // Retrieve the purchase details based on potblid
+        //                var purchaseDetails = await dbcontext.Purchasedetails
+        //                                                     .FirstOrDefaultAsync(pd => pd.poitemid == entry.itemcode && pd.orderid == grnheader.pono);
+
+        //                if (purchaseDetails == null)
+        //                {
+        //                    return NotFound($"Purchase details not found for item code {entry.itemcode} and PO {grnheader.pono}.");
+        //                }
+
+        //                var purchaseheader = await dbcontext.PO
+        //                                                     .FirstOrDefaultAsync(ph => ph.Orderid == grnheader.pono);
+
+        //                if (purchaseheader == null)
+        //                {
+        //                    return NotFound($"Purchase header not found for PO {grnheader.pono}.");
+        //                }
+
+        //                purchaseDetails.grncreatedqty = entry.grnqty;
+
+        //                // Update the isregistered field
+        //                grnheader.isregistered = 1;
+
+        //                var inventory = new Inventory
+        //                {
+        //                    productid = entry.itemcode,
+        //                    batchid = 1, // Assuming batchid is part of the entry details
+        //                    jobid = purchaseheader.jobid, // Assuming jobid is part of the entry details
+        //                    pono = grnheader.pono,
+        //                    quantity = entry.grnqty * (decimal)entry.multiplyingfactor,
+
+        //                    Entrydate = DateTime.UtcNow,
+        //                    uomid = entry.inventoryuomid ,
+        //                    invcurrencyid=request.invcurrencyid ,
+        //                    invprice=entry.pounitprice
+        //                    // Assuming pouomid is part of the purchase details
+        //                };
+
+        //                // Add the Inventory object to the context
+        //                dbcontext.Inventory.Add(inventory);
+
+
+
+
+        //                await dbcontext.SaveChangesAsync();
+
+        //                // Retrieve the invid after saving
+        //                var inventoryWithId = await dbcontext.Inventory
+        //                                                       .Where(inv => inv.productid == entry.itemcode && inv.pono == grnheader.pono)
+        //                                                       .OrderByDescending(inv => inv.Entrydate)
+        //                                                       .FirstOrDefaultAsync();
+
+        //                if (inventoryWithId == null)
+        //                {
+        //                    return StatusCode(500, "Failed to retrieve the generated inventory ID.");
+        //                }
+
+        //                // Now use the generated invid for the grntrack
+        //                var grntrack = new grntracking
+        //                {
+        //                    productid = entry.itemcode,
+        //                    jobid = purchaseheader.jobid, // Assuming jobid is part of the entry details
+        //                    grnno = grnheader.grnno,
+        //                    grnqty = entry.grnqty * (decimal)entry.multiplyingfactor,
+        //                    grndate = DateTime.UtcNow.Date,
+        //                    invid = inventoryWithId.invid ,
+        //                    grnuomid = entry.inventoryuomid,
+        //                    grncurrencyid = request.invcurrencyid,
+        //                    grnunitprice = entry.pounitprice
+
+
+        //                    // Assign the retrieved invid here
+        //                };
+
+
+
+        //                dbcontext.grntracking.Add(grntrack);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //            // Save changes to the database
+        //            await dbcontext.SaveChangesAsync();
+
+        //            // Commit the transaction
+        //            await transaction.CommitAsync();
+
+        //            return Ok(new { Message = "Purchase details and received headers updated successfully.", Success = true });
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            // Roll back the transaction if any error occurs
+        //            await transaction.RollbackAsync();
+        //            return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
+        //        }
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
+
+
         [HttpPost("RegisterGRN")]
         public async Task<IActionResult> RegisterGRN([FromBody] RegisterGRNclass request)
         {
@@ -601,11 +783,20 @@ namespace WebApplication1.Controllers
             {
                 try
                 {
+                    // If request.details is null or empty, just update isregistered to 1
+                    if (request.details == null || !request.details.Any())
+                    {
+                        grnheader.isregistered = 1;
+                        await dbcontext.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                        return Ok(new { Message = "GRN registered successfully without details.", Success = true });
+                    }
+
+                    // Process details if available
                     foreach (var entry in request.details)
                     {
-                        // Retrieve the purchase details based on potblid
                         var purchaseDetails = await dbcontext.Purchasedetails
-                                                             .FirstOrDefaultAsync(pd => pd.poitemid == entry.itemcode && pd.orderid == grnheader.pono);
+                            .FirstOrDefaultAsync(pd => pd.poitemid == entry.itemcode && pd.orderid == grnheader.pono);
 
                         if (purchaseDetails == null)
                         {
@@ -613,7 +804,7 @@ namespace WebApplication1.Controllers
                         }
 
                         var purchaseheader = await dbcontext.PO
-                                                             .FirstOrDefaultAsync(ph => ph.Orderid == grnheader.pono);
+                            .FirstOrDefaultAsync(ph => ph.Orderid == grnheader.pono);
 
                         if (purchaseheader == null)
                         {
@@ -622,139 +813,63 @@ namespace WebApplication1.Controllers
 
                         purchaseDetails.grncreatedqty = entry.grnqty;
 
-                        // Update the isregistered field
+                        // Update isregistered field
                         grnheader.isregistered = 1;
 
                         var inventory = new Inventory
                         {
                             productid = entry.itemcode,
-                            batchid = 1, // Assuming batchid is part of the entry details
-                            jobid = purchaseheader.jobid, // Assuming jobid is part of the entry details
+                            batchid = 1,
+                            jobid = purchaseheader.jobid,
                             pono = grnheader.pono,
                             quantity = entry.grnqty * (decimal)entry.multiplyingfactor,
-                     
                             Entrydate = DateTime.UtcNow,
-                            uomid = entry.inventoryuomid ,
-                            invcurrencyid=request.invcurrencyid ,
-                            invprice=entry.pounitprice
-                            // Assuming pouomid is part of the purchase details
+                            uomid = entry.inventoryuomid,
+                            invcurrencyid = request.invcurrencyid,
+                            invprice = entry.pounitprice
                         };
 
-                        // Add the Inventory object to the context
                         dbcontext.Inventory.Add(inventory);
-
-
-
-
                         await dbcontext.SaveChangesAsync();
 
-                        // Retrieve the invid after saving
                         var inventoryWithId = await dbcontext.Inventory
-                                                               .Where(inv => inv.productid == entry.itemcode && inv.pono == grnheader.pono)
-                                                               .OrderByDescending(inv => inv.Entrydate)
-                                                               .FirstOrDefaultAsync();
+                            .Where(inv => inv.productid == entry.itemcode && inv.pono == grnheader.pono)
+                            .OrderByDescending(inv => inv.Entrydate)
+                            .FirstOrDefaultAsync();
 
                         if (inventoryWithId == null)
                         {
                             return StatusCode(500, "Failed to retrieve the generated inventory ID.");
                         }
 
-                        // Now use the generated invid for the grntrack
                         var grntrack = new grntracking
                         {
                             productid = entry.itemcode,
-                            jobid = purchaseheader.jobid, // Assuming jobid is part of the entry details
+                            jobid = purchaseheader.jobid,
                             grnno = grnheader.grnno,
                             grnqty = entry.grnqty * (decimal)entry.multiplyingfactor,
                             grndate = DateTime.UtcNow.Date,
-                            invid = inventoryWithId.invid ,
+                            invid = inventoryWithId.invid,
                             grnuomid = entry.inventoryuomid,
                             grncurrencyid = request.invcurrencyid,
                             grnunitprice = entry.pounitprice
-
-
-                            // Assign the retrieved invid here
                         };
 
-
-
                         dbcontext.grntracking.Add(grntrack);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    // Save changes to the database
                     await dbcontext.SaveChangesAsync();
-
-                    // Commit the transaction
                     await transaction.CommitAsync();
 
                     return Ok(new { Message = "Purchase details and received headers updated successfully.", Success = true });
                 }
                 catch (Exception ex)
                 {
-                    // Roll back the transaction if any error occurs
                     await transaction.RollbackAsync();
                     return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
                 }
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250228071652_add subctegory 1")]
+    partial class addsubctegory1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4259fa44-211c-4a50-939f-7fc4f61b0007",
+                            ConcurrencyStamp = "dca8a144-2ced-4cbc-bfbe-d39f75b3d51a",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAELe/XTGyLTDGc2VE1VLfnkoQTENn/+xCp+8Q1O5+JADTjhvbLAivo2tV4GhOYC7L1A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECEoTHFumyWLA8iXy2Aetgr5PQYVu0gns9RKBy9MJFO4FqNvUQR6F56XgvT6AdqwDg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d352eb5c-2b90-485d-acce-679417fd46d9",
+                            SecurityStamp = "e209d0ce-dd1c-41ba-a0a5-b1af4739f4e6",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -922,10 +924,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("issuedto")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("issuetype")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("jobid")
@@ -1619,9 +1617,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("standarduomid")
                         .HasColumnType("int");
 
-                    b.Property<int>("subcategoryid")
-                        .HasColumnType("int");
-
                     b.HasKey("itemid");
 
                     b.HasIndex("categoryid");
@@ -1629,8 +1624,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("itembudgetheaderid");
 
                     b.HasIndex("standarduomid");
-
-                    b.HasIndex("subcategoryid");
 
                     b.ToTable("Product");
                 });
@@ -2779,17 +2772,9 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.SubCategory", "SubCategory")
-                        .WithMany()
-                        .HasForeignKey("subcategoryid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("BudgettHeader");
 
                     b.Navigation("Category");
-
-                    b.Navigation("SubCategory");
 
                     b.Navigation("UOM");
                 });
