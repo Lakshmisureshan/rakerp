@@ -238,7 +238,12 @@ namespace WebApplication1.Controllers
             public List<int> ForderId { get; set; }
         }
 
-
+        public class Addtobomfromestimationrv1
+        {
+            public string userid { get; set; }
+            public string passcode { get; set; }
+            public List<int> festimation { get; set; }
+        }
 
 
 
@@ -271,6 +276,7 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost("VerifyPOs")]
+
         public async Task<IActionResult> VerifyPOs([FromBody] VerifyPORequest request)
         {
             if (request == null || string.IsNullOrEmpty(request.UserId) || request.ForderId == null || request.ForderId.Count == 0)
@@ -1201,6 +1207,125 @@ namespace WebApplication1.Controllers
                 return StatusCode(500, "An error occurred while verifying POs.");
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("Addtobomfromestimation")]
+        public async Task<IActionResult> Addtobomfromestimation([FromBody] Addtobomfromestimationrv1 request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.userid) || request.festimation == null || request.festimation.Count == 0)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            var user = await userManager1.FindByIdAsync(request.userid) ??
+                       await userManager1.FindByEmailAsync(request.userid);
+
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Check the passcode
+            if (user.passcode != request.passcode)
+            {
+                return Unauthorized("Invalid password or passcode.");
+            }
+
+            using var transaction = await dbcontext.Database.BeginTransactionAsync();
+
+            try
+            {
+                var estimationList = await dbcontext.estimation
+                    .Where(e => request.festimation.Contains(e.estimationid) && e.isconvertedtobom == 0)
+                    .ToListAsync();
+
+                if (!estimationList.Any())
+                {
+                    return BadRequest("No new estimation records to process.");
+                }
+
+                foreach (var estimation in estimationList)
+                {
+                    // Insert new record into BOM table
+                    var newBom = new Bom
+                    {
+                        itemid = estimation.itemid,
+                        bomqty = (double)estimation.quantity,
+                        bomuomid = estimation.uomid,
+                        price = (double)estimation.price,
+                        currencyid = estimation.currencyid,
+                        jobid = estimation.jobid,
+                        prodstageid = estimation.applicationid, // Mapping applicationid to prodstageid
+                        bomstatus = 1, // Default status
+                        prcreatedqty = 0, // Initially set to zero
+                        bomnumber = 1 // Assuming default value
+                    };
+
+                    dbcontext.Bom.Add(newBom);
+
+                    // Mark estimation as converted
+                    estimation.isconvertedtobom = 1;
+                }
+
+                await dbcontext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return Ok(new { message = "Estimation records successfully added to BOM." });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }

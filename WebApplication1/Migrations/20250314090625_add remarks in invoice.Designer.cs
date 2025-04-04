@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250314090625_add remarks in invoice")]
+    partial class addremarksininvoice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "af8f6281-a854-40e1-9d72-01572dc2e28a",
+                            ConcurrencyStamp = "ff5c2385-172f-4926-b367-d3e53c1b4fda",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAENo4rgmReSVppEb/w0UyiJ4cHb1OyPeMNuIYAs6aSP79WeBWjN+fJo2Bg0Cna9M/Jg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKngXAk4YAf0JUCYgQWrnxVuxCnvgh9gR95X3t8htnZQrtFUNV3gtYT7/di7RNUQ5A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7ac5fdf7-285c-456d-8b74-551101ca3256",
+                            SecurityStamp = "9b888930-8614-4ac7-af05-593e13bbc1ce",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -580,77 +582,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("countryid");
 
                     b.ToTable("Customer");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.estimation", b =>
-                {
-                    b.Property<int>("estimationid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("estimationid"), 1L, 1);
-
-                    b.Property<int>("applicationid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("currencyid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("isconvertedtobom")
-                        .HasColumnType("int");
-
-                    b.Property<int>("itemid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("jobid")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("quantity")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("uomid")
-                        .HasColumnType("int");
-
-                    b.HasKey("estimationid");
-
-                    b.HasIndex("applicationid");
-
-                    b.HasIndex("currencyid");
-
-                    b.HasIndex("itemid");
-
-                    b.HasIndex("jobid");
-
-                    b.HasIndex("uomid");
-
-                    b.ToTable("estimation");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.FixedBudget", b =>
-                {
-                    b.Property<int>("fixedbudgetid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("fixedbudgetid"), 1L, 1);
-
-                    b.Property<int>("budgetId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("fixedamount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("revision")
-                        .HasColumnType("int");
-
-                    b.HasKey("fixedbudgetid");
-
-                    b.HasIndex("budgetId");
-
-                    b.ToTable("FixedBudget");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.GRNDetails", b =>
@@ -886,103 +817,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("uomid");
 
                     b.ToTable("Inventoryreservation");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Invoicedetails", b =>
-                {
-                    b.Property<int>("invidno")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("invidno"), 1L, 1);
-
-                    b.Property<string>("amount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("counter")
-                        .HasColumnType("int");
-
-                    b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("invoiceno")
-                        .HasColumnType("int");
-
-                    b.Property<string>("qty")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("taxamount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("unitprice")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("uom")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("vatpercent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("invidno");
-
-                    b.HasIndex("invoiceno");
-
-                    b.ToTable("Invoicedetails");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.InvoiceReg", b =>
-                {
-                    b.Property<int>("invoiceregid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("invoiceregid"), 1L, 1);
-
-                    b.Property<decimal>("Invoicereceipts")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Invoiceregisteredby")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Invoicevalue")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Invoicevalueinbasecurrency")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("currencyid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("customerid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("invoiceno")
-                        .HasColumnType("int");
-
-                    b.Property<int>("jobid")
-                        .HasColumnType("int");
-
-                    b.HasKey("invoiceregid");
-
-                    b.HasIndex("Invoiceregisteredby");
-
-                    b.HasIndex("currencyid");
-
-                    b.HasIndex("customerid");
-
-                    b.HasIndex("invoiceno");
-
-                    b.HasIndex("jobid");
-
-                    b.ToTable("InvoiceReg");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.IsLDApplicable", b =>
@@ -1350,10 +1184,10 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("podeliverydate")
+                    b.Property<DateTime>("podeliverydate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("projectcategoryid")
+                    b.Property<int>("projectcategoryid")
                         .HasColumnType("int");
 
                     b.Property<string>("projectengineerid")
@@ -1368,11 +1202,8 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("qualitylevelid")
+                    b.Property<int>("qualitylevelid")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("totalinvoiceinbasecurrency")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("totalnumber")
                         .HasColumnType("int");
@@ -2165,12 +1996,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("customerid")
                         .HasColumnType("int");
 
-                    b.Property<int>("invcurrencyid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("isregistered")
-                        .HasColumnType("int");
-
                     b.Property<int>("jobid")
                         .HasColumnType("int");
 
@@ -2180,8 +2005,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("invoiceno");
 
                     b.HasIndex("customerid");
-
-                    b.HasIndex("invcurrencyid");
 
                     b.HasIndex("jobid");
 
@@ -2309,60 +2132,6 @@ namespace WebApplication1.Migrations
                         .IsRequired();
 
                     b.Navigation("country");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.estimation", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.ProductionStages", "ProductionStages")
-                        .WithMany()
-                        .HasForeignKey("applicationid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("currencyid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("itemid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("jobid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.UOM", "UOM")
-                        .WithMany()
-                        .HasForeignKey("uomid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Currency");
-
-                    b.Navigation("Job");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ProductionStages");
-
-                    b.Navigation("UOM");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.FixedBudget", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.BudgettHeader", "BudgetHeader")
-                        .WithMany()
-                        .HasForeignKey("budgetId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("BudgetHeader");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.GRNDetails", b =>
@@ -2562,60 +2331,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("TOJob");
 
                     b.Navigation("UOM");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Invoicedetails", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Invoice", "Invoice")
-                        .WithMany()
-                        .HasForeignKey("invoiceno")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.InvoiceReg", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "applicationUser")
-                        .WithMany()
-                        .HasForeignKey("Invoiceregisteredby")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("currencyid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("customerid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Invoice", "Invoice")
-                        .WithMany()
-                        .HasForeignKey("invoiceno")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("jobid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Currency");
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Invoice");
-
-                    b.Navigation("Job");
-
-                    b.Navigation("applicationUser");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.IssuedetailsfromStock", b =>
@@ -2872,7 +2587,8 @@ namespace WebApplication1.Migrations
                     b.HasOne("WebApplication1.Models.Domain.ProjectCategory", "ProjectCategory")
                         .WithMany()
                         .HasForeignKey("projectcategoryid")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "ProjectEngineer")
                         .WithMany()
@@ -2889,7 +2605,8 @@ namespace WebApplication1.Migrations
                     b.HasOne("WebApplication1.Models.Domain.QualityLevel", "QualityLevel")
                         .WithMany()
                         .HasForeignKey("qualitylevelid")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Currency");
 
@@ -3260,19 +2977,11 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("invcurrencyid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("WebApplication1.Models.Domain.Job", "Job")
                         .WithMany()
                         .HasForeignKey("jobid")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Currency");
 
                     b.Navigation("Customer");
 

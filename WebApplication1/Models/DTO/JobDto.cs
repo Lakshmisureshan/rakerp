@@ -18,26 +18,26 @@ namespace WebApplication1.Models.DTO
         public DateTime lpodate { get; set; }
         public string lpono { get; set; }
         public ApplicationUser ProjectManager { get; set; }
-        public string projectmanagerid { get; set; }
+        public string projectmanagerid { get; set; } 
         public ApplicationUser ProjectEngineer { get; set; }
-        public string projectengineerid { get; set; }
+        public string projectengineerid { get; set; } 
         public int totalnumber { get; set; }
 
         public ManufacturingBay ManufacturingBay { get; set; }
 
-        public int manufacturingbayid { get; set; }
+        public int manufacturingbayid { get; set; } = 0;
 
 
         public QualityLevel QualityLevel { get; set; }
 
-        public int qualitylevelid { get; set; }
+        public int? qualitylevelid { get; set; } = 0;
 
-        public DateTime podeliverydate { get; set; }
+        public DateTime ? podeliverydate { get; set; }
 
 
         public ProjectCategory ProjectCategory { get; set; }
 
-        public int projectcategoryid { get; set; }
+        public int? projectcategoryid { get; set; } = 0;
 
 
 

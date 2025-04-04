@@ -23,21 +23,21 @@ namespace WebApplication1.Models.Domain
 
         public int totalnumber { get; set; }
 
-        public ManufacturingBay ManufacturingBay { get; set; }
+        public ManufacturingBay? ManufacturingBay { get; set; }
 
         public int  manufacturingbayid { get; set; }
 
 
-        public QualityLevel QualityLevel { get; set; }
+        public QualityLevel  QualityLevel { get; set; }
 
-        public int qualitylevelid { get; set; }
+        public int ? qualitylevelid { get; set; }
 
-        public DateTime podeliverydate { get; set; }
+        public DateTime ? podeliverydate { get; set; }
 
 
         public ProjectCategory ProjectCategory { get; set; }
 
-        public int projectcategoryid { get; set; }
+        public int ? projectcategoryid { get; set; }
 
 
 
@@ -75,7 +75,7 @@ namespace WebApplication1.Models.Domain
         public int bomjobrevno2 { get; set; } = 0;
         public int bomjobstatusid2 { get; set; } = 0;
 
-
+        public decimal  totalinvoiceinbasecurrency { get; set; } = 0;
 
 
 

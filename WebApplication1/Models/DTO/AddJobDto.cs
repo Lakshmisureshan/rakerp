@@ -30,7 +30,7 @@ namespace WebApplication1.Models.DTO
 
         public int qualitylevelid { get; set; }
 
-        public DateTime podeliverydate { get; set; }
+        public DateTime ?  podeliverydate { get; set; }
 
 
         public int enduserid { get; set; }

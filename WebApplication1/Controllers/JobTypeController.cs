@@ -105,7 +105,17 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetAllJobNos")]
+        public async Task<IActionResult> GetAllJobNos()
+        {
+            // Retrieve the maximum job number for the specified job type
+            var jobdetails = await dbcontext.Job
+    
+       .ToListAsync();
 
+
+            return Ok(jobdetails);// Increment maxJobNo or use default if maxJobNo is null
+        }
 
 
 

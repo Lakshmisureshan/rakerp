@@ -764,5 +764,48 @@ namespace WebApplication1.Controllers
             return Ok(new { message = "Job has been Un frozen successfully", jobid });
         }
 
+
+
+        [HttpGet("GetProductbybudgetheaderid/{budgetheaderid}")]
+        public async Task<IActionResult> GetProductbybudgetheaderid(int budgetheaderid)
+        {
+            var product = await dbcontext.Product
+                                         .Where(p => p.itembudgetheaderid == budgetheaderid)
+
+                                         .ToListAsync();
+
+            if (product == null)
+            {
+                return NotFound("Product not found");
+            }
+
+            return Ok(product);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

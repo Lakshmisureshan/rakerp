@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250403134350_add estimation")]
+    partial class addestimation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "af8f6281-a854-40e1-9d72-01572dc2e28a",
+                            ConcurrencyStamp = "96a8c5bc-f489-49d9-99fc-d6cc580a2332",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAENo4rgmReSVppEb/w0UyiJ4cHb1OyPeMNuIYAs6aSP79WeBWjN+fJo2Bg0Cna9M/Jg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMWWxi48TKmTf0/MdSjW80d0V4otYfjZclje9CEx3zBGQqYV1I1NbvhS0yVTmOL7vg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7ac5fdf7-285c-456d-8b74-551101ca3256",
+                            SecurityStamp = "64f40e8d-bbb8-4902-a565-fbc1bbb921e4",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -594,9 +596,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("currencyid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("isconvertedtobom")
                         .HasColumnType("int");
 
                     b.Property<int>("itemid")

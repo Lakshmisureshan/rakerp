@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using WebApplication1.Models;
 using WebApplication1.Models.Domain;
 namespace WebApplication1.Data
 {
@@ -79,6 +80,16 @@ namespace WebApplication1.Data
 
 
         public DbSet<SubCategory> SubCategory { get; set; }
+
+        public DbSet<Invoice> Invoice { get; set; }
+        public DbSet<Invoicedetails> Invoicedetails { get; set; }
+
+        public DbSet<InvoiceReg> InvoiceReg { get; set; }
+
+        public DbSet<FixedBudget> FixedBudget { get; set; }
+
+        public DbSet<estimation> estimation { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -669,25 +680,7 @@ base.OnModelCreating(modelBuilder);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+         
 
 
 
@@ -1155,8 +1148,6 @@ base.OnModelCreating(modelBuilder);
             base.OnModelCreating(modelBuilder);
 
 
-
-
             modelBuilder.Entity<Issuetracking>()
 .HasOne(pd => pd.UOM)
 .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
@@ -1164,17 +1155,14 @@ base.OnModelCreating(modelBuilder);
 .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
-
-
             modelBuilder.Entity<Issuetracking>()
 .HasOne(pd => pd.currency)
 .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
 .HasForeignKey(pd => pd.issuecurrencyid)
 .OnDelete(DeleteBehavior.NoAction);
-            base.OnModelCreating(modelBuilder);
+  base.OnModelCreating(modelBuilder);
 
-
-
+  
 
 
 
@@ -1299,6 +1287,205 @@ base.OnModelCreating(modelBuilder);
                    .HasForeignKey(pd => pd.iruomid)
                    .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<Invoice>()
+                 .HasOne(pd => pd.Job)
+                 .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                 .HasForeignKey(pd => pd.jobid)
+                 .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Invoice>()
+                           .HasOne(pd => pd.Currency)
+                           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                           .HasForeignKey(pd => pd.invcurrencyid)
+                           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Invoice>()
+                        .HasOne(pd => pd.Customer)
+                        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                        .HasForeignKey(pd => pd.customerid)
+                        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Invoicedetails>()
+                      .HasOne(pd => pd.Invoice)
+                      .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                      .HasForeignKey(pd => pd.invoiceno)
+                      .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<FixedBudget>()
+                      .HasOne(pd => pd.BudgetHeader)
+                      .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                      .HasForeignKey(pd => pd.budgetId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+            modelBuilder.Entity<InvoiceReg>()
+        .HasOne(pd => pd.Invoice)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.invoiceno)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<InvoiceReg>()
+        .HasOne(pd => pd.Job)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.jobid )
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+            modelBuilder.Entity<InvoiceReg>()
+        .HasOne(pd => pd.applicationUser)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.Invoiceregisteredby)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            modelBuilder.Entity<InvoiceReg>()
+        .HasOne(pd => pd.Customer)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.customerid)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<InvoiceReg>()
+        .HasOne(pd => pd.Currency)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.currencyid)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<estimation>()
+  .HasOne(pd => pd.Currency)
+  .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+  .HasForeignKey(pd => pd.currencyid)
+  .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<estimation>()
+.HasOne(pd => pd.Job)
+.WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+.HasForeignKey(pd => pd.jobid)
+.OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<estimation>()
+.HasOne(pd => pd.ProductionStages)
+.WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+.HasForeignKey(pd => pd.applicationid)
+.OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<estimation>()
+.HasOne(pd => pd.Product)
+.WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+.HasForeignKey(pd => pd.itemid )
+.OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<estimation>()
+.HasOne(pd => pd.UOM)
+.WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+.HasForeignKey(pd => pd.uomid)
+.OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            modelBuilder.Entity<InvoiceReg>()
+        .HasOne(pd => pd.Job)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.jobid)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<Job>()
+      .Property(j => j.qualitylevelid)
+ 
+      .IsRequired(false); // Explicitly allow NULL
+
+            modelBuilder.Entity<Job>()
+                .Property(j => j.projectcategoryid)
+                .IsRequired(false);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
