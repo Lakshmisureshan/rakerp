@@ -20,8 +20,8 @@ namespace WebApplication1.Models.Domain
         public UOM UOM { get; set; }
         public int pouomid { get; set; }
 
-
-
+        public decimal inspholdqty { get; set; }
+        public decimal insprejectedqty { get; set; }
 
     }
 }

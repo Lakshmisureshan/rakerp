@@ -37,7 +37,7 @@ namespace WebApplication1.Models.DTO
         public Boolean qtnattached { get; set; }
         public Boolean qtnshippingdocs { get; set; }
         public Boolean approveddrawings { get; set; }
-        public Boolean Others { get; set; }
+        public Boolean others { get; set; }
         public string Remarks { get; set; }
         
 

@@ -53,63 +53,177 @@ namespace WebApplication1.Controllers
 
 
 
+        //[HttpPost("AddPOHeader")]
+        //public async Task<IActionResult> AddpoHeader(AddPO request)
+        //{
+        //    DateTime currentDate = DateTime.Now;
+        //    try
+        //    {
+        //        var PO = new PO
+        //        {
+        //            approveddrawings = request.approveddrawings,
+        //            chineseorgin = request.chineseorgin,
+        //            coorequired = request.coorequired,
+        //            createddate = currentDate,
+        //            createdbyid = request.createdbyid,
+        //            jobid = request.jobid,
+        //            extendedwarraty3years = request.extendedwarraty3years,
+        //            deliverydate = request.deliverydate,
+        //            mtcpriortodispatch = request.mtcpriortodispatch,
+        //            warranty = request.warranty,
+        //            suppliertrnno = request.suppliertrnno,
+        //            Mtcrequired = request.Mtcrequired,
+        //            Orderid = request.Orderid,
+        //            Others = request.Others,
+        //            supplierid = request.supplierid,
+        //            popaymenttermsid = request.popaymenttermsid,
+        //            POPaymentterms2id = request.POPaymentterms2id,
+        //            podeliverytermsid = request.podeliverytermsid,
+        //            PaymenttermsDaysid = request.PaymenttermsDaysid,
+        //            pocurrencyid = request.pocurrencyid,
+        //            Podate = request.Podate,
+
+        //            predispatchinspection = request.predispatchinspection,
+        //            Qtndate = request.Qtndate,
+        //            Qtnref = request.Qtnref,
+        //            supplieraddress = request.supplieraddress,
+        //            Remarks = request.Remarks,
+        //            qtnattached = request.qtnattached,
+        //            suppliercontactid = request.suppliercontactid,
+        //            qtnshippingdocs = request.qtnshippingdocs,
+        //            poexchangerate = request.poexchangerate,
+
+
+
+
+
+
+
+
+
+        //        };
+
+        //        await dbcontext.PO.AddAsync(PO);
+        //        await dbcontext.SaveChangesAsync();
+        //        var response = new PODto
+        //        {
+        //            createdbyid = request.createdbyid,
+        //            Orderid = request.Orderid
+
+        //        };
+
+        //        return Ok(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log the exception (optional)
+        //        // e.g., logger.LogError(ex, "An error occurred while adding PR header");
+
+        //        return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
+
         [HttpPost("AddPOHeader")]
         public async Task<IActionResult> AddpoHeader(AddPO request)
         {
             DateTime currentDate = DateTime.Now;
             try
             {
-                var PO = new PO
+                // Check if the PO already exists
+                var existingPO = await dbcontext.PO.FirstOrDefaultAsync(po => po.Orderid == request.Orderid);
+
+                if (existingPO != null)
                 {
-                    approveddrawings = request.approveddrawings,
-                    chineseorgin = request.chineseorgin,
-                    coorequired = request.coorequired,
-                    createddate = currentDate,
-                    createdbyid = request.createdbyid,
-                    jobid = request.jobid,
-                    extendedwarraty3years = request.extendedwarraty3years,
-                    deliverydate = request.deliverydate,
-                    mtcpriortodispatch = request.mtcpriortodispatch,
-                    warranty = request.warranty,
-                    suppliertrnno = request.suppliertrnno,
-                    Mtcrequired = request.Mtcrequired,
-                    Orderid = request.Orderid,
-                    Others = request.Others,
-                    supplierid = request.supplierid,
-                    popaymenttermsid = request.popaymenttermsid,
-                    POPaymentterms2id = request.POPaymentterms2id,
-                    podeliverytermsid = request.podeliverytermsid,
-                    PaymenttermsDaysid = request.PaymenttermsDaysid,
-                    pocurrencyid = request.pocurrencyid,
-                    Podate = request.Podate,
+                    // If the PO exists, update it
+                    existingPO.approveddrawings = request.approveddrawings;
+                    existingPO.chineseorgin = request.chineseorgin;
+                    existingPO.coorequired = request.coorequired;
+                    existingPO.createddate = currentDate; // Update the created date if needed
+                    existingPO.createdbyid = request.createdbyid;
+                    existingPO.jobid = request.jobid;
+                    existingPO.extendedwarraty3years = request.extendedwarraty3years;
+                    existingPO.deliverydate = request.deliverydate;
+                    existingPO.mtcpriortodispatch = request.mtcpriortodispatch;
+                    existingPO.warranty = request.warranty;
+                    existingPO.suppliertrnno = request.suppliertrnno;
+                    existingPO.Mtcrequired = request.Mtcrequired;
+                    existingPO.Orderid = request.Orderid;
+                    existingPO.Others = request.others;
+                    existingPO.supplierid = request.supplierid; 
+                    existingPO.popaymenttermsid = request.popaymenttermsid;
+                    existingPO.POPaymentterms2id = request.POPaymentterms2id;
+                    existingPO.podeliverytermsid = request.podeliverytermsid;
+                    existingPO.PaymenttermsDaysid = request.PaymenttermsDaysid;
+                    existingPO.pocurrencyid = request.pocurrencyid;
+                    existingPO.Podate = request.Podate;
+                    existingPO.predispatchinspection = request.predispatchinspection;
+                    existingPO.Qtndate = request.Qtndate;
+                    existingPO.Qtnref = request.Qtnref;
+                    existingPO.supplieraddress = request.supplieraddress;
+                    existingPO.Remarks = request.Remarks;
+                    existingPO.qtnattached = request.qtnattached;
+                    existingPO.suppliercontactid = request.suppliercontactid;
+                    existingPO.qtnshippingdocs = request.qtnshippingdocs;
+                    existingPO.poexchangerate = request.poexchangerate;
 
-                    predispatchinspection = request.predispatchinspection,
-                    Qtndate = request.Qtndate,
-                    Qtnref = request.Qtnref,
-                    supplieraddress = request.supplieraddress,
-                    Remarks = request.Remarks,
-                    qtnattached = request.qtnattached,
-                    suppliercontactid = request.suppliercontactid,
-                    qtnshippingdocs = request.qtnshippingdocs,
-                    poexchangerate = request.poexchangerate,
+                    // Save changes to the existing PO
+                    await dbcontext.SaveChangesAsync();
+                }
+                else
+                {
+                    // If the PO doesn't exist, create a new PO
+                    var PO = new PO
+                    {
+                        approveddrawings = request.approveddrawings,
+                        chineseorgin = request.chineseorgin,
+                        coorequired = request.coorequired,
+                        createddate = currentDate,
+                        createdbyid = request.createdbyid,
+                        jobid = request.jobid,
+                        extendedwarraty3years = request.extendedwarraty3years,
+                        deliverydate = request.deliverydate,
+                        mtcpriortodispatch = request.mtcpriortodispatch,
+                        warranty = request.warranty,
+                        suppliertrnno = request.suppliertrnno,
+                        Mtcrequired = request.Mtcrequired,
+                        Orderid = request.Orderid,
+                        Others = request.others,
+                        supplierid = request.supplierid,
+                        popaymenttermsid = request.popaymenttermsid,
+                        POPaymentterms2id = request.POPaymentterms2id,
+                        podeliverytermsid = request.podeliverytermsid,
+                        PaymenttermsDaysid = request.PaymenttermsDaysid,
+                        pocurrencyid = request.pocurrencyid,
+                        Podate = request.Podate,
+                        predispatchinspection = request.predispatchinspection,
+                        Qtndate = request.Qtndate,
+                        Qtnref = request.Qtnref,
+                        supplieraddress = request.supplieraddress,
+                        Remarks = request.Remarks,
+                        qtnattached = request.qtnattached,
+                        suppliercontactid = request.suppliercontactid,
+                        qtnshippingdocs = request.qtnshippingdocs,
+                        poexchangerate = request.poexchangerate,
+                    };
 
+                    // Add the new PO to the database
+                    await dbcontext.PO.AddAsync(PO);
+                    await dbcontext.SaveChangesAsync();
+                }
 
-
-
-
-
-
-
-
-                };
-
-                await dbcontext.PO.AddAsync(PO);
-                await dbcontext.SaveChangesAsync();
                 var response = new PODto
                 {
                     createdbyid = request.createdbyid,
                     Orderid = request.Orderid
-
                 };
 
                 return Ok(response);
@@ -117,11 +231,33 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 // Log the exception (optional)
-                // e.g., logger.LogError(ex, "An error occurred while adding PR header");
-
                 return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         [HttpGet("GetPrpendinglistwhereponotcreated")]
@@ -163,16 +299,15 @@ namespace WebApplication1.Controllers
 
         [HttpGet("GetPOHeaderDetailsbypoid")]
         public async Task<IActionResult> GetPOHeaderDetailsbypoid(int pono)
-        {
-
+       {
             try
             {
-
                 var POheaderdetails = await dbcontext.PO
-      .Include(po => po.Supplier) // Include the Supplier related entity
+      .Include(po => po.Supplier)
+      .Include(po => po.PoAuthorizedby)
+      .Include(po => po.postatus)// Include the Supplier related entity
       .Where(po => po.Orderid == pono)
       .FirstOrDefaultAsync();
-
                 if (POheaderdetails == null)
                 {
                     return NotFound();
@@ -181,15 +316,8 @@ namespace WebApplication1.Controllers
             }
             catch (Exception ex)
             {
-
                 return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
-
             }
-
-
-
-
-
         }
 
 
@@ -244,6 +372,9 @@ namespace WebApplication1.Controllers
                                            po.poitemid,
                                            ii.itemname,
                                            po.pounitprice,
+
+
+                                           totalamount=po.pounitprice * po.poquantity
                                            // You can include other fields from PRPO if needed
                                        }).ToListAsync();
             if (POlinedetails == null)
@@ -4561,6 +4692,8 @@ namespace WebApplication1.Controllers
                           .Include(po => po.ProjectCategory)
                            .Include(po => po.QualityLevel)
                              .Include(po => po.Currency)
+
+                              .Include(po => po.JobStage)
               .Where(po => po.Jobid == jobid)
               .FirstOrDefaultAsync();
                 if (issueheader == null)
@@ -4611,12 +4744,72 @@ namespace WebApplication1.Controllers
         }
 
 
+        [HttpGet("GetAllApprovedpolistforinspection")]
+
+        public async Task<IActionResult> GetAllApprovedpolistforinspection()
+        {
+            var prdetails = await (from po in dbcontext.PO
+                                   join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
+
+                                   join pp in dbcontext.Purchasedetails on po.Orderid equals pp.orderid
+
+                                   join re in dbcontext.ReceivedEntryDetails on pp.potblid equals re.potblid    
+                                   where po.postatusid == 3   &&  re.receivedqty > (re.acceptedqty+ re.rejectedqty)
+                                   group po by new { po.Orderid, ss.suppliername, po.Podate, re.RENO } into grouped
+                                   select new
+                                   {
+                                       grouped.Key.Orderid,
+                                       grouped.Key.suppliername,
+                                       grouped.Key.Podate,
+                                       grouped.Key.RENO
+                                   }).ToListAsync();
+
+            if (prdetails == null || !prdetails.Any()) // Handle empty list
+            {
+                return NotFound();
+            }
+
+            return Ok(prdetails);
+        }
 
 
 
 
+        [HttpGet("GetAllApprovedpendingmaterilinspectionbasedonreno")]
 
+        public async Task<IActionResult> GetAllApprovedpendingmaterilinspectionbasedonreno(int reno)
+        {
+            var prdetails = await (from po in dbcontext.PO
+                                   join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
+                                   join pp in dbcontext.Purchasedetails on po.Orderid equals pp.orderid
+                                   join re in dbcontext.ReceivedEntryDetails on pp.potblid equals re.potblid
+                                join ii in dbcontext.Product on re.itemid equals  ii.itemid
+                                   where po.postatusid == 3 && re.receivedqty > (re.acceptedqty + re.rejectedqty)
+                                   && re.RENO  ==reno
+                                   group po by new { po.Orderid, ss.suppliername, po.Podate, re.RENO , re.acceptedqty, re.receivedqty, re.rejectedqty, re.holdqty, re.itemid, ii.itemname} into grouped
+                                   select new
+                                   {
+                                       grouped.Key.Orderid,
+                                       grouped.Key.suppliername,
+                                       grouped.Key.Podate,
+                                       grouped.Key.RENO,
+                                       grouped.Key.acceptedqty,
+                                       grouped.Key.receivedqty,
+                                       grouped.Key.holdqty,
+                                       grouped.Key.rejectedqty,
+                                       grouped.Key.itemname,
+                                       grouped.Key.itemid,
+                                       pending = (grouped.Key.receivedqty -(grouped.Key.acceptedqty + grouped.Key.holdqty)),
 
+                                   }).ToListAsync();
+
+            if (prdetails == null || !prdetails.Any()) // Handle empty list
+            {
+                return NotFound();
+            }
+
+            return Ok(prdetails);
+        }
 
 
 
@@ -4827,6 +5020,14 @@ namespace WebApplication1.Controllers
 
 
 
+        public class POSummary
+        {
+            public string budgetheadername { get; set; }
+            public decimal Totalamt { get; set; }
+
+            public int  budgetheaderid { get; set; }
+
+        }
 
 
 
@@ -5914,6 +6115,798 @@ namespace WebApplication1.Controllers
 
 
 
+
+        [HttpGet("GetMaxmino")]
+        public async Task<int?> GetMaxmino()
+
+        {
+            // Get the maximum PR ID from the PurchaseRequest table
+            int maxmino = (await dbcontext.Materialinspection.MaxAsync(pr => (int?)pr.mid) ?? 1000) + 1;
+            return maxmino;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetPOdetailsfromreno")]
+
+        public async Task<IActionResult> GetPOdetailsfromreno(int reno)
+        {
+            if (reno <= 0)
+            {
+                return BadRequest("Invalid reno");
+            }
+
+            var podetails = await (from aa in dbcontext.PO
+                                           join re in dbcontext.ReceivedEntry on aa.Orderid equals re.pono
+                                       
+                                           where re.REID == reno
+                                           select new
+                                           {
+                                               jobid = aa.jobid,
+                                               pono = aa.Orderid,
+                                         
+                                         
+
+
+
+                                           })
+                                           .FirstOrDefaultAsync();
+
+            if (podetails == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(podetails);
+        }
+
+
+
+
+
+
+
+
+        //    [HttpPost("AddorupdateMI")]
+        //    public async Task<IActionResult> AddorupdateMI(AddorUpdateMIHeaderandDetails dto)
+        //    {
+        //        using (var transaction = await dbcontext.Database.BeginTransactionAsync()) // Start a transaction
+        //        {
+        //            try
+        //            {
+        //                var unregisteredmi = await dbcontext.Materialinspection
+        //                    .Where(e => e.isregistered == 0 && e.mid != dto.mid)
+        //                    .ToListAsync();
+
+        //                if (unregisteredmi.Any())
+        //                {
+        //                    return Ok(new { message = "unreg" });
+        //                }
+
+        //                // Find existing received entry
+        //                var exitingmi = await dbcontext.Materialinspection
+        //                    .FirstOrDefaultAsync(e => e.mid == dto.mid);
+
+        //                if (exitingmi != null)
+        //                {
+        //                    // Update existing entry
+        //                    exitingmi.pono = dto.pono;
+        //                    exitingmi.mid = dto.mid;
+        //                    exitingmi.midate = dto.midate;
+        //                    exitingmi.reid = dto.reid;
+        //                    exitingmi.remarks = dto.remarks;
+        //                    exitingmi.colorcoding = dto.colorcoding;
+        //                    exitingmi.correlation = dto.correlation;
+        //                    exitingmi.phycondn = dto.phycondn;
+        //                    exitingmi.heattags = dto.heattags;
+        //                    exitingmi.tcverify = dto.tcverify;
+        //                    exitingmi.siteidentification = dto.siteidentification;
+        //                    exitingmi.tcverify = dto.tcverify;
+
+
+        //                    exitingmi.materialsent = dto.materialsent;  
+        //                    dbcontext.Materialinspection.Update(exitingmi);
+        //                }
+        //                else
+        //                {
+        //                    // Create a new received entry
+        //                    exitingmi = new Materialinspection
+        //                    {
+        //                        pono = dto.pono,
+        //                        mid = dto.mid,
+        //                        midate = dto.midate,
+        //                        reid = dto.reid,
+        //                        remarks = dto.remarks,
+        //                        colorcoding = dto.colorcoding,
+        //                        correlation = dto.correlation,
+        //                        phycondn = dto.phycondn,
+        //                        heattags = dto.heattags,
+        //                        tcverify = dto.tcverify,
+        //                        siteidentification = dto.siteidentification,
+        //                        materialsent = dto.materialsent,
+        //                        qtyverified = dto.qtyverified,
+
+        //                    };
+        //                        dbcontext.Materialinspection.Update(exitingmi);
+
+
+        //                    await dbcontext.Materialinspection.AddAsync(exitingmi);
+        //                }
+
+        //                await dbcontext.SaveChangesAsync(); // Save received entry
+
+        //                // Insert or update details
+        //                foreach (var item in dto.midetails)
+        //                {
+        //                    var detail = new MIdetails
+        //                    {
+        //                       mid =item.mid,
+        //                       itemid =item.itemid,
+        //                        acceptedqty = item.acceptedqty,
+        //                        rejectedqty = item.rejectedqty,
+        //                        holdqty =item.holdqty
+
+        //};
+
+        //                    await dbcontext.MIdetails.AddAsync(detail);
+        //                }
+
+        //                await dbcontext.SaveChangesAsync(); // Save received entry details
+
+        //                await transaction.CommitAsync(); // Commit transaction if everything succeeds
+
+        //                return Ok(new { Message = "MI Details  saved successfully." });
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                await transaction.RollbackAsync(); // Rollback transaction on failure
+
+        //                return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+        //            }
+
+
+        //        }
+        //    }
+
+
+        [HttpPost("AddorupdateMI")]
+        public async Task<IActionResult> AddorupdateMI(AddorUpdateMIHeaderandDetails dto)
+        {
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Check if there are any unregistered MI entries (other than the one being saved)
+                    var unregisteredmi = await dbcontext.Materialinspection
+                        .Where(e => e.isregistered == 0 && e.mid != dto.mid)
+                        .ToListAsync();
+
+                    if (unregisteredmi.Any())
+                    {
+                        return Ok(new { message = "unreg" });
+                    }
+
+                    // Check if this MI already exists
+                    var exitingmi = await dbcontext.Materialinspection
+                        .FirstOrDefaultAsync(e => e.mid == dto.mid);
+
+                    if (exitingmi != null)
+                    {
+                        // Update existing MI entry
+                        exitingmi.pono = dto.pono;
+                        exitingmi.mid = dto.mid;
+                        exitingmi.midate = dto.midate;
+                        exitingmi.reid = dto.reid;
+                        exitingmi.remarks = dto.remarks;
+                        exitingmi.colorcoding = dto.colorcoding;
+                        exitingmi.correlation = dto.correlation;
+                        exitingmi.phycondn = dto.phycondn;
+                        exitingmi.heattags = dto.heattags;
+                        exitingmi.tcverify = dto.tcverify;
+                        exitingmi.siteidentification = dto.siteidentification;
+                        exitingmi.materialsent = dto.materialsent;
+                        exitingmi.qtyverified = dto.qtyverified;
+
+                        dbcontext.Materialinspection.Update(exitingmi);
+                    }
+                    else
+                    {
+                        // Create new MI entry
+                        exitingmi = new Materialinspection
+                        {
+                            pono = dto.pono,
+                            mid = dto.mid,
+                            midate = dto.midate,
+                            reid = dto.reid,
+                            remarks = dto.remarks,
+                            colorcoding = dto.colorcoding,
+                            correlation = dto.correlation,
+                            phycondn = dto.phycondn,
+                            heattags = dto.heattags,
+                            tcverify = dto.tcverify,
+                            siteidentification = dto.siteidentification,
+                            materialsent = dto.materialsent,
+                            qtyverified = dto.qtyverified,
+                        };
+
+                        await dbcontext.Materialinspection.AddAsync(exitingmi);
+                    }
+
+                    await dbcontext.SaveChangesAsync();
+
+                    // Process MI Details (Update if exists, else insert)
+                    foreach (var item in dto.midetails)
+                    {
+                        var existingDetail = await dbcontext.MIdetails
+                            .FirstOrDefaultAsync(x => x.mid == item.mid && x.itemid == item.itemid);
+
+                        if (existingDetail != null)
+                        {
+                            // Update existing record
+                            existingDetail.acceptedqty = item.acceptedqty;
+                            existingDetail.rejectedqty = item.rejectedqty;
+                            existingDetail.holdqty = item.holdqty;
+
+                            dbcontext.MIdetails.Update(existingDetail);
+                        }
+                        else
+                        {
+                            // Add new record
+                            var detail = new MIdetails
+                            {
+                                mid = item.mid,
+                                itemid = item.itemid,
+                                acceptedqty = item.acceptedqty,
+                                rejectedqty = item.rejectedqty,
+                                holdqty = item.holdqty
+                            };
+
+                            await dbcontext.MIdetails.AddAsync(detail);
+                        }
+                    }
+
+                    await dbcontext.SaveChangesAsync(); // Save details
+                    await transaction.CommitAsync(); // Commit transaction
+
+                    return Ok(new { Message = "MI Details saved successfully." });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(); // Rollback on failure
+
+                    return StatusCode(500, new
+                    {
+                        Message = "An error occurred while processing your request.",
+                        Error = ex.Message
+                    });
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+        //[HttpGet("GetMIdetailsbymino")]
+        //public async Task<IActionResult> GetMIdetailsbymino([FromQuery] int mino)
+        //{
+        //    var miheaderdetails = await dbcontext.Materialinspection
+        //        .Where(p => p.mid == mino) // Assuming PONO is a property in your Purchasedetails model
+        //        .ToListAsync();
+        //    return Ok(miheaderdetails);
+        //}
+
+
+
+        [HttpGet("GetMIdetailsbymino")]
+        public async Task<IActionResult> GetMIdetailsbymino([FromQuery] int mino)
+        
+        {
+            var miHeaderDetails = await (from mi in dbcontext.Materialinspection
+                                         join po in dbcontext.PO on mi.pono equals po.Orderid
+                                         where mi.mid == mino
+                                         select new
+                                         {
+                                             mi.mid,
+                                             mi.pono,
+                                             mi.midate,
+                                             mi.reid,
+                                             mi.remarks,
+                                             mi.colorcoding,
+                                             mi.correlation,
+                                             mi.phycondn,
+                                             mi.heattags,
+                                             mi.tcverify,
+                                             mi.siteidentification,
+                                             mi.materialsent,
+                                             mi.qtyverified,
+                                             jobid = po.jobid,
+                                             mi.isregistered
+                                         }).  ToListAsync();
+
+            return Ok(miHeaderDetails);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetMILineDetailsbymiD")]
+        public async Task<IActionResult> GetMILineDetailsbymiD(int mino)
+        {
+            var midetails = await dbcontext.MIdetails
+     .Where(p => p.mid == mino)
+     .Include(p => p.Product) // Assuming 'Product' is the navigation property in 'Purchasedetail'
+     .ToListAsync();
+            return Ok(midetails);
+        }
+
+
+
+        //public async Task<IActionResult> GetAllApprovedpendingmaterilinspectionbasedonren2o(int reno)
+        //{
+        //    var prdetails = await (from po in dbcontext.PO
+        //                           join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
+        //                           join pp in dbcontext.Purchasedetails on po.Orderid equals pp.orderid
+        //                           join re in dbcontext.ReceivedEntryDetails on pp.potblid equals re.potblid
+        //                           join ii in dbcontext.Product on re.itemid equals ii.itemid
+        //                           where po.postatusid == 3 && re.receivedqty > (re.acceptedqty + re.rejectedqty)
+        //                           && re.RENO == reno
+        //                           group po by new { po.Orderid, ss.suppliername, po.Podate, re.RENO, re.acceptedqty, re.receivedqty, re.rejectedqty, re.holdqty, re.itemid, ii.itemname } into grouped
+        //                           select new
+        //                           {
+        //                               grouped.Key.Orderid,
+        //                               grouped.Key.suppliername,
+        //                               grouped.Key.Podate,
+        //                               grouped.Key.RENO,
+        //                               grouped.Key.acceptedqty,
+        //                               grouped.Key.receivedqty,
+        //                               grouped.Key.holdqty,
+        //                               grouped.Key.rejectedqty,
+        //                               grouped.Key.itemname,
+        //                               grouped.Key.itemid,
+        //                               pending = (grouped.Key.receivedqty - (grouped.Key.acceptedqty + grouped.Key.holdqty)),
+
+        //                           }).ToListAsync();
+
+        //    if (prdetails == null || !prdetails.Any()) // Handle empty list
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(prdetails);
+        //}
+
+        [HttpGet("GetpendinglineitemstobeaddedtoMI")]
+        public async Task<IActionResult> GetpendinglineitemstobeaddedtoMI([FromQuery] int mino, int reno)
+        {
+
+            //            var midetails = await (from mi in dbcontext.Materialinspection
+
+            //                                   join mid in dbcontext.MIdetails on mi.mid equals mid.mid
+
+            //where mi.mid ==mino
+
+            //                                   select new
+            //                                   {
+
+            //                                      mid.itemid
+
+
+            //                                   }).ToListAsync();
+
+            var midetailsItemIds = await (
+      from mi in dbcontext.Materialinspection
+      join mid in dbcontext.MIdetails on mi.mid equals mid.mid
+      where mi.mid == mino
+      select mid.itemid
+  ).ToListAsync();
+
+
+
+            var prdetails = await (from po in dbcontext.PO
+                                   join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
+                                   join pp in dbcontext.Purchasedetails on po.Orderid equals pp.orderid
+                                   join re in dbcontext.ReceivedEntryDetails on pp.potblid equals re.potblid
+                                   join ii in dbcontext.Product on re.itemid equals ii.itemid
+                                   where po.postatusid == 3 && re.receivedqty > (re.acceptedqty + re.holdqty)
+                                   && re.RENO == reno && !midetailsItemIds.Contains(re.itemid)
+                                   group po by new { po.Orderid, ss.suppliername, po.Podate, re.RENO, re.acceptedqty, re.receivedqty, re.rejectedqty, re.holdqty, re.itemid, ii.itemname } into grouped
+                                   select new
+                                   {
+                                       grouped.Key.Orderid,
+                                       grouped.Key.suppliername,
+                                       grouped.Key.Podate,
+                                       grouped.Key.RENO,
+                                       grouped.Key.acceptedqty,
+                                       grouped.Key.receivedqty,
+                                       grouped.Key.holdqty,
+                                       grouped.Key.rejectedqty,
+                                       grouped.Key.itemname,
+                                       grouped.Key.itemid,
+                                       pending = (grouped.Key.receivedqty - (grouped.Key.acceptedqty + grouped.Key.holdqty)),
+
+                                   }).ToListAsync();
+
+            if (prdetails == null || !prdetails.Any()) // Handle empty list
+            {
+                return Ok(new { message = "nodatafound" });
+            }
+
+            return Ok(prdetails);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+        [HttpDelete("deletemidetails")]
+        public async Task<bool> deletemidetails(int mitblid)
+        {
+            var entry = await dbcontext.MIdetails.FindAsync(mitblid);
+            if (entry == null)
+            {
+                return false;
+            }
+
+            dbcontext.MIdetails.Remove(entry);
+            await dbcontext.SaveChangesAsync();
+            return true;
+        }
+
+
+
+
+
+
+        [HttpPost("RegisterMI")]
+        public async Task<IActionResult> RegisterMI(int mid)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_RegisterMI_UpdateQuantities", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@mid", mid);
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return Ok(new { message = "MI Registered successfully and quantities updated." });
+            }
+            catch (Exception ex)
+            {
+                // Log the error (replace with proper logging)
+                Console.WriteLine($"Error in RegisterMI: {ex.Message}");
+                return StatusCode(500, new { message = "An error occurred during MI registration.", error = ex.Message });
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetPurchasesummarycostingsheet")]
+        public async Task<ActionResult<List<POSummary>>> GetPurchasesummarycostingsheet(int jobid)
+        {
+            var posummary = new List<POSummary>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetPurchasesummarycostingpage", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@jobid", jobid);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                posummary.Add(new POSummary
+                                {
+                                    budgetheadername = reader["budgetheadername"].ToString(),
+                                    
+                                    Totalamt = reader.IsDBNull(reader.GetOrdinal("Totalamt"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["Totalamt"]),
+                                    budgetheaderid = reader.GetInt32(reader.GetOrdinal("budgetheaderid")),
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (posummary.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(posummary);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching PO summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the PO summary.");
+            }
+        }
+
+
+
+
+
+
+
+        [HttpGet("Getrpodetaillineitemsjobsummary")]
+        public async Task<IActionResult> Getrpodetaillineitemsjobsummary(int jobid, int budgetheaderid)
+        {
+            if (jobid <= 0)
+            {
+                return BadRequest("Invalid jobid");
+            }
+
+            var issuedetails = await (from aa in dbcontext.PO
+                                      join bb in dbcontext.Purchasedetails on aa.Orderid equals bb.orderid
+                                      join ii in dbcontext.Product on bb.poitemid equals ii.itemid
+                                      join  ss in dbcontext.Supplier on aa.supplierid equals ss.supplierid
+                                      where aa.jobid == jobid && ii.itembudgetheaderid == budgetheaderid
+
+                                  
+
+                                      select new
+                                      {
+                                          orderid = aa.Orderid,
+                                          suppliername=ss.suppliername
+                                          
+
+
+                                      })
+                                           .ToListAsync();
+
+            if (!issuedetails.Any())
+            {
+                return NotFound("PO   details not found");
+            }
+
+            return Ok(issuedetails);
+        }
+
+
+        [HttpGet("GetPrnosFromPrpo")]
+        public async Task<ActionResult<List<int>>> GetPrnosFromPrpoAsync(int pono)
+        
+        {
+            var prnos = new List<int>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetPrnosfromprpo", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@pono", pono);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                prnos.Add(reader.GetInt32(reader.GetOrdinal("prid")));
+                            }
+                        }
+                    }
+                }
+
+                if (prnos.Count == 0)
+                {
+                    return NotFound(new { message = "No PR numbers found for the given PO number." });
+                }
+
+                return Ok(prnos);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching PR numbers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the PR numbers.");
+            }
+        }
+
+
+
+
+        [HttpGet("GetGRNnosfrompono")]
+        public async Task<ActionResult<List<int>>> GetGRNnosfrompono(int pono)
+
+        {
+            var grnnos = new List<int>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetGRNSnosofPO", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@pono", pono);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                grnnos.Add(reader.GetInt32(reader.GetOrdinal("grnno")));
+                            }
+                        }
+                    }
+                }
+
+                if (grnnos.Count == 0)
+                {
+                    return Ok(new { message = "No GRN numbers found for the given PO number." });
+                   // return NotFound(new { message = "No GRN numbers found for the given PO number." });
+                }
+
+                return Ok(grnnos);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching GRN numbers: {ex.Message}");
+               // return StatusCode(500, "An error occurred while fetching the GRN numbers.");
+                return Ok(new { message = "An error occurred while fetching the GRN numbers" });
+            }
+        }
+
+
+
+        [HttpGet("Getminosfrompono")]
+        public async Task<ActionResult<List<int>>> Getminosfrompono(int pono)
+
+        {
+            var grnnos = new List<int>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetMInosforpos", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@pono", pono);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                grnnos.Add(reader.GetInt32(reader.GetOrdinal("mid")));
+                            }
+                        }
+                    }
+                }
+
+                if (grnnos.Count == 0)
+                {
+                    return NotFound(new { message = "No MI numbers found for the given PO number." });
+                }
+
+                return Ok(grnnos);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching GRN numbers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the GRN numbers.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetRenosfrompono")]
+        public async Task<ActionResult<List<int>>> GetRenosfrompono(int pono)
+
+        {
+            var grnnos = new List<int>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_Getreceivedentryforpos", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@pono", pono);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                grnnos.Add(reader.GetInt32(reader.GetOrdinal("REID")));
+                            }
+                        }
+                    }
+                }
+
+                if (grnnos.Count == 0)
+                {
+                    return NotFound(new { message = "No RENO numbers found for the given PO number." });
+                }
+
+                return Ok(grnnos);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching RE numbers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the RE numbers.");
+            }
+        }
 
 
 

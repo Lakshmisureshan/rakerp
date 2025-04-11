@@ -59,7 +59,7 @@ namespace WebApplication1.Models.Domain
         public int postatusid { get; set; } = 1;
 
 
-
+        public decimal discount { get; set; }
 
     }
 }

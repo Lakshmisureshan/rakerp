@@ -1313,6 +1313,35 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpPost("submitpr")]
+        public async Task<IActionResult> SubmitPr(int prid)
+        {
+            using var transaction = await dbcontext.Database.BeginTransactionAsync();
+
+            try
+            {
+                var pr = await dbcontext.PR.FirstOrDefaultAsync(p => p.PRID == prid);
+                if (pr == null)
+                {
+                    return NotFound("PR not found.");
+                }
+
+                pr.prstatusid = 2;
+               // Optional: track modified date
+
+                await dbcontext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return Ok(new { message = "PR status updated to 2" });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                // Optionally log ex here
+                return StatusCode(500, "Error updating PR status.");
+            }
+        }
+
 
 
 

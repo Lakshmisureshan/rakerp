@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250409065711_sd,fnvsdf")]
+    partial class sdfnvsdf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2222fffe-2baa-492a-bb9c-def8ac8a1d5a",
+                            ConcurrencyStamp = "a12ffcab-924b-4969-b84e-4f9847c6e87f",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIqZH/YIhzWcV2Z8N+HyLn/hgbAJwlIe5pF0CFsTaoEyCVByroibX+QGftf1J8Ugqg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECwy1mVi1wPbclvnU5IzcnlIljbRYAScwkOQl887l10f2ekwQJn2CAUa/xKMFGJN6Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e32b48cf-ac87-4e71-82f8-f5483f5ea3d4",
+                            SecurityStamp = "cff86d59-cdd0-42df-ad45-cf22d21a27ca",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1614,9 +1616,6 @@ namespace WebApplication1.Migrations
                     b.Property<DateTime?>("deliverydate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("discount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<bool>("extendedwarraty3years")
                         .HasColumnType("bit");
 
@@ -1873,10 +1872,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("categoryid")
                         .HasColumnType("int");
 
-                    b.Property<string>("itembname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("itembudgetheaderid")
                         .HasColumnType("int");
 
@@ -1897,12 +1892,6 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("productcode")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("reorderlevel")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("reorderqty")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("standarduomid")
                         .HasColumnType("int");

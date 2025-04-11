@@ -76,14 +76,92 @@ namespace WebApplication1.Controllers
 
 
 
+        //[HttpPost("AddPrDetails")]
+        //public async Task<IActionResult> AddPrDetails(AddPrdetails request)
+        //{
+        //    using var transaction = await dbcontext.Database.BeginTransactionAsync(); // Begin transaction
+
+        //    try
+        //    {
+        //        // Step 1: Create and add the PRDetails entity
+        //        var prdetails = new PRDetails
+        //        {
+        //            bomid = request.bomid,
+        //            prid = request.prid,
+        //            pritemid = request.pritemid,
+        //            prqty = request.prqty,
+        //            pruomid = request.pruomid
+        //        };
+
+        //        await dbcontext.PRDetails.AddAsync(prdetails);
+
+        //        // Step 2: Retrieve the corresponding BOM record
+        //        var bom = await dbcontext.Bom.FindAsync(request.bomid);
+
+        //        if (bom == null)
+        //        {
+        //            return NotFound(new { Message = "BOM not found" });
+        //        }
+
+        //        // Step 3: Update the BOM quantity (add new PR created qty to the existing one)
+        //        bom.prcreatedqty = (bom.prcreatedqty ) + request.prqty;
+
+        //        // Step 4: Save changes to both PRDetails and BOM table
+        //        await dbcontext.SaveChangesAsync();
+
+        //        // Commit transaction
+        //        await transaction.CommitAsync();
+
+        //        // Step 5: Prepare the response DTO
+        //        var response = new PrdetailsDto
+        //        {
+        //            bomid = prdetails.bomid,
+        //            prid = prdetails.prid,
+        //            prqty = prdetails.prqty,
+        //            pritemid = prdetails.pritemid,
+        //        };
+
+        //        return Ok(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await transaction.RollbackAsync(); // Rollback transaction on error
+        //        return StatusCode(500, new { Message = "An error occurred while processing the request", Error = ex.Message });
+        //    }
+        //}
+
+
+
+
+
         [HttpPost("AddPrDetails")]
         public async Task<IActionResult> AddPrDetails(AddPrdetails request)
         {
-            using var transaction = await dbcontext.Database.BeginTransactionAsync(); // Begin transaction
+            using var transaction = await dbcontext.Database.BeginTransactionAsync();
 
             try
             {
-                // Step 1: Create and add the PRDetails entity
+                // Step 1: Retrieve the BOM record
+                var bom = await dbcontext.Bom.FindAsync(request.bomid);
+
+                if (bom == null)
+                {
+                    return NotFound(new { Message = "BOM not found" });
+                }
+
+                // ✅ Check 1: The prqty itself should not be greater than the bomqty
+                if (request.prqty > bom.bomqty)
+                {
+                    return BadRequest(new { Message = "PR quantity exceeds BOM quantity." });
+                }
+
+                // ✅ Check 2: The total PR created qty should not exceed BOM qty
+                if ((bom.prcreatedqty + request.prqty) > bom.bomqty)
+                {
+                    return BadRequest(new { Message = "Total PR created quantity exceeds BOM quantity." });
+                }
+
+                // Step 2: Add new PRDetails record
                 var prdetails = new PRDetails
                 {
                     bomid = request.bomid,
@@ -95,24 +173,14 @@ namespace WebApplication1.Controllers
 
                 await dbcontext.PRDetails.AddAsync(prdetails);
 
-                // Step 2: Retrieve the corresponding BOM record
-                var bom = await dbcontext.Bom.FindAsync(request.bomid);
+                // Step 3: Update BOM's prcreatedqty
+                bom.prcreatedqty += request.prqty;
 
-                if (bom == null)
-                {
-                    return NotFound(new { Message = "BOM not found" });
-                }
-
-                // Step 3: Update the BOM quantity (add new PR created qty to the existing one)
-                bom.prcreatedqty = (bom.prcreatedqty ) + request.prqty;
-
-                // Step 4: Save changes to both PRDetails and BOM table
+                // Step 4: Save changes and commit
                 await dbcontext.SaveChangesAsync();
-
-                // Commit transaction
                 await transaction.CommitAsync();
 
-                // Step 5: Prepare the response DTO
+                // Step 5: Prepare and return response
                 var response = new PrdetailsDto
                 {
                     bomid = prdetails.bomid,
@@ -125,16 +193,10 @@ namespace WebApplication1.Controllers
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(); // Rollback transaction on error
+                await transaction.RollbackAsync();
                 return StatusCode(500, new { Message = "An error occurred while processing the request", Error = ex.Message });
             }
         }
-
-
-
-
-
-
 
 
 

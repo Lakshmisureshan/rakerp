@@ -76,6 +76,9 @@ namespace WebApplication1.Models.Domain
         public int bomjobstatusid2 { get; set; } = 0;
 
         public decimal  totalinvoiceinbasecurrency { get; set; } = 0;
+        public JobStage JobStage { get; set; }
+        public int jobstageid { get; set; }
+
 
 
 

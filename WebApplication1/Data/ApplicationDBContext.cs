@@ -90,6 +90,14 @@ namespace WebApplication1.Data
 
         public DbSet<estimation> estimation { get; set; }
 
+        public DbSet<Materialinspection> Materialinspection { get; set; }
+
+        public DbSet<MIdetails> MIdetails { get; set; }
+
+        public DbSet<JobStage> JobStage { get; set; }
+
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1389,9 +1397,25 @@ base.OnModelCreating(modelBuilder);
             base.OnModelCreating(modelBuilder);
 
 
+            modelBuilder.Entity<MIdetails>()
+           .HasOne(pd => pd.Materialinspection)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.mid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
-            modelBuilder.Entity<estimation>()
+
+            modelBuilder.Entity<MIdetails>()
+           .HasOne(pd => pd.Product)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.itemid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+                        modelBuilder.Entity<estimation>()
   .HasOne(pd => pd.Currency)
   .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
   .HasForeignKey(pd => pd.currencyid)
@@ -1432,6 +1456,83 @@ base.OnModelCreating(modelBuilder);
 .HasForeignKey(pd => pd.uomid)
 .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+      modelBuilder.Entity<Job>()
+     .HasOne(pd => pd.JobStage)
+     .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+     .HasForeignKey(pd => pd.jobstageid)
+     .OnDelete(DeleteBehavior.NoAction);
+      base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            modelBuilder.Entity<Materialinspection>()
+           .HasOne(pd => pd.PO)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.pono)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<Materialinspection>()
+         .HasOne(pd => pd.receivedEntry)
+         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+         .HasForeignKey(pd => pd.reid)
+         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

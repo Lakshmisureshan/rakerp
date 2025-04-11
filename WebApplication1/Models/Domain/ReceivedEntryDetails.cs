@@ -16,5 +16,11 @@ namespace WebApplication1.Models.Domain
 
         public int potblid  { get; set; }
 
+        public decimal acceptedqty { get; set; }
+
+        public decimal rejectedqty { get; set; }
+
+        public decimal holdqty { get; set; }
+
     }
 }

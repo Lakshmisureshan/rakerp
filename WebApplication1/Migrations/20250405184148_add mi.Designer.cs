@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250405184148_add mi")]
+    partial class addmi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2222fffe-2baa-492a-bb9c-def8ac8a1d5a",
+                            ConcurrencyStamp = "5440739c-e1c8-4638-90bc-7302974f8289",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIqZH/YIhzWcV2Z8N+HyLn/hgbAJwlIe5pF0CFsTaoEyCVByroibX+QGftf1J8Ugqg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEI14WRH904cLetYwi59g05LnS2yXXropyoPQH/FOqBWTQuGZtYJLF6YXYzyNsev/7A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e32b48cf-ac87-4e71-82f8-f5483f5ea3d4",
+                            SecurityStamp = "05932362-c4a3-44e9-8c71-1279cf09e3c6",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1320,9 +1322,6 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("jobstageid")
-                        .HasColumnType("int");
-
                     b.Property<int>("jobtypeid")
                         .HasColumnType("int");
 
@@ -1394,8 +1393,6 @@ namespace WebApplication1.Migrations
 
                     b.HasIndex("isldapplicable");
 
-                    b.HasIndex("jobstageid");
-
                     b.HasIndex("jobtypeid");
 
                     b.HasIndex("manufacturingbayid");
@@ -1409,20 +1406,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("qualitylevelid");
 
                     b.ToTable("Job");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.JobStage", b =>
-                {
-                    b.Property<int>("jobstageid")
-                        .HasColumnType("int");
-
-                    b.Property<string>("jobstagename")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("jobstageid");
-
-                    b.ToTable("JobStage");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.JobType", b =>
@@ -1513,38 +1496,6 @@ namespace WebApplication1.Migrations
                     b.ToTable("Materialinspection");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Domain.MIdetails", b =>
-                {
-                    b.Property<int>("mitblid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("mitblid"), 1L, 1);
-
-                    b.Property<decimal>("acceptedqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("holdqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("itemid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("mid")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("rejectedqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("mitblid");
-
-                    b.HasIndex("itemid");
-
-                    b.HasIndex("mid");
-
-                    b.ToTable("MIdetails");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Domain.PaymenttermsDays", b =>
                 {
                     b.Property<int>("paydaysid")
@@ -1613,9 +1564,6 @@ namespace WebApplication1.Migrations
 
                     b.Property<DateTime?>("deliverydate")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("discount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("extendedwarraty3years")
                         .HasColumnType("bit");
@@ -1873,10 +1821,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("categoryid")
                         .HasColumnType("int");
 
-                    b.Property<string>("itembname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("itembudgetheaderid")
                         .HasColumnType("int");
 
@@ -1897,12 +1841,6 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("productcode")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("reorderlevel")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("reorderqty")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("standarduomid")
                         .HasColumnType("int");
@@ -2011,12 +1949,6 @@ namespace WebApplication1.Migrations
                     b.Property<decimal>("inspacceptedqty")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("inspholdqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("insprejectedqty")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("make")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2105,12 +2037,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("RENO")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("acceptedqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("holdqty")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("itemid")
                         .HasColumnType("int");
 
@@ -2118,9 +2044,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("receivedqty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("rejectedqty")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("rtblid");
@@ -2989,12 +2912,6 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.JobStage", "JobStage")
-                        .WithMany()
-                        .HasForeignKey("jobstageid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("WebApplication1.Models.Domain.JobType", "JobType")
                         .WithMany()
                         .HasForeignKey("jobtypeid")
@@ -3035,8 +2952,6 @@ namespace WebApplication1.Migrations
 
                     b.Navigation("Enduser");
 
-                    b.Navigation("JobStage");
-
                     b.Navigation("JobType");
 
                     b.Navigation("ManufacturingBay");
@@ -3069,25 +2984,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("PO");
 
                     b.Navigation("receivedEntry");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.MIdetails", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("itemid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Materialinspection", "Materialinspection")
-                        .WithMany()
-                        .HasForeignKey("mid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Materialinspection");
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.PO", b =>

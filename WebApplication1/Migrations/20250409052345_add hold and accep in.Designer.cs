@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250409052345_add hold and accep in")]
+    partial class addholdandaccepin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2222fffe-2baa-492a-bb9c-def8ac8a1d5a",
+                            ConcurrencyStamp = "3780c34a-c6fa-4884-86a4-1a0595624d30",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIqZH/YIhzWcV2Z8N+HyLn/hgbAJwlIe5pF0CFsTaoEyCVByroibX+QGftf1J8Ugqg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMtn9Pn/H9ywf0vT3JfH0Ed/LPH6N4/xDsjJcn+FA18M96Opfk7gH609ox7RpNmG8A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e32b48cf-ac87-4e71-82f8-f5483f5ea3d4",
+                            SecurityStamp = "098a0cf5-9aa3-4403-ab5b-3ca1e9c6dd92",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1320,9 +1322,6 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("jobstageid")
-                        .HasColumnType("int");
-
                     b.Property<int>("jobtypeid")
                         .HasColumnType("int");
 
@@ -1394,8 +1393,6 @@ namespace WebApplication1.Migrations
 
                     b.HasIndex("isldapplicable");
 
-                    b.HasIndex("jobstageid");
-
                     b.HasIndex("jobtypeid");
 
                     b.HasIndex("manufacturingbayid");
@@ -1409,20 +1406,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("qualitylevelid");
 
                     b.ToTable("Job");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.JobStage", b =>
-                {
-                    b.Property<int>("jobstageid")
-                        .HasColumnType("int");
-
-                    b.Property<string>("jobstagename")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("jobstageid");
-
-                    b.ToTable("JobStage");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.JobType", b =>
@@ -1613,9 +1596,6 @@ namespace WebApplication1.Migrations
 
                     b.Property<DateTime?>("deliverydate")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("discount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("extendedwarraty3years")
                         .HasColumnType("bit");
@@ -1873,10 +1853,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("categoryid")
                         .HasColumnType("int");
 
-                    b.Property<string>("itembname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("itembudgetheaderid")
                         .HasColumnType("int");
 
@@ -1897,12 +1873,6 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("productcode")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("reorderlevel")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("reorderqty")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("standarduomid")
                         .HasColumnType("int");
@@ -2989,12 +2959,6 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.JobStage", "JobStage")
-                        .WithMany()
-                        .HasForeignKey("jobstageid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("WebApplication1.Models.Domain.JobType", "JobType")
                         .WithMany()
                         .HasForeignKey("jobtypeid")
@@ -3034,8 +2998,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Enduser");
-
-                    b.Navigation("JobStage");
 
                     b.Navigation("JobType");
 
