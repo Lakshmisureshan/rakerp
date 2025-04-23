@@ -25,5 +25,25 @@ namespace WebApplication1.Models.Domain
         public decimal reorderqty { get; set; }
         public decimal reorderlevel  { get; set; }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

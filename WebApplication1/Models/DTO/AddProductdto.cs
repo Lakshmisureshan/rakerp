@@ -20,5 +20,20 @@ namespace WebApplication1.Models.DTO
         public int categoryid { get; set; }
         public int subcategoryid { get; set; }
 
+        public string itembname { get; set; }
+        public decimal reorderqty { get; set; }
+        public decimal reorderlevel { get; set; }
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

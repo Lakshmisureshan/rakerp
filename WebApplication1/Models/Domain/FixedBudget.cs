@@ -14,5 +14,11 @@ namespace WebApplication1.Models.Domain
         public decimal fixedamount { get; set; } = 0;
 
         public int  revision { get; set; }
+
+
+        public Job Job { get; set; }
+        public int jobid  { get; set; }
+
+
     }
 }

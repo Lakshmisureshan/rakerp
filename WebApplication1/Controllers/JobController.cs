@@ -178,7 +178,7 @@ namespace WebApplication1.Controllers
                     existingJob.warrantyterms = request.warrantyterms;
                     existingJob.enduserid = request.enduserid;
                     existingJob.jobdescription = request.jobdescription;
-
+                    existingJob.mainjobid = request.mainjobid;
                     dbcontext.Job.Update(existingJob);
                 }
                 else
@@ -213,8 +213,8 @@ namespace WebApplication1.Controllers
                         warrantyterms = request.warrantyterms,
                         enduserid = request.enduserid,
                         jobdescription = request.jobdescription,
+                        mainjobid = request.mainjobid,
 
-                       
                     };
 
                     await dbcontext.Job.AddAsync(job);

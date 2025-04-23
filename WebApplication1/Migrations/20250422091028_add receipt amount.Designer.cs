@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250422091028_add receipt amount")]
+    partial class addreceiptamount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b3c10eb9-da98-4bd8-864e-8529f5e80433",
+                            ConcurrencyStamp = "b88adbcb-ff6b-4965-8d6a-2b3f06e8acb1",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFQOIJQIdEFpDJNIPCK9S1CYYwVUVPu6SREMkfetxvyjdXBjPbY+TwZjY7xR33/FoA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBfS1y/smFXZuVLcO6azM+cwosa6TOiHNYBSmQ14glxEfSQbnWK7ep5h8PBXScUmNA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b5f56b21-30cf-45bc-aaf7-c32c5446d831",
+                            SecurityStamp = "3e2770eb-ce2c-4f48-af56-063c2ad87b77",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1391,9 +1393,6 @@ namespace WebApplication1.Migrations
                     b.Property<int>("totalnumber")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("totalreceivedinbasecurrency")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("warrantyterms")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2129,6 +2128,9 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("invoiceid")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("receiptamount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("receiptid")
                         .HasColumnType("int");

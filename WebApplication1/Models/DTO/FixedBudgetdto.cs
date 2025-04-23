@@ -5,7 +5,7 @@
         public int budgetId { get; set; }
         public decimal fixedamount { get; set; }
         public int revision { get; set; }
-   
+        public int jobid { get; set; }
 
     }
 }

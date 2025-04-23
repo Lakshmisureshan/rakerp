@@ -80,9 +80,9 @@ namespace WebApplication1.Models.Domain
         public int jobstageid { get; set; }
 
 
+        public decimal pruexpense1 { get; set; } = 0;
+        public decimal pruexpense2 { get; set; } = 0;
 
-
-
-
+        public decimal totalreceivedinbasecurrency { get; set; }
     }
 }

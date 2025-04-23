@@ -1,5 +1,6 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ using WebApplication1.Models;
 using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
 using static WebApplication1.Controllers.AuthController;
+using static WebApplication1.Controllers.POController;
 using AddReceivedEntry = WebApplication1.Models.DTO.AddReceivedEntry;
 
 namespace WebApplication1.Controllers
@@ -1788,6 +1790,46 @@ namespace WebApplication1.Controllers
             return maxrenoPlusOne;
         }
 
+
+
+
+
+
+
+
+        [HttpGet("GetMaxReceiptVoucher")]
+        public async Task<int?> GetMaxReceiptVoucher()
+
+        {
+            // Get the maximum PR ID from the PurchaseRequest table
+            int maxrvnoPlusOne = (await dbcontext.ReceiptVoucher.MaxAsync(pr => (int?)pr.receiptid) ?? 5000) + 1;
+
+            return maxrvnoPlusOne;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet("GetpodetailsbyPONO1")]
         public async Task<IActionResult> GetpodetailsbyPONO1([FromQuery] int pono)
         {
@@ -2781,6 +2823,61 @@ namespace WebApplication1.Controllers
 
 
 
+
+
+
+
+        [HttpGet("GetProductdetailsbyitemid")]
+        public async Task<IActionResult> GetProductdetailsbyitemid(int itemid)
+
+        {
+            if (itemid <= 0)
+            {
+                return BadRequest("Invalid");
+            }
+            var podetails = await dbcontext.Product
+                .Include(po => po.BudgettHeader)
+                .Include(po => po.Category)
+                .Include(po => po.SubCategory)
+       .Where(x => x.itemid == itemid)
+       .FirstOrDefaultAsync();
+
+            if (podetails == null)
+            {
+                return NotFound("Product not found");
+            }
+            return Ok(podetails);
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet("GetPRPendingList")]
         public async Task<IActionResult> GetPRPendingList()
         {
@@ -3039,6 +3136,30 @@ namespace WebApplication1.Controllers
             public string itemname { get; set; }
             public int jobid { get; set; }
             public double rate { get; set; }
+
+            public string jobtypename { get; set; }
+
+            public int budgetheaderid { get; set; }
+
+            public string  budgetheadername { get; set; }
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
 
@@ -3130,6 +3251,11 @@ namespace WebApplication1.Controllers
                                        join product in dbcontext.Product on grn.productid equals product.itemid
                                        join currency in dbcontext.Currency on grn.grncurrencyid equals currency.currencyid
                                        join uom in dbcontext.UOM on grn.grnuomid equals uom.uomid
+                                       join jj in dbcontext.Job on grn.jobid equals jj.Jobid
+                                       join jt in dbcontext.JobType on jj.jobtypeid equals jt.jobtypeid
+                                       join bh in dbcontext.BudgettHeader on product.itembudgetheaderid equals bh.budgetheaderid
+
+
                                        where grn.grndate <= targetDate
                                        group grn by new
                                        {
@@ -3141,7 +3267,12 @@ namespace WebApplication1.Controllers
                                            currency.currencyname,
                                            uom.uomname,
                                            currency.exchangerate,
-                                           grn.jobid
+                                           grn.jobid,
+
+
+                                           jt.JobtypeName,
+                                           bh.budgetheadername,
+                                           bh.budgetheaderid
 
                                        } into g
                                        select new
@@ -3153,7 +3284,14 @@ namespace WebApplication1.Controllers
                                            Currency = g.Key.currencyname,
                                            Itemname = g.Key.itemname,
                                            Rate = g.Key.exchangerate,
-                                           jobid = g.Key.jobid
+                                           jobid = g.Key.jobid,
+
+
+                                           jobtypename=g.Key.JobtypeName,
+
+
+                                           budgetheadername =g.Key.budgetheadername,
+                                           budgetheaderid =g.Key.budgetheaderid
                                        }).ToListAsync();
 
             // Total Issued Quantities
@@ -3161,6 +3299,13 @@ namespace WebApplication1.Controllers
                                      join product in dbcontext.Product on issue.productid equals product.itemid
                                      join currency in dbcontext.Currency on issue.issuecurrencyid equals currency.currencyid
                                      join uom in dbcontext.UOM on issue.issueuomid equals uom.uomid
+
+                                     join jj in dbcontext.Job on issue.jobid equals jj.Jobid
+                                     join jt in dbcontext.JobType on jj.jobtypeid equals jt.jobtypeid
+                                     join bh in dbcontext.BudgettHeader on product.itembudgetheaderid equals bh.budgetheaderid
+
+
+
                                      where issue.issuedate <= targetDate
                                      group issue by new
                                      {
@@ -3173,6 +3318,13 @@ namespace WebApplication1.Controllers
                                          uom.uomname,
                                          currency.exchangerate,
                                          issue.jobid,
+                                         jt.JobtypeName,
+                                         bh.budgetheadername,
+                                         bh.budgetheaderid
+
+
+
+
                                      } into g
                                      select new
                                      {
@@ -3183,7 +3335,10 @@ namespace WebApplication1.Controllers
                                          Currency = g.Key.currencyname,
                                          Itemname = g.Key.itemname,
                                          Rate = g.Key.exchangerate,
-                                         jobid = g.Key.jobid
+                                         jobid = g.Key.jobid,
+                                         jobtypename = g.Key.JobtypeName,
+                                         budgetheadername = g.Key.budgetheadername,
+                                         budgetheaderid = g.Key.budgetheaderid
 
 
                                      }).ToListAsync();
@@ -3193,6 +3348,10 @@ namespace WebApplication1.Controllers
                                        join product in dbcontext.Product on returnTrack.productid equals product.itemid
                                        join currency in dbcontext.Currency on returnTrack.issuecurrencyid equals currency.currencyid
                                        join uom in dbcontext.UOM on returnTrack.uomid equals uom.uomid
+
+                                       join jj in dbcontext.Job on returnTrack.jobid equals jj.Jobid
+                                       join jt in dbcontext.JobType on jj.jobtypeid equals jt.jobtypeid
+                                       join bh in dbcontext.BudgettHeader on product.itembudgetheaderid equals bh.budgetheaderid
                                        where returnTrack.issuereturndate <= targetDate
                                        group returnTrack by new
                                        {
@@ -3204,7 +3363,10 @@ namespace WebApplication1.Controllers
                                            currency.currencyname,
                                            uom.uomname,
                                            currency.exchangerate,
-                                           returnTrack.jobid
+                                           returnTrack.jobid,
+                                           jt.JobtypeName,
+                                           bh.budgetheadername,
+                                           bh.budgetheaderid
                                        } into g
                                        select new
                                        {
@@ -3215,7 +3377,11 @@ namespace WebApplication1.Controllers
                                            Currency = g.Key.currencyname,
                                            Itemname = g.Key.itemname,
                                            Rate = g.Key.exchangerate,
-                                           jobid = g.Key.jobid
+                                           jobid = g.Key.jobid,
+                                        
+                                           jobtypename = g.Key.JobtypeName,
+                                           budgetheadername = g.Key.budgetheadername,
+                                           budgetheaderid = g.Key.budgetheaderid
                                        }).ToListAsync();
 
             // Adjust issued quantities by subtracting returned quantities
@@ -3232,7 +3398,13 @@ namespace WebApplication1.Controllers
                     issue.Currency,
                     issue.Itemname,
                     issue.Rate,
-                    issue.jobid
+                    issue.jobid,
+                    issue.jobtypename,
+                    issue.budgetheaderid,
+                    issue.budgetheadername
+
+
+
                 }).ToList();
 
             // Inventory Calculation
@@ -3259,7 +3431,11 @@ namespace WebApplication1.Controllers
                     currency = x.Received.Currency,
                     itemname = x.Received.Itemname,
                     rate = x.Received.Rate,
-                    jobid = x.Received.jobid
+                    jobid = x.Received.jobid,
+                    jobtypename=x.Received.jobtypename  ,
+                    budgetheaderid = x.Received.budgetheaderid,
+                    budgetheadername = x.Received.budgetheadername,
+
                 })
                 .Union(totalIssued
                     .Where(i => !totalReceived.Any(r => r.Invid == i.Invid))
@@ -3273,7 +3449,10 @@ namespace WebApplication1.Controllers
                         currency = i.Currency,
                         itemname = i.Itemname,
                         rate = i.Rate,
-                        jobid = i.jobid
+                        jobid = i.jobid,
+                        jobtypename = i.jobtypename,
+                        budgetheaderid = i.budgetheaderid,
+                        budgetheadername =i.budgetheadername,
                     }))
                 .Union(totalReturned
                     .Where(r => !totalReceived.Any(grn => grn.Invid == r.Invid) && !totalIssued.Any(issue => issue.Invid == r.Invid))
@@ -3286,7 +3465,11 @@ namespace WebApplication1.Controllers
                         currency = r.Currency,
                         itemname = r.Itemname,
                         rate = r.Rate,
-                        jobid = r.jobid
+                        jobid = r.jobid,
+                        jobtypename = r.jobtypename,
+
+                        budgetheaderid = r.budgetheaderid,
+                        budgetheadername =r.budgetheadername,
                     }))
                 .OrderBy(result => result.invid)
                 .ToList();
@@ -4654,21 +4837,21 @@ namespace WebApplication1.Controllers
 
 
 
-        [HttpPost("UploadFile")]
-        public IActionResult UploadFile([FromForm] IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
+        ////[HttpPost("UploadFile")]
+        ////public IActionResult UploadFile([FromForm] IFormFile file)
+        ////{
+        ////    if (file == null || file.Length == 0)
+        ////        return BadRequest("No file uploaded.");
 
-            var filePath = Path.Combine("prUploads", file.FileName);
+        ////    var filePath = Path.Combine("prUploads", file.FileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                file.CopyTo(stream);
-            }
+        ////    using (var stream = new FileStream(filePath, FileMode.Create))
+        ////    {
+        ////        file.CopyTo(stream);
+        ////    }
 
-            return Ok(new { Message = "File uploaded successfully", FileName = file.FileName });
-        }
+        ////    return Ok(new { Message = "File uploaded successfully", FileName = file.FileName });
+        ////}
 
 
 
@@ -5030,6 +5213,53 @@ namespace WebApplication1.Controllers
         }
 
 
+        public class InvoicereceiptPending
+        {
+            public int invoiceno { get; set; }
+            public int  jobid { get; set; }
+            public decimal invoicevalueinbasecurrency { get; set; }
+            public decimal invoicereceipts { get; set; }
+        
+         
+
+
+
+        }
+
+
+        public class Invoicepending
+        {
+            public int jobid { get; set; }
+            public string customername { get; set; }
+            public decimal ordervaluebasecurrency { get; set; }
+            public decimal totalinvoiced { get; set; }
+            public int customerid { get; set; }
+            public decimal balancetobeinvoiced { get; set; }
+            public string jobdescription { get; set; }
+            public string projectname { get; set; }
+
+            public string jobtypename { get; set; }
+
+            
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5039,6 +5269,8 @@ namespace WebApplication1.Controllers
             public int BudgetHeaderId { get; set; }
             public int JobId { get; set; }
             public decimal Amount { get; set; }
+
+            public decimal fixedamount { get; set; }
         }
 
         //[HttpGet("GetBudgetSummary")]
@@ -5124,7 +5356,7 @@ namespace WebApplication1.Controllers
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     await conn.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand("sp_GetBudgetSummary", conn))
+                    using (SqlCommand cmd = new SqlCommand("sp_GetBudgetSummaryrv2", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@jobid", jobId);
@@ -5140,7 +5372,10 @@ namespace WebApplication1.Controllers
 
                                     Amount = reader.IsDBNull(reader.GetOrdinal("Amount"))
                                      ? 0
-                                     : Convert.ToDecimal(reader["Amount"])
+                                     : Convert.ToDecimal(reader["Amount"]),
+                                    fixedamount= reader.IsDBNull(reader.GetOrdinal("fixedamount"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["fixedamount"]),
 
                                 });
                             }
@@ -5333,6 +5568,48 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpPost("addorupdatemiscost")]
+        public async Task<IActionResult> addorupdatemiscost(Addorupdatemiscostdetails dto)
+        {
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync()) // Start a transaction
+            {
+                try
+                {
+
+
+
+
+                    foreach (var item in dto.misdetails)
+                    {
+
+                        // Insert new detail if rtblid doesn't exist
+                        var newmiscost = new Miscost
+                        {
+                            description = item.description,
+                            jobid = item.jobid,
+                            misamount = item.misamount,
+
+
+
+                        };
+
+                        await dbcontext.Miscost.AddAsync(newmiscost);
+                    }
+                    await dbcontext.SaveChangesAsync(); // Save received entry details
+                    await transaction.CommitAsync(); // Commit transaction if everything succeeds
+                    return StatusCode(201, new { Message = "Miscost Entry created successfully." });
+
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(); // Rollback transaction on failure
+
+                    return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+                }
+
+
+            }
+        }
 
 
         [HttpGet("GetInvoicedetailsbyInvoiceno")]
@@ -5790,7 +6067,7 @@ namespace WebApplication1.Controllers
                     // Calculate total invoiced value in base currency
                     decimal totalInvoiced = job.totalinvoiceinbasecurrency;
                     decimal newTotal = totalInvoiced + request.invoiceValue * (decimal)job.exchangerate;
-                    decimal orderValueBaseCurrency = Convert.ToDecimal(job.ordervaluebasecurrency);
+                    decimal orderValueBaseCurrency = Convert.ToDecimal(job.ordervaluebasecurrency)  + Convert.ToDecimal(job.ordervaluebasecurrency) *5/100;
                     if (newTotal > orderValueBaseCurrency)
                     {
                         throw new Exception("Total invoice value exceeds job order value.");
@@ -5947,7 +6224,9 @@ namespace WebApplication1.Controllers
             {
                 budgetId = estimation.budgetId,
                 fixedamount = estimation.fixedamount,
-                revision = newRevision
+                revision = newRevision, 
+                
+                jobid=estimation.jobid
             }).ToList();
 
             // 🔹 Save all new records in a single database operation
@@ -6089,8 +6368,8 @@ namespace WebApplication1.Controllers
                                           unitprice = aa.price,
                                           qty=aa.quantity,
 
-                                          totalpriceinbasecurrency =aa.quantity *  aa.price* Convert.ToDecimal(cc.exchangerate) 
-
+                                          totalpriceinbasecurrency =aa.quantity *  aa.price* Convert.ToDecimal(cc.exchangerate),
+                                          isconvertedtobom =aa.isconvertedtobom
 
 
                                       })
@@ -6690,6 +6969,40 @@ namespace WebApplication1.Controllers
 
 
 
+        //[HttpGet("Getrpodetaillineitemsjobsummary")]
+        //public async Task<IActionResult> Getrpodetaillineitemsjobsummary(int jobid, int budgetheaderid)
+        //{
+        //    if (jobid <= 0)
+        //    {
+        //        return BadRequest("Invalid jobid");
+        //    }
+
+        //    var issuedetails = await (from aa in dbcontext.PO
+        //                              join bb in dbcontext.Purchasedetails on aa.Orderid equals bb.orderid
+        //                              join ii in dbcontext.Product on bb.poitemid equals ii.itemid
+        //                              join  ss in dbcontext.Supplier on aa.supplierid equals ss.supplierid
+        //                              where aa.jobid == jobid && ii.itembudgetheaderid == budgetheaderid
+
+
+
+        //                              select new
+        //                              {
+        //                                  orderid = aa.Orderid,
+        //                                  suppliername=ss.suppliername
+
+
+
+        //                              })
+        //                                   .ToListAsync();
+
+        //    if (!issuedetails.Any())
+        //    {
+        //        return NotFound("PO   details not found");
+        //    }
+
+        //    return Ok(issuedetails);
+        //}
+
         [HttpGet("Getrpodetaillineitemsjobsummary")]
         public async Task<IActionResult> Getrpodetaillineitemsjobsummary(int jobid, int budgetheaderid)
         {
@@ -6701,24 +7014,19 @@ namespace WebApplication1.Controllers
             var issuedetails = await (from aa in dbcontext.PO
                                       join bb in dbcontext.Purchasedetails on aa.Orderid equals bb.orderid
                                       join ii in dbcontext.Product on bb.poitemid equals ii.itemid
-                                      join  ss in dbcontext.Supplier on aa.supplierid equals ss.supplierid
+                                      join ss in dbcontext.Supplier on aa.supplierid equals ss.supplierid
                                       where aa.jobid == jobid && ii.itembudgetheaderid == budgetheaderid
-
-                                  
-
                                       select new
                                       {
-                                          orderid = aa.Orderid,
-                                          suppliername=ss.suppliername
-                                          
-
-
+                                          aa.Orderid,
+                                          ss.suppliername
                                       })
-                                           .ToListAsync();
+                                      .Distinct() // Ensures distinct combinations
+                                      .ToListAsync();
 
             if (!issuedetails.Any())
             {
-                return NotFound("PO   details not found");
+                return NotFound("PO details not found");
             }
 
             return Ok(issuedetails);
@@ -6925,12 +7233,1142 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetAllProductCategories")]
+        public async Task<IActionResult> GetAllProductCategories()
+        {
+          
+        var categorydetails = await dbcontext.Category
+      
+       .ToListAsync();
+
+            if (categorydetails == null)
+            {
+                return NotFound("Category not found");
+            }
+            return Ok(categorydetails);
+
+        }
+
+
+        [HttpGet("GetAllproductsubCategories")]
+        public async Task<IActionResult> GetAllproductsubCategories()
+        {
+            var subcategorydetails = await dbcontext.SubCategory
+
+           .ToListAsync();
+
+            if (subcategorydetails == null)
+            {
+                return NotFound("Sub Category not found");
+            }
+            return Ok(subcategorydetails);
+
+        }
+
+
+
+        [HttpGet("GetMiscostdetailsbyjobid")]
+        public async Task<IActionResult> GetMiscostdetailsbyjobid(int jobid)
+        
+        {
+            if (jobid <= 0)
+            {
+                return BadRequest("Invalid jobid");
+            }
+
+            var misdetails = await (from aa in dbcontext.Miscost
+                                   
+
+                                           where aa.jobid == jobid
+
+
+                                           select new
+                                           {
+
+                                               misid = aa.misid,
+                                               misamount = aa.misamount,
+                                               jobid = aa.jobid,
+                                               description = aa.description,
+                                              
+
+                                           })
+                                           .ToListAsync();
+
+            if (!misdetails.Any())
+            {
+                return NotFound(new { message = "No data found for the provided jobId." });
+            }
+
+            return Ok(misdetails);
+        }
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetStockissuereturndetailsbyjobid")]
+        public async Task<IActionResult> GetStockissuereturndetailsbyjobid(int jobid)
+        {
+            if (jobid <= 0)
+            {
+                return BadRequest("Invalid jobid");
+            }
+
+            var result = await (from d in dbcontext.Issuereturndetails
+                                join h in dbcontext.Issuereturn on d.issuereturnref equals h.issuereturnref
+                                join im in dbcontext.Product on d.productid equals im.itemid
+                                join bh in dbcontext.BudgettHeader on im.itembudgetheaderid equals bh.budgetheaderid
+                                join cc in dbcontext.Currency on d.ircurrencyid equals cc.currencyid
+                                where  h.jobid == jobid
+
+                                && h.isregistered == 1
+                                group new { d, cc } by new { h.jobid, im.itembudgetheaderid, bh.budgetheadername } into g
+                                select new
+                                {
+                                    JobId = g.Key.jobid,
+                                    BudgetHeaderId = g.Key.itembudgetheaderid,
+                                    BudgetHeaderName = g.Key.budgetheadername,
+                                    TotalCost = g.Sum(x => (decimal)x.d.quantityreturned * x.d.irunitprice * (decimal)x.cc.exchangerate)
+                                })
+                     .OrderBy(x => x.JobId)
+                     .ThenBy(x => x.BudgetHeaderId)
+                     .ToListAsync();
+            if (!result.Any())
+            {
+                return NotFound("Invoice registration details not found");
+            }
+
+            return Ok(result);
+        }
+
+
+
+
+        [HttpGet("GetAdditionaljobdetailsbymainjobid")]
+        public async Task<IActionResult> GetAdditionaljobdetailsbymainjobid(int jobid)
+        {
+            if (jobid <= 0)
+            {
+                return BadRequest("Invalid jobid");
+            }
+
+            var result = await dbcontext.Job
+                .Where(j => j.mainjobid == jobid)
+                .Select(j => new
+                {
+                    JobId = j.Jobid,
+                   // example field — include any other fields you want
+                    JobDate = j.jobdate,
+                    ordervalueinbasecurrency = j.ordervaluebasecurrency,
+                    // Add more fields as needed
+                })
+                .OrderBy(j => j.JobId)
+                .ToListAsync();
+
+            if (!result.Any())
+            {
+                return NotFound(new { message = "No data found for the provided jobId." });
+            }
+
+            return Ok(result);
+        }
+
+
+
+
+
+
+        [HttpGet("GetInvoicereceiptpendingreport")]
+        public async Task<ActionResult<List<InvoicereceiptPending>>> GetInvoicereceiptpendingreport()
+        {
+            var InvoicereceiptPending = new List<InvoicereceiptPending>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetInvoiceReceiptPending", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                      
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                InvoicereceiptPending.Add(new InvoicereceiptPending
+                                {
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+                                    invoiceno = reader.GetInt32(reader.GetOrdinal("invoiceno")),
+
+
+
+                                    invoicevalueinbasecurrency = reader.IsDBNull(reader.GetOrdinal("invoicevalueinbasecurrency"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["invoicevalueinbasecurrency"]),
+
+
+                                    invoicereceipts = reader.IsDBNull(reader.GetOrdinal("invoicereceipts"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["invoicereceipts"]),
+
+
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (InvoicereceiptPending.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(InvoicereceiptPending);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+        public class Paymentpending
+        {
+
+            public string  customername { get; set; }
+
+            public int  totalinvoicecount  { get; set; }
+            public decimal totalbalance { get; set; }
+            public int totalpending { get; set; }
+            public int period { get; set; }
+            public int customerid { get; set; }
+        }
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetPaymentpending")]
+        public async Task<ActionResult<List<Paymentpending>>> GetPaymentpending()
+        {
+            var paymentpending  = new List<Paymentpending>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_Getcounttotalregisteredinvoicepercustomer", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                paymentpending.Add(new Paymentpending
+                                {
+                                    customername = reader["customername"].ToString(),
+                                    customerid= reader.GetInt32(reader.GetOrdinal("customerid")),
+                                    totalinvoicecount = reader.GetInt32(reader.GetOrdinal("totalinvoicecount")),
+                                     totalpending= reader.GetInt32(reader.GetOrdinal("totalpending")),
+                                    period = reader.GetInt32(reader.GetOrdinal("period")),
+
+                                    totalbalance = reader.IsDBNull(reader.GetOrdinal("totalbalance"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalbalance"]),
+
+
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (paymentpending.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(paymentpending);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the payment pending.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        public class invoicereceiptpendingdetails
+        {
+
+
+            public int invoiceno { get; set; }
+
+            public int jobid { get; set; }
+
+            public DateTime InvoiceDate { get; set; }
+
+            public DateTime  DueDate { get; set; }
+
+            public decimal  Invoicevalueinbasecurrency { get; set; }
+
+            public decimal Invoicereceipts { get; set; }
+            public decimal totalpending { get; set; }
+
+        }
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetInvoiceReceiptPendingdetailsbycustomerid")]
+        public async Task<ActionResult<List<invoicereceiptpendingdetails>>> GetInvoiceReceiptPendingdetailsbycustomerid(int customerid)
+        {
+            var InvoicereceiptPending = new List<invoicereceiptpendingdetails>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetInvoiceReceiptPendingbycustomerid", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@customerid", customerid);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                InvoicereceiptPending.Add(new invoicereceiptpendingdetails
+                                {
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+                                    invoiceno = reader.GetInt32(reader.GetOrdinal("invoiceno")),
+
+                                    InvoiceDate= reader.GetDateTime(reader.GetOrdinal("InvoiceDate")),
+                                    DueDate = reader.GetDateTime(reader.GetOrdinal("DueDate")),
+                                    Invoicevalueinbasecurrency = reader.IsDBNull(reader.GetOrdinal("Invoicevalueinbasecurrency"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["Invoicevalueinbasecurrency"]),
+
+
+                                    Invoicereceipts = reader.IsDBNull(reader.GetOrdinal("invoicereceipts"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["invoicereceipts"]),
+
+                                    totalpending = reader.IsDBNull(reader.GetOrdinal("totalpending"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalpending"]),
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (InvoicereceiptPending.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(InvoicereceiptPending);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetInvoicependingreport")]
+        public async Task<ActionResult<List<Invoicepending>>> GetInvoicependingreport()
+        {
+            var invoicependig = new List<Invoicepending>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_GetInvoicependingreport", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                invoicependig.Add(new Invoicepending
+                                {
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+                                    customerid = reader.GetInt32(reader.GetOrdinal("customerid")),
+                                    customername = reader["customername"].ToString(),
+
+                                    jobdescription = reader["jobdescription"].ToString(),
+                                    jobtypename = reader["jobtypename"].ToString(),
+                                    projectname = reader["projectname"].ToString(),
+                                    totalinvoiced = reader.IsDBNull(reader.GetOrdinal("totalinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalinvoiced"]),
+                                    ordervaluebasecurrency = reader.IsDBNull(reader.GetOrdinal("ordervaluebasecurrency"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervaluebasecurrency"]),
+
+
+                                    balancetobeinvoiced = reader.IsDBNull(reader.GetOrdinal("balancetobeinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balancetobeinvoiced"]),
+
+
+
+
+
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (invoicependig.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(invoicependig);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+        [HttpGet("getJobOngoingReport")]
+        public async Task<ActionResult<List<Invoicepending>>> getJobOngoingReport()
+        {
+            var invoicependig = new List<Invoicepending>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_getJobOngoingReport", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                invoicependig.Add(new Invoicepending
+                                {
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+                                    customerid = reader.GetInt32(reader.GetOrdinal("customerid")),
+                                    customername = reader["customername"].ToString(),
+
+                                    jobdescription = reader["jobdescription"].ToString(),
+                                    jobtypename = reader["jobtypename"].ToString(),
+                                    projectname = reader["projectname"].ToString(),
+                                    totalinvoiced = reader.IsDBNull(reader.GetOrdinal("totalinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalinvoiced"]),
+                                    ordervaluebasecurrency = reader.IsDBNull(reader.GetOrdinal("ordervaluebasecurrency"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervaluebasecurrency"]),
+
+
+                                    balancetobeinvoiced = reader.IsDBNull(reader.GetOrdinal("balancetobeinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balancetobeinvoiced"]),
+
+
+
+
+
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (invoicependig.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(invoicependig);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("Addorupdatereceiptvoucher")]
+        public async Task<IActionResult> Addorupdatereceiptvoucher([FromBody]  AddorupdateReceiptVoucher dto)
+        {
+            try
+            {
+                // Check if this is an update or create operation
+                var existingEntry = await dbcontext.ReceiptVoucher
+                    .FirstOrDefaultAsync(e => e.receiptid == dto.receiptid);
+
+                if (existingEntry != null)
+                {
+                    // Update existing ReceiptVoucher
+                    existingEntry.cheque = dto.cheque;
+                    existingEntry.chequedate = dto.chequedate;
+                    existingEntry.createdbyid = dto.createdbyid;
+                    existingEntry.rvreamrks = dto.rvreamrks;
+                    existingEntry.rvexchangerate = dto.rvexchangerate;
+                    existingEntry.bankname = dto.bankname;
+                    existingEntry.rvcurrencyid = dto.rvcurrencyid;
+                    existingEntry.rvamountaed = dto.rvamountaed;
+                    existingEntry.rvamount = dto.rvamount;
+                    existingEntry.customerid = dto.customerid;
+                    existingEntry.receiptdate = dto.receiptdate;
+                    existingEntry.rvamountwords = dto.rvamountwords;
+                    dbcontext.ReceiptVoucher.Update(existingEntry);
+                }
+                else
+                {
+                    // Add new ReceiptVoucher
+                    var newEntry = new ReceiptVoucher
+                    {
+                        receiptid = dto.receiptid,
+                        cheque = dto.cheque,
+                        chequedate = dto.chequedate,
+                        createdbyid = dto.createdbyid,
+                        rvreamrks = dto.rvreamrks,
+                        rvexchangerate = dto.rvexchangerate,
+                        bankname = dto.bankname,
+                        rvcurrencyid = dto.rvcurrencyid,
+                        rvamountaed = dto.rvamountaed,
+                        rvamount = dto.rvamount,
+                        customerid = dto.customerid,
+                        receiptdate = dto.receiptdate,
+                        rvamountwords=dto.rvamountwords
+                    };
+
+                    await dbcontext.ReceiptVoucher.AddAsync(newEntry);
+                }
+
+                await dbcontext.SaveChangesAsync();
+
+                return Ok(new { Message = "Receipt voucher saved successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "An error occurred while processing your request.",
+                    Error = ex.Message
+                });
+            }
+        }
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+        [HttpGet("GetReceiptPendingCutomerList")]
+        public async Task<ActionResult<List<BudgetSummary>>> GetReceiptPendingCutomerList(int jobId)
+        {
+            var budgetSummaries = new List<BudgetSummary>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_GetBudgetSummaryrv2", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@jobid", jobId);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                budgetSummaries.Add(new BudgetSummary
+                                {
+                                    BudgetHeadName = reader["budgetheadername"].ToString(),
+                                    BudgetHeaderId = reader.GetInt32(reader.GetOrdinal("budgetheaderid")),
+
+                                    Amount = reader.IsDBNull(reader.GetOrdinal("Amount"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["Amount"]),
+                                    fixedamount = reader.IsDBNull(reader.GetOrdinal("fixedamount"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["fixedamount"]),
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (budgetSummaries.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(budgetSummaries);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public class ReceiptPendingCustomer
+        {
+            public int CustomerId { get; set; }
+            public string CustomerName { get; set; }
+        }
+
+
+
+        [HttpGet("getReceiptPendingCustomerList")]
+        public async Task<ActionResult<List<ReceiptPendingCustomer>>> GetReceiptPendingCustomerList()
+        {
+            var customerList = new List<ReceiptPendingCustomer>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("SP_GetReceiptPendingCutomerList", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                customerList.Add(new ReceiptPendingCustomer
+                                {
+                                    CustomerId = reader.GetInt32(reader.GetOrdinal("CustomerId")),
+                                    CustomerName = reader["customername"].ToString()
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (customerList.Count == 0)
+                {
+                    return NotFound(new { message = "No pending receipts found." });
+                }
+
+                return Ok(customerList);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching pending customers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the pending customer list.");
+            }
+        }
+
+        public class ReceiptRV
+        {
+            public int receiptid { get; set; }
+            
+        }
+
+
+
+
+        [HttpGet("Pendingreceiptvouchernosbycustomerid")]
+        public async Task<ActionResult<List<ReceiptRV>>> Pendingreceiptvouchernosbycustomerid(int customerid)
+        {
+            var rvlist = new List<ReceiptRV>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_Pendingreceiptvouchernosbycustomerid", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@customerid", customerid); // Pass the parameter
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                rvlist.Add(new ReceiptRV
+                                {
+                                    receiptid = reader.GetInt32(reader.GetOrdinal("receiptid")),
+                                    // Add other properties here as needed
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (rvlist.Count == 0)
+                {
+                    return NotFound(new { message = "No pending receipts found." });
+                }
+
+                return Ok(rvlist);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching pending receipt vouchers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the pending receipt vouchers.");
+            }
+        }
+
+
+
+        public class Receiptpendingvoucherdetails
+        {
+            public decimal rvamountaed { get; set; }
+            public decimal balance { get; set; }
+            public DateTime receiptdate { get; set; }
+
+        }
+
+
+        [HttpGet("detailedreceiptpendingvoucherbyreceipid")]
+        public async Task<ActionResult<List<Receiptpendingvoucherdetails>>> detailedreceiptpendingvoucherbyreceipid(int receiptid)
+        {
+            var rvlist = new List<Receiptpendingvoucherdetails>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_Pendingreceiptvoucherdetailsbyreceiptid", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@receiptid", receiptid); // Pass the parameter
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                rvlist.Add(new Receiptpendingvoucherdetails
+                                {
+                                    rvamountaed = reader.IsDBNull(reader.GetOrdinal("rvamountaed"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["rvamountaed"]),
+
+                                    balance = reader.IsDBNull(reader.GetOrdinal("balance"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balance"]),
+
+                                    receiptdate = reader.GetDateTime(reader.GetOrdinal("receiptdate"))
+
+                                    // Add other properties here as needed
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (rvlist.Count == 0)
+                {
+                    return NotFound(new { message = "No pending receipts found." });
+                }
+
+                return Ok(rvlist);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching pending receipt vouchers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the pending receipt vouchers.");
+            }
+        }
+
+
+        public class ReceiptPendinginvoicedetails
+        {
+            public int  invoiceno { get; set; }
+            public int  jobid { get; set; }
+            public DateTime invoicedate { get; set; }
+            public decimal invoicevalue { get; set; }
+            public decimal  invoicevalueinbasecurrency { get; set; }
+
+            public decimal receiptpending { get; set; }
+
+        }
+
+        [HttpGet("GetReceiptPendingInvoiceDetails")]
+        public async Task<ActionResult<List<ReceiptPendinginvoicedetails>>> GetReceiptPendingInvoiceDetails(int customerid )
+        {
+            var invoicelist = new List<ReceiptPendinginvoicedetails>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("SP_GetReceiptPendingpercustomerid", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@customerid", customerid);
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                invoicelist.Add(new ReceiptPendinginvoicedetails
+                                {
+                                    invoiceno = reader.GetInt32(reader.GetOrdinal("invoiceno")),
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+
+                                    invoicedate = reader.GetDateTime(reader.GetOrdinal("invoicedate")),
+
+                                      invoicevalue = reader.IsDBNull(reader.GetOrdinal("invoicevalue"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["invoicevalue"]),
+                                    invoicevalueinbasecurrency = reader.IsDBNull(reader.GetOrdinal("Invoicevalueinbasecurrency"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["Invoicevalueinbasecurrency"]),
+                                    receiptpending = reader.IsDBNull(reader.GetOrdinal("receiptpending"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["receiptpending"]),
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (invoicelist.Count == 0)
+                {
+                    return NotFound(new { message = "No pending receipts found." });
+                }
+
+                return Ok(invoicelist);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching pending customers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the pending customer list.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("addorupdatereceiptregister")]
+        public async Task<IActionResult> addorupdatereceiptregister([FromBody] Addorupdatereceiptregisterdto dto)
+        {
+            using var transaction = await dbcontext.Database.BeginTransactionAsync();
+
+            try
+            {
+                if (dto.receiptdetails == null || dto.receiptdetails.Count == 0)
+                    return BadRequest("No receipt details provided.");
+
+                foreach (var detail in dto.receiptdetails)
+                {
+                    // Insert into receipt table
+                    var receipt = new receipt
+                    {
+                        receiptid = dto.receiptid,
+                        customerid = dto.customerid,
+                        invoiceid = detail.invoiceno,
+                        amountinbasecurrency = detail.receivedamount,
+                        Createdbyid = dto.userid,
+                        createdbydate = DateTime.UtcNow
+                    };
+                    dbcontext.receipt.Add(receipt);
+
+                    // Update invoice table
+                    var invoice = await dbcontext.InvoiceReg.FirstOrDefaultAsync(i => i.invoiceno == detail.invoiceno);
+                    if (invoice != null)
+                    {
+                        invoice.Invoicereceipts += detail.receivedamount;
+                        dbcontext.InvoiceReg.Update(invoice);
+                    }
+
+                    // Update job table
+                    var job = await dbcontext.Job.FirstOrDefaultAsync(j => j.Jobid == detail.jobid);
+                    if (job != null)
+                    {
+                        job.totalreceivedinbasecurrency += detail.receivedamount;
+                        dbcontext.Job.Update(job);
+                    }
+                }
+
+                await dbcontext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return Ok(new { Message = $"Receipt Registered Successfully" });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"Transaction failed: {ex.Message}");
+            }
+        }
+
+
+        [HttpGet("ListReceiptRegister")]
+        public async Task<IActionResult> ListReceiptRegister()
+        {
+            var result = from re in dbcontext.receipt
+                         join inv in dbcontext.InvoiceReg on re.invoiceid equals inv.invoiceno
+                         join cc in dbcontext.Customer on re.customerid equals cc.customerid    
+                   join aa in dbcontext.Users on re.Createdbyid equals aa.Id
+                         select new
+                         {
+                             re.receiptid,
+                             cc.Customername,
+                             re.invoiceid,
+                             inv.jobid,
+                             re.amountinbasecurrency,
+                             re.createdbydate,
+                             aa.UserName
+                             // Add other properties as needed
+                         };
+            var filteredData = await result.ToListAsync();
+            return Ok(filteredData);
+
+        }
+
+
+
+
+        public class jobreceiptpending
+        {
+            public int jobid { get; set; }
+            public decimal  ordervaluebasecurrency { get; set; }
+            public decimal  totalreceivedwithvat { get; set; }
+            public decimal totalreceivedwithoutvat { get; set; }
+            public decimal totalpendingwithoutvat { get; set; }
+
+            public decimal totalpendingwithvat { get; set; }
+
+        }
+
+        [HttpGet("GetjobreceiptPending")]
+        public async Task<ActionResult<List<jobreceiptpending>>> GetjobreceiptPending()
+        {
+            var invoicelist = new List<jobreceiptpending>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("SP_GetjobreceiptPending", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                  
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                invoicelist.Add(new jobreceiptpending
+                                {
+                                    
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+
+                                    ordervaluebasecurrency = reader.IsDBNull(reader.GetOrdinal("ordervaluebasecurrency"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervaluebasecurrency"]),
+
+                                    totalreceivedwithvat = reader.IsDBNull(reader.GetOrdinal("totalreceived"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalreceived"]),
+                                    totalreceivedwithoutvat = reader.IsDBNull(reader.GetOrdinal("totalreceived_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalreceived_withoutvat"]),
+                                    totalpendingwithoutvat = reader.IsDBNull(reader.GetOrdinal("totalpending_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalpending_withoutvat"]),
+
+                                    totalpendingwithvat = reader.IsDBNull(reader.GetOrdinal("totalpending_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalpending_withvat"]),
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (invoicelist.Count == 0)
+                {
+                    return NotFound(new { message = "No pending receipts found." });
+                }
+
+                return Ok(invoicelist);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching pending customers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the pending customer list.");
+            }
+        }
 
     }
 }

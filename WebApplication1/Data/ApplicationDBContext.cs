@@ -96,9 +96,9 @@ namespace WebApplication1.Data
 
         public DbSet<JobStage> JobStage { get; set; }
 
-
-
-
+        public DbSet<Miscost> Miscost { get; set; }
+        public DbSet<ReceiptVoucher> ReceiptVoucher { get; set; }
+        public DbSet<receipt> receipt { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -352,6 +352,13 @@ ConcurrencyStamp =prverificationrole
 
 
 
+
+            modelBuilder.Entity<estimation>()
+         .HasOne(pd => pd.Job)
+         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+         .HasForeignKey(pd => pd.jobid)
+         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Job>()
             .HasOne(pd => pd.QualityLevel)
@@ -1353,8 +1360,12 @@ base.OnModelCreating(modelBuilder);
         .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
-
-
+            modelBuilder.Entity<Miscost>()
+                               .HasOne(pd => pd.Job)
+                               .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                               .HasForeignKey(pd => pd.jobid)
+                               .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
@@ -1370,13 +1381,34 @@ base.OnModelCreating(modelBuilder);
 
 
 
+            modelBuilder.Entity<receipt>()
+       .HasOne(pd => pd.receiptvoucher)
+       .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+       .HasForeignKey(pd => pd.receiptid)
+       .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<receipt>()
+                  .HasOne(pd => pd.Invoice)
+                  .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                  .HasForeignKey(pd => pd.invoiceid)
+                  .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
+            modelBuilder.Entity<receipt>()
+                .HasOne(pd => pd.Customer)
+                .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                .HasForeignKey(pd => pd.customerid)
+                .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
-
-
-
-
+            modelBuilder.Entity<receipt>()
+              .HasOne(pd => pd.CreatedBy)
+              .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+              .HasForeignKey(pd => pd.Createdbyid)
+              .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
@@ -1458,13 +1490,36 @@ base.OnModelCreating(modelBuilder);
             base.OnModelCreating(modelBuilder);
 
 
+       
+
+
+
+            modelBuilder.Entity<ReceiptVoucher>()
+.HasOne(pd => pd.Customer)
+.WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+.HasForeignKey(pd => pd.customerid)
+.OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ReceiptVoucher>()
+           .HasOne(pd => pd.Currency)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.rvcurrencyid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ReceiptVoucher>()
+              .HasOne(pd => pd.createdby)
+              .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+              .HasForeignKey(pd => pd.createdbyid)
+              .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
 
 
-
-      modelBuilder.Entity<Job>()
+            modelBuilder.Entity<Job>()
      .HasOne(pd => pd.JobStage)
      .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
      .HasForeignKey(pd => pd.jobstageid)

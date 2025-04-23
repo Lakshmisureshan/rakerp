@@ -118,7 +118,19 @@ namespace WebApplication1.Controllers
         }
 
 
+        [HttpGet("GetAllJobNosrv1")]
+        public async Task<IActionResult> GetAllJobNosrv1()
+        {
+            var jobdetails = await dbcontext.Job
+                .Select(j => new
+                {
+                    jobid = j.Jobid,
+                    jobname = j.Jobid + "  " + j.projectname + "  " + j.lpono + "  " + j.jobdescription
+                })
+                .ToListAsync();
 
+            return Ok(jobdetails);
+        }
 
 
 

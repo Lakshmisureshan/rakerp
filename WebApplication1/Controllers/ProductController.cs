@@ -46,9 +46,12 @@ namespace WebApplication1.Controllers
                 productcode = request.productcode ,
                 price = request.price ,
                 categoryid = request.categoryid ,
-                subcategoryid=request.subcategoryid
-                
-                
+                subcategoryid=request.subcategoryid,
+                reorderlevel =request.reorderlevel,
+                reorderqty = request.reorderqty,
+                itembname = request.itembname,
+
+
             };
             await dbcontext.Product.AddAsync(product);
             await dbcontext.SaveChangesAsync();

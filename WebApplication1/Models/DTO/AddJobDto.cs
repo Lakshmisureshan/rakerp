@@ -19,7 +19,7 @@ namespace WebApplication1.Models.DTO
         public string lpono { get; set; }
   
         public string projectmanagerid { get; set; }
-     
+        public int   mainjobid { get; set; }
         public string projectengineerid { get; set; }
         public int totalnumber { get; set; }
 
