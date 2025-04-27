@@ -13,8 +13,8 @@ namespace WebApplication1.Models.Domain
         public JobType JobType { get; set; }
         public int jobtypeid { get; set; }
         public DateTime jobdate { get; set; }
-        public DateTime lpodate { get; set; }
-        public string  lpono { get; set; }
+        public DateTime ? lpodate { get; set; }
+        public string ? lpono { get; set; }
         public ApplicationUser ProjectManager { get; set; }
         public string   projectmanagerid { get; set; }
 
@@ -66,7 +66,7 @@ namespace WebApplication1.Models.Domain
         public int enduserid { get; set; }
 
 
-        public int mainjobid { get; set; } = 0;
+        public int? mainjobid { get; set; } = 0;
 
         public DateTime expecteddeliverydate { get; set; }
         public string jobdescription { get; set; }

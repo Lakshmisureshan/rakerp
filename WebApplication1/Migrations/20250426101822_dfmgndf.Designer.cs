@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250426101822_dfmgndf")]
+    partial class dfmgndf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,13 +113,6 @@ namespace WebApplication1.Migrations
                             ConcurrencyStamp = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad",
                             Name = "PRVerification",
                             NormalizedName = "PRVERIFICATION"
-                        },
-                        new
-                        {
-                            Id = "b65fb755-5a86-46a7-b28d-8e935c05b967",
-                            ConcurrencyStamp = "b65fb755-5a86-46a7-b28d-8e935c05b967",
-                            Name = "Miscostcreation",
-                            NormalizedName = "MISCOSTCREATION"
                         });
                 });
 
@@ -252,11 +247,6 @@ namespace WebApplication1.Migrations
                         {
                             UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             RoleId = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad"
-                        },
-                        new
-                        {
-                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
-                            RoleId = "b65fb755-5a86-46a7-b28d-8e935c05b967"
                         });
                 });
 
@@ -353,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f0170bb4-3824-4248-a168-460d1911f78a",
+                            ConcurrencyStamp = "bf8d914e-bab5-4e09-8c57-790b68518335",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPiulZd6dk3jr5p1KrlmBqzdCM0AOBzcTTFVfu7Kf9refsMxzS/q2WDRiVqE6qaVCA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEO8Kpz1D6wIXYQ3rliMT8TmTF4kOovElSL36XaLCx/N2puRZyJ/qXrNeZU6gAAk1Mw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9d583ae8-2548-4a62-93fd-fc04bb58433f",
+                            SecurityStamp = "75f46ceb-b29e-480b-909e-da6d1c993481",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"

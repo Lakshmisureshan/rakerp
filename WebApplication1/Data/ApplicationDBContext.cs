@@ -115,6 +115,7 @@ namespace WebApplication1.Data
             var grnregistrationrole = "e05d3da2-24c8-43fb-859f-cdbee6ac2a73";
 
             var prverificationrole = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad";
+            var miscostcreationrole = "b65fb755-5a86-46a7-b28d-8e935c05b967";
 
             var roles = new List<IdentityRole>
 {
@@ -196,6 +197,13 @@ NormalizedName ="PRVerification".ToUpper(),
 ConcurrencyStamp =prverificationrole
 },
 
+  new IdentityRole ()
+{
+Id =miscostcreationrole,
+Name ="Miscostcreation",
+NormalizedName ="Miscostcreation".ToUpper(),
+ConcurrencyStamp =miscostcreationrole
+},
 
 
 
@@ -277,6 +285,12 @@ ConcurrencyStamp =prverificationrole
                 {
                     UserId = adminUserid,
                     RoleId  = prverificationrole
+
+                },
+                     new()
+                {
+                    UserId = adminUserid,
+                    RoleId  = miscostcreationrole
 
                 }
 

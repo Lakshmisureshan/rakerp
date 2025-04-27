@@ -25,6 +25,6 @@ namespace WebApplication1.Models.Domain
 
         public int isconvertedtobom { get; set; } = 0;
 
-
+        public int revision { get; set; } = 0;
     }
 }

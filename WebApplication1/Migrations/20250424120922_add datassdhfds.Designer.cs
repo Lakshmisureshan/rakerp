@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250424120922_add datassdhfds")]
+    partial class adddatassdhfds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,13 +113,6 @@ namespace WebApplication1.Migrations
                             ConcurrencyStamp = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad",
                             Name = "PRVerification",
                             NormalizedName = "PRVERIFICATION"
-                        },
-                        new
-                        {
-                            Id = "b65fb755-5a86-46a7-b28d-8e935c05b967",
-                            ConcurrencyStamp = "b65fb755-5a86-46a7-b28d-8e935c05b967",
-                            Name = "Miscostcreation",
-                            NormalizedName = "MISCOSTCREATION"
                         });
                 });
 
@@ -252,11 +247,6 @@ namespace WebApplication1.Migrations
                         {
                             UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             RoleId = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad"
-                        },
-                        new
-                        {
-                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
-                            RoleId = "b65fb755-5a86-46a7-b28d-8e935c05b967"
                         });
                 });
 
@@ -353,15 +343,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f0170bb4-3824-4248-a168-460d1911f78a",
+                            ConcurrencyStamp = "2fd3518a-fd0d-4519-ac3a-435d7743804b",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPiulZd6dk3jr5p1KrlmBqzdCM0AOBzcTTFVfu7Kf9refsMxzS/q2WDRiVqE6qaVCA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAENxK8qTllbwgzZvLCkYra8DrQ13iCMyr4ZuXytGciiFGI1g+NNgHozQq4mEo3DNafg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9d583ae8-2548-4a62-93fd-fc04bb58433f",
+                            SecurityStamp = "07d53beb-6c03-4af7-8480-9a766d29512d",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -613,9 +603,6 @@ namespace WebApplication1.Migrations
 
                     b.Property<decimal>("quantity")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("revision")
-                        .HasColumnType("int");
 
                     b.Property<int>("uomid")
                         .HasColumnType("int");
@@ -1908,8 +1895,11 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Product", b =>
                 {
-                    b.Property<int>("productcode")
+                    b.Property<int>("itemid")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("itemid"), 1L, 1);
 
                     b.Property<int>("categoryid")
                         .HasColumnType("int");
@@ -1929,18 +1919,15 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("itemid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("itemid"), 1L, 1);
-
                     b.Property<string>("itemname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("price")
                         .HasColumnType("real");
+
+                    b.Property<int>("productcode")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("reorderlevel")
                         .HasColumnType("decimal(18,2)");
@@ -1954,7 +1941,7 @@ namespace WebApplication1.Migrations
                     b.Property<int>("subcategoryid")
                         .HasColumnType("int");
 
-                    b.HasKey("productcode");
+                    b.HasKey("itemid");
 
                     b.HasIndex("categoryid");
 

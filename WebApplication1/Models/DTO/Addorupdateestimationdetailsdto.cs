@@ -18,8 +18,8 @@
         public int itemid { get; set; }
 
 
+        public int revision { get; set; }
 
-       
 
     }
 }

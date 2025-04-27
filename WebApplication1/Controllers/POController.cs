@@ -7,14 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Reflection.Metadata;
 using WebApplication1.Data;
-using WebApplication1.Migrations;
+//using WebApplication1.Migrations;
 using WebApplication1.Models;
 using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static WebApplication1.Controllers.AuthController;
 using static WebApplication1.Controllers.POController;
 using AddReceivedEntry = WebApplication1.Models.DTO.AddReceivedEntry;
@@ -362,7 +364,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> GetPOLinedetailsbyPOid(int pono)
         {
             var POlinedetails = await (from po in dbcontext.Purchasedetails
-                                       join ii in dbcontext.Product on po.poitemid equals ii.itemid
+                                       join ii in dbcontext.Product on po.poitemid equals ii.productcode
                                        where po.orderid == pono
                                        select new
                                        {
@@ -5271,6 +5273,8 @@ namespace WebApplication1.Controllers
             public decimal Amount { get; set; }
 
             public decimal fixedamount { get; set; }
+
+            public decimal poamount { get; set; }
         }
 
         //[HttpGet("GetBudgetSummary")]
@@ -5356,7 +5360,7 @@ namespace WebApplication1.Controllers
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     await conn.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand("sp_GetBudgetSummaryrv2", conn))
+                    using (SqlCommand cmd = new SqlCommand("sp_GetBudgetSummaryrv3", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@jobid", jobId);
@@ -5376,6 +5380,11 @@ namespace WebApplication1.Controllers
                                     fixedamount= reader.IsDBNull(reader.GetOrdinal("fixedamount"))
                                      ? 0
                                      : Convert.ToDecimal(reader["fixedamount"]),
+
+                                    poamount = reader.IsDBNull(reader.GetOrdinal("poamount"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["poamount"]),
+
 
                                 });
                             }
@@ -6304,7 +6313,7 @@ namespace WebApplication1.Controllers
                         uomid = item.uomid,
                         quantity=item.qty,
                         price=item.unitprice,
-
+                         revision=item.revision,
                         itemid = item.itemid,   
                        
                     };
@@ -6352,7 +6361,7 @@ namespace WebApplication1.Controllers
 
             var estimationdetails = await (from aa in dbcontext.estimation
                                       join cc in dbcontext.Currency on aa.currencyid equals cc.currencyid
-                                      join pp in dbcontext.Product on aa.itemid equals pp.itemid
+                                      join pp in dbcontext.Product on aa.itemid equals pp.productcode
                                       join bh in dbcontext.BudgettHeader on pp.itembudgetheaderid equals bh.budgetheaderid
                                       join app in dbcontext.ProductionStages on aa.applicationid equals app.prostageid
                                      
@@ -6367,7 +6376,7 @@ namespace WebApplication1.Controllers
                                           application = app.productionstagename,
                                           unitprice = aa.price,
                                           qty=aa.quantity,
-
+                                          revision = aa.revision,
                                           totalpriceinbasecurrency =aa.quantity *  aa.price* Convert.ToDecimal(cc.exchangerate),
                                           isconvertedtobom =aa.isconvertedtobom
 
@@ -8306,6 +8315,8 @@ namespace WebApplication1.Controllers
 
             public decimal totalpendingwithvat { get; set; }
 
+            public string  cutomername { get; set; }
+
         }
 
         [HttpGet("GetjobreceiptPending")]
@@ -8369,6 +8380,251 @@ namespace WebApplication1.Controllers
                 return StatusCode(500, "An error occurred while fetching the pending customer list.");
             }
         }
+
+
+
+        public class InvoiceregAll
+        {
+            public int invoiceno { get; set; }
+            public int  jobid { get; set; }
+            public decimal invoicevalue_withvat { get; set; }
+            public decimal received_withvat { get; set; }
+            public decimal received_withoutvat { get; set; }
+            public decimal pending_withoutvat { get; set; }
+            public string customername { get; set; }
+            public decimal pending_withvat { get; set; }
+            public DateTime  invoicedate  { get; set; }
+            public decimal invoicevalue_withoutvat { get; set; }
+
+        }
+
+
+        [HttpGet("GetInvoiceRegDetailsWithVATCheck")]
+        public async Task<ActionResult<List<InvoiceregAll>>> GetInvoiceRegDetailsWithVATCheck()
+        {
+            var invoicelist = new List<InvoiceregAll>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("SP_GetInvoiceRegDetailsWithVATCheck", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                invoicelist.Add(new InvoiceregAll
+                                {
+                                    invoiceno = reader.GetInt32(reader.GetOrdinal("invoiceno")),
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+                                    customername = reader["customername"].ToString(),
+
+                                  invoicedate = reader.GetDateTime(reader.GetOrdinal("invoicedate")),
+                                  invoicevalue_withvat = reader.IsDBNull(reader.GetOrdinal("invoicevalue_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["invoicevalue_withvat"]),
+
+                                    invoicevalue_withoutvat = reader.IsDBNull(reader.GetOrdinal("invoicevalue_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["invoicevalue_withoutvat"]),
+                                    received_withvat = reader.IsDBNull(reader.GetOrdinal("received_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["received_withvat"]),
+                                    received_withoutvat = reader.IsDBNull(reader.GetOrdinal("received_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["received_withoutvat"]),
+
+                                    pending_withoutvat = reader.IsDBNull(reader.GetOrdinal("pending_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["pending_withoutvat"]),
+
+                                    pending_withvat = reader.IsDBNull(reader.GetOrdinal("pending_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["pending_withvat"]),
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (invoicelist.Count == 0)
+                {
+                    return NotFound(new { message = "No pending receipts found." });
+                }
+
+                return Ok(invoicelist);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching pending customers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the pending customer list.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("Getmaxrevisionestimation")]
+        public async Task<IActionResult> Getmaxrevisionestimation(int jobid)
+        {
+            var maxRevision = await dbcontext.estimation
+                .Where(e => e.jobid == jobid )
+                .MaxAsync(e => (int?)e.revision) ?? 0;
+
+            var nextRevision = maxRevision + 1;
+
+            return Ok(nextRevision);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        public class listestimation
+        {
+          
+            public int jobid { get; set; }
+            public string  customername { get; set; }
+            public string projectname { get; set; }
+        }
+            [HttpGet("GetDistinctjobestimationdetails")]
+        public async Task<ActionResult<List<listestimation>>> GetDistinctjobestimationdetails()
+        {
+            var listestimation = new List<listestimation>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetDistinctjobestimationdetails", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                      
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                listestimation.Add(new listestimation
+                                {
+                                    customername = reader["customername"].ToString(),
+                                    //                        BudgetHeaderId = Convert.ToInt32(reader["BudgetHeaderId"]),
+                                                 jobid = Convert.ToInt32(reader["jobid"]),
+
+                                    projectname = reader["projectname"].ToString(),
+                                   
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (listestimation.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(listestimation);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching list estimation: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the list estimation.");
+            }
+
+
+
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetPRFiles/{prid}")]
+        public IActionResult GetPRFiles(string prid)
+        {
+            var prfolderpath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "PRFILE", prid);
+
+            if (!Directory.Exists(prfolderpath))
+            {
+                return NotFound("PR folder not found.");
+            }
+
+            var files = Directory.GetFiles(prfolderpath)
+                                 .Select(System.IO.Path.GetFileName)
+                                 .ToList();
+
+            if (files.Count == 0)
+            {
+                return NotFound("No files found in this PR folder.");
+            }
+
+            return Ok(files);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }

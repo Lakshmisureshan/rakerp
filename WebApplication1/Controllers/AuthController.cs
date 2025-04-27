@@ -1261,6 +1261,8 @@ namespace WebApplication1.Controllers
                     // Insert new record into BOM table
                     var newBom = new Bom
                     {
+                        bomrevno=estimation.revision,
+
                         itemid = estimation.itemid,
                         bomqty = (double)estimation.quantity,
                         bomuomid = estimation.uomid,
