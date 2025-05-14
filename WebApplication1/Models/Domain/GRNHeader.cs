@@ -13,6 +13,10 @@ namespace WebApplication1.Models.Domain
         public int isregistered { get; set; } = 0;
         public Currency Currency { get; set; }
         public int currencyid { get; set; }
-        
+        public string?  billofentryno { get; set; }
+        public DateTime? billofentrydate { get; set; }
+        public string  dono { get; set; }
+        public string? remarks { get; set; }
+
     }
 }

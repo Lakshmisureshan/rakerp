@@ -250,6 +250,7 @@ namespace WebApplication1.Controllers
             var jobs = await dbcontext.Job
       .Include(j => j.Customer). Include(t => t.JobType)
       .Include(t => t.ProjectEngineer)
+        .Include(t => t.ProjectManager)
       .ToListAsync();
             return Ok(jobs);
         }
@@ -408,5 +409,66 @@ namespace WebApplication1.Controllers
             return File(fileBytes, "application/pdf", fileName);
         }
 
+
+
+
+
+
+
+
+
+        [HttpGet("GetAllManhours")]
+        public async Task<IActionResult> GetAllManhours()
+        {
+            var jobs = await dbcontext.manhour
+      .Include(j => j.Job)
+      .Include(t => t.employeemaster)
+       
+      .ToListAsync();
+            return Ok(jobs);
+        }
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

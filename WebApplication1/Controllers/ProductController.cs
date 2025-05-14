@@ -106,7 +106,21 @@ namespace WebApplication1.Controllers
             return maxProductCode+1 ?? 10000 + 1; // Return 10001 if maxProductCode is null
         }
 
+        [HttpGet("getAllConsumbalecategoryproduct")]
+        public async Task<IActionResult> GetAllConsumbaleCategoryProduct()
+        {
+            var products = await dbcontext.Product
+            
+                .Include(p => p.Category)
+                  .Include(p => p.BudgettHeader)
+                .Include(p => p.SubCategory)
+                .Include(p => p.UOM)
 
+                    .Where(p => p.BudgettHeader.budgetheaderid == 13)
+                .ToListAsync();
+
+            return Ok(products);
+        }
 
 
 

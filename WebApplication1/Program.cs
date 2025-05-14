@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using WebApplication1.Data;
 using WebApplication1.Models.Domain;
 using WebApplication1.Repositories.Implementation;
 using WebApplication1.Repositories.Interface;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+ExcelPackage.License.SetNonCommercialPersonal("lakshmi");
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

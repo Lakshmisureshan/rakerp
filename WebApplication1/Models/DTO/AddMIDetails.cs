@@ -10,5 +10,6 @@ namespace WebApplication1.Models.DTO
         public decimal acceptedqty { get; set; }
         public decimal rejectedqty { get; set; }
         public decimal holdqty { get; set; }
+        public int  rtblid { get; set; }
     }
 }

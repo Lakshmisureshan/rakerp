@@ -10,6 +10,11 @@ namespace WebApplication1.Models.DTO
         public int pono { get; set; }
 
         public int currencyid { get; set; }
+        public string ? billofentryno { get; set; }
+        public DateTime?  billofentrydate { get; set; }
+        public string  dono { get; set; }
+
+        public string? remarks { get; set; }
 
         public ICollection<AddGrnDetails> grndetails { get; set; }
     }

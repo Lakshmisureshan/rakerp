@@ -42,7 +42,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> GetUomByProductId(int productId)
         {
             var product = await dbcontext.Product
-                                         .Where(p => p.itemid == productId)
+                                         .Where(p => p.productcode == productId)
                                          .Select(p => new {
                                              p.standarduomid
                                          })
@@ -60,25 +60,7 @@ namespace WebApplication1.Controllers
 
 
 
-        [HttpGet("GetFreezedBombyjobidprnotcreated/{jobid}")]
-        public async Task<IActionResult> GetFreezedBombyjobidprnotcreated(int jobid)
-        {
-            var bom = await dbcontext.Bom
-     .Include(b => b.UOM)
-     .Include(b => b.Product).Include(b => b.UOM).Include(b => b.currency)
-     // Eager load the UOM related entity
-     .Where(p => p.jobid == jobid
-                 && p.bomqty > p.prcreatedqty
-                 && p.bomstatus == 1) // Apply multiple conditions
-     .ToListAsync();
-
-            if (bom == null)
-            {
-                return NotFound("Bom  not found");
-            }
-            return Ok(bom);
-           
-        }
+       
      
 
 
@@ -666,16 +648,17 @@ namespace WebApplication1.Controllers
         [HttpGet("getAllBom2byJobId")]
         public async Task<IActionResult> getAllBom2byJobId(int jobid, int bomnumber)
         {
-                var bom = await dbcontext.Bom
-    .Include(b => b.UOM)
-     .Include(b => b.Product).
-    Include(c => c.currency)// Eager load the UOM related entity
-    .Where(p => p.jobid == jobid  && p.bomnumber ==bomnumber)
-    .ToListAsync();
+            var bom = await dbcontext.Bom
+                .Include(b => b.UOM)
+                .Include(b => b.Product)
+                .Include(c => c.currency) // Eager load the UOM related entity
+                .Where(p => p.jobid == jobid && p.bomnumber == bomnumber)
+                .OrderBy(b => b.bomrevno) // Order by revision field
+                .ToListAsync();
 
-            if (bom == null)
+            if (bom == null || bom.Count == 0)
             {
-                return NotFound("Bom  not found");
+                return NotFound("Bom not found");
             }
             return Ok(bom);
         }
@@ -788,6 +771,229 @@ namespace WebApplication1.Controllers
 
 
 
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetFreezedBombyjobidprnotcreated/{jobid}")]
+        public async Task<IActionResult> GetFreezedBombyjobidprnotcreated(int jobid)
+        {
+            var bom = await dbcontext.Bom
+     .Include(b => b.UOM)
+     .Include(b => b.Product).Include(b => b.UOM).Include(b => b.currency)
+     // Eager load the UOM related entity
+     .Where(p => p.jobid == jobid
+                 && p.bomqty > p.prcreatedqty
+                 && p.bomstatus == 1) // Apply multiple conditions
+     .ToListAsync();
+
+            if (bom == null)
+            {
+                return NotFound("Bom  not found");
+            }
+            return Ok(bom);
+
+        }
+
+
+
+        //[HttpGet("GetBudgetSummary")]
+
+        //public List<BudgetSummary> GetBudgetSummary(int jobId)
+        //{
+        //    List<BudgetSummary> budgetSummaries = new List<BudgetSummary>();
+
+        //    using (SqlConnection conn = new SqlConnection(_connectionString))
+        //    {
+        //        using (SqlCommand cmd = new SqlCommand("sp_GetBudgetSummary", conn))
+        //        {
+        //            cmd.CommandType = CommandType.StoredProcedure;
+        //            cmd.Parameters.AddWithValue("@jobid", jobId);
+
+        //            conn.Open();
+        //            using (SqlDataReader reader = cmd.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    budgetSummaries.Add(new BudgetSummary
+        //                    {
+        //                        BudgetHeadName = reader["budgetheadername"].ToString(),
+        //                        BudgetHeaderId = Convert.ToInt32(reader["BudgetHeaderId"]),
+        //                        JobId = Convert.ToInt32(reader["jobid"]),
+        //                        Amount = Convert.ToDecimal(reader["Amount"])
+        //                    });
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return budgetSummaries;
+        //}
+
+
+
+
+        [HttpPost("UnFreezeBom3")]
+        public async Task<IActionResult> UnFreezeBom3(int jobid)
+        {
+            // Retrieve the job based on job ID
+            var job = await dbcontext.Job
+                .FirstOrDefaultAsync(j => j.Jobid == jobid);
+
+            if (job == null)
+            {
+                // Return a NotFound result if the job is not found
+                return NotFound($"Job with ID {jobid} not found.");
+            }
+
+
+
+            // Increment the revision number in the job table
+            job.bomjobstatusid3 = 0;
+            ;
+
+            try
+            {
+                // Save the changes to the database
+                await dbcontext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during save
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+            // Return a success result
+            return Ok(new { message = "Job has been Un frozen successfully", jobid });
+        }
+
+
+
+
+        [HttpPost("FreezeBom3")]
+        public async Task<IActionResult> FreezeBom3(int jobid)
+        {
+            // Retrieve the job based on job ID
+            var job = await dbcontext.Job
+                .FirstOrDefaultAsync(j => j.Jobid == jobid);
+
+            if (job == null)
+            {
+                // Return a NotFound result if the job is not found
+                return NotFound($"Job with ID {jobid} not found.");
+            }
+
+            var boms = await dbcontext.Bom
+                .Where(b => b.jobid == jobid && b.bomnumber == 3)
+                .ToListAsync();
+
+            foreach (var bom in boms)
+            {
+                bom.bomstatus = 1;  // Set bomstatus to 1
+            }
+
+            // Increment the revision number in the job table
+            job.bomjobrevno3 += 1;
+
+            // Set the job status to frozen (assuming 1 means frozen)
+            job.bomjobstatusid3 = 1;
+
+            try
+            {
+                // Save the changes to the database
+                await dbcontext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during save
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+            // Return a success result with JSON response
+            return Ok(new { message = "Job has been frozen successfully", jobid });
+        }
+
+
+
+
+
+
+
+
+
+        [HttpGet("IsJobFrozenbom3Async")]
+        public async Task<bool> IsJobFrozenbom3Async(int jobid)
+
+        {
+            // Retrieve the job status
+            var job = await dbcontext.Job
+                .Where(j => j.Jobid == jobid)
+                .Select(j => new { j.bomjobstatusid3 })
+                .FirstOrDefaultAsync();
+
+            // Check if job is null
+            if (job == null)
+            {
+                // Handle the case where the job is not found
+                // For example, you can return false or throw an exception if desired
+                return false; // Assuming that if the job is not found, it's not frozen
+            }
+
+            // Return true if the job status indicates that it's frozen (status = 1)
+            return job.bomjobstatusid3 == 1;
+        }
+
+
+
+
+
+        [HttpGet("GetLastBomRevbom3")]
+        public async Task<int> GetLastBomRevbom3(int jobid)
+
+        {
+            // Retrieve the job status
+            var job = await dbcontext.Job
+                .Where(j => j.Jobid == jobid)
+                .Select(j => new { j.bomjobrevno3 })
+                .FirstOrDefaultAsync();
+
+            // Check if job is null
+            if (job == null)
+            {
+                // Handle the case where the job is not found
+                // For example, you can return false or throw an exception if desired
+                return 0; // Assuming that if the job is not found, it's not frozen
+            }
+
+            // Return true if the job status indicates that it's frozen (status = 1)
+            return job.bomjobrevno3;
+        }
+
+
+
+        [HttpGet("getAllBom3byJobId")]
+        public async Task<IActionResult> getAllBom3byJobId(int jobid, int bomnumber)
+        {
+            var bom = await dbcontext.Bom
+                .Include(b => b.UOM)
+                .Include(b => b.Product)
+                .Include(c => c.currency) // Eager load the UOM related entity
+                .Where(p => p.jobid == jobid && p.bomnumber == bomnumber)
+                .OrderBy(b => b.bomrevno) // Order by revision field
+                .ToListAsync();
+
+            if (bom == null || bom.Count == 0)
+            {
+                return NotFound("Bom not found");
+            }
+            return Ok(bom);
+        }
 
 
 

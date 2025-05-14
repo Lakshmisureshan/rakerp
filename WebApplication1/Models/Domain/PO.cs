@@ -54,12 +54,14 @@ namespace WebApplication1.Models.Domain
         public Boolean qtnshippingdocs { get; set; }
         public Boolean approveddrawings { get; set; }
         public Boolean Others { get; set; }
-        public string  Remarks  { get; set; }
+        public string?  Remarks  { get; set; }
         public POStatus postatus { get; set; }
         public int postatusid { get; set; } = 1;
 
 
         public decimal discount { get; set; }
 
+        public string?  paymenterm1description { get; set; }
+       
     }
 }

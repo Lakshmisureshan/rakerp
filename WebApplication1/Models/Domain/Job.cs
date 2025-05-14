@@ -84,5 +84,23 @@ namespace WebApplication1.Models.Domain
         public decimal pruexpense2 { get; set; } = 0;
 
         public decimal totalreceivedinbasecurrency { get; set; }
+
+
+
+        public int bomjobrevno3 { get; set; } = 0;
+        public int bomjobstatusid3 { get; set; } = 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

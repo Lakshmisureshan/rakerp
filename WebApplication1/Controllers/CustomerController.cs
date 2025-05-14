@@ -21,44 +21,78 @@ namespace WebApplication1.Controllers
         {
             var customer = new Customer
             {
-              countryid = request.countryid,
-              ccode = request.ccode,    
-             Customername = request.Customername,
-             email = request.email  ,
-             IEC = request.IEC  ,
-             location = request.location ,  
-             remarks = request.remarks,
-             shortname = request.shortname  ,
-             web = request.web  ,
-             phone = request.phone ,    
-             pobox = request.pobox ,    
-             Trnno = request.Trnno , 
-             address = request.address ,
-             
+                countryid = request.countryid,
+                ccode = request.ccode,
+                Customername = request.Customername,
+                email = request.email,
+                IEC = request.IEC,
+                location = request.location,
+                remarks = request.remarks,
+                shortname = request.shortname,
+                web = request.web,
+                phone = request.phone,
+                pobox = request.pobox,
+                Trnno = request.Trnno,
+                address = request.address,
+
             };
             await dbcontext.Customer.AddAsync(customer);
             await dbcontext.SaveChangesAsync();
             var response = new CustomerDto
             {
-              Trnno= customer.Trnno,
-              pobox= customer.pobox,
-              phone= customer.phone,
-              web= customer.web,
-              shortname= customer.shortname,
-              remarks= customer.remarks,
-              location= customer.location ,
-              IEC= customer. IEC ,
-              ccode= customer.ccode ,
-              countryid= customer.countryid,    
-              Customername = customer.Customername ,
-              email= customer.email ,   
-              address= customer.address ,
+                Trnno = customer.Trnno,
+                pobox = customer.pobox,
+                phone = customer.phone,
+                web = customer.web,
+                shortname = customer.shortname,
+                remarks = customer.remarks,
+                location = customer.location,
+                IEC = customer.IEC,
+                ccode = customer.ccode,
+                countryid = customer.countryid,
+                Customername = customer.Customername,
+                email = customer.email,
+                address = customer.address,
             };
 
             return Ok(response);
         }
 
 
+        [HttpPost("UpdateCustomer")]
+        public async Task<IActionResult> UpdateCustomer(UpdateCustomerDto request)
+        {
+            if (request.customerid <= 0)
+            {
+                return BadRequest(new { message = "Invalid customer ID for update." });
+            }
+
+            var customer = await dbcontext.Customer.FindAsync(request.customerid);
+            if (customer == null)
+            {
+                return NotFound(new { message = "Customer not found." });
+            }
+
+            // Update fields
+            customer.countryid = request.countryid;
+            customer.ccode = request.ccode;
+            customer.Customername = request.customername;
+            customer.email = request.email;
+            customer.IEC = request.iec;
+            customer.location = request.location;
+            customer.remarks = request.remarks;
+            customer.shortname = request.shortname;
+            customer.web = request.web;
+            customer.phone = request.phone;
+            customer.pobox = request.pobox;
+            customer.Trnno = request.trnno;
+            customer.address = request.address;
+
+            dbcontext.Customer.Update(customer);
+            await dbcontext.SaveChangesAsync();
+
+            return Ok(new { message = "Customer updated successfully." });
+        }
 
 
         [HttpGet("GetAllCountryList")]
@@ -250,6 +284,90 @@ namespace WebApplication1.Controllers
             var POPaymentDays2 = await dbcontext.Popaymentterms2.ToListAsync();
             return Ok(POPaymentDays2);
         }
+
+        [HttpGet("Getcustomerdetailsbycustomerid/{customerid}")]
+        public async Task<IActionResult> Getcustomerdetailsbycustomerid(int customerid)
+        {
+            var customer = await dbcontext.Customer
+                .FirstOrDefaultAsync(c => c.customerid == customerid);
+
+            if (customer == null)
+            {
+                return NotFound(new { message = "Customer not found" });
+            }
+
+            return Ok(customer);
+        }
+   
+
+
+
+
+
+        [HttpPost("AddCustomerContact")]
+        public async Task<IActionResult> AddCustomerContact(Addorupdatecustomercontactdto request)
+        {
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync()) // Start a transaction
+            {
+                try
+                {
+                   foreach (var item in request.contactdetails)
+                    {
+
+                        // Insert new detail if rtblid doesn't exist
+                        var newcustomercontact = new customercontact
+                        {
+                            customerid = item.customerid,
+                            name = item.name,
+                            designation = item.designation,
+                            phone = item.phone,
+                            mobile = item.mobile,
+                            email = item.email
+
+
+
+                        };
+
+                        await dbcontext.customercontact.AddAsync(newcustomercontact);
+                    }
+                    await dbcontext.SaveChangesAsync(); // Save received entry details
+                    await transaction.CommitAsync(); // Commit transaction if everything succeeds
+                    return StatusCode(201, new { Message = "New Customer Contact Added Successfully" });
+
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(); // Rollback transaction on failure
+
+                    return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+                }
+
+
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

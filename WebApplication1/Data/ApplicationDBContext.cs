@@ -99,6 +99,12 @@ namespace WebApplication1.Data
         public DbSet<Miscost> Miscost { get; set; }
         public DbSet<ReceiptVoucher> ReceiptVoucher { get; set; }
         public DbSet<receipt> receipt { get; set; }
+        public DbSet<customercontact> customercontact { get; set; }
+        public DbSet<Employeemaster> Employeemaster { get; set; }
+        public DbSet<manhour> manhour { get; set; }
+        public DbSet<Designation> designation { get; set; }
+
+        public DbSet<setmanhourrate> manhourrate { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -116,6 +122,7 @@ namespace WebApplication1.Data
 
             var prverificationrole = "0eae39be-0cd2-4e99-a8c6-8258c72dc7ad";
             var miscostcreationrole = "b65fb755-5a86-46a7-b28d-8e935c05b967";
+            var PRUexpenserole = "553d0b9b-15cf-4879-8ac9-e42e13e35e22";
 
             var roles = new List<IdentityRole>
 {
@@ -205,7 +212,13 @@ NormalizedName ="Miscostcreation".ToUpper(),
 ConcurrencyStamp =miscostcreationrole
 },
 
-
+ new IdentityRole ()
+{
+Id =PRUexpenserole,
+Name ="PRUEXPENSEROLE",
+NormalizedName ="PRUEXPENSEROLE".ToUpper(),
+ConcurrencyStamp =PRUexpenserole
+},
 
 
 
@@ -291,6 +304,12 @@ ConcurrencyStamp =miscostcreationrole
                 {
                     UserId = adminUserid,
                     RoleId  = miscostcreationrole
+
+                },
+                            new()
+                {
+                    UserId = adminUserid,
+                    RoleId  = PRUexpenserole
 
                 }
 
@@ -1014,13 +1033,7 @@ base.OnModelCreating(modelBuilder);
                 .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Inventoryreservation>()
-              .HasOne(pd => pd.Inventory)
-              .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
-              .HasForeignKey(pd => pd.inventoryid)
-              .OnDelete(DeleteBehavior.NoAction);
-            base.OnModelCreating(modelBuilder);
-
+      
             modelBuilder.Entity<Inventoryreservation>()
          .HasOne(pd => pd.UOM)
          .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
@@ -1048,9 +1061,19 @@ base.OnModelCreating(modelBuilder);
 
 
 
+            modelBuilder.Entity<manhour>()
+               .HasOne(pd => pd.Job)
+               .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+               .HasForeignKey(pd => pd.jobid)
+               .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
-
-
+            modelBuilder.Entity<manhour>()
+            .HasOne(pd => pd.employeemaster)
+            .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+            .HasForeignKey(pd => pd.empid)
+            .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
@@ -1126,6 +1149,12 @@ base.OnModelCreating(modelBuilder);
 
 
 
+            modelBuilder.Entity<MIdetails>()
+              .HasOne(pd => pd.receivedEntryDetails)
+              .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+              .HasForeignKey(pd => pd.rtblid)
+              .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
@@ -1580,7 +1609,12 @@ base.OnModelCreating(modelBuilder);
 
 
 
-
+            modelBuilder.Entity<customercontact>()
+   .HasOne(pd => pd.Customer)
+   .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+   .HasForeignKey(pd => pd.customerid)
+   .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 

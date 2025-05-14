@@ -5,7 +5,7 @@ namespace WebApplication1.Models.Domain
     {
         [Key]
         public int RId { get; set; }
-        public Inventory Inventory { get; set; }
+
         public int inventoryid { get; set; }
         public Job FROMJob { get; set; }
         public int fromjobid { get; set; }

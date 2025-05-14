@@ -118,6 +118,13 @@ namespace WebApplication1.Migrations
                             ConcurrencyStamp = "b65fb755-5a86-46a7-b28d-8e935c05b967",
                             Name = "Miscostcreation",
                             NormalizedName = "MISCOSTCREATION"
+                        },
+                        new
+                        {
+                            Id = "553d0b9b-15cf-4879-8ac9-e42e13e35e22",
+                            ConcurrencyStamp = "553d0b9b-15cf-4879-8ac9-e42e13e35e22",
+                            Name = "PRUEXPENSEROLE",
+                            NormalizedName = "PRUEXPENSEROLE"
                         });
                 });
 
@@ -257,6 +264,11 @@ namespace WebApplication1.Migrations
                         {
                             UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             RoleId = "b65fb755-5a86-46a7-b28d-8e935c05b967"
+                        },
+                        new
+                        {
+                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
+                            RoleId = "553d0b9b-15cf-4879-8ac9-e42e13e35e22"
                         });
                 });
 
@@ -353,15 +365,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f0170bb4-3824-4248-a168-460d1911f78a",
+                            ConcurrencyStamp = "578fc4bd-d74a-4cf9-bb47-09d7cb1c79ea",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPiulZd6dk3jr5p1KrlmBqzdCM0AOBzcTTFVfu7Kf9refsMxzS/q2WDRiVqE6qaVCA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECVT4K7V61C28ZvMHSUsKmYdRjl0RPoafv3rtQ+hYzBwsr7WGgUtzkvsxuHBlek7GQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9d583ae8-2548-4a62-93fd-fc04bb58433f",
+                            SecurityStamp = "4c34c82a-d80e-48d6-8455-e2cb1db8456f",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -532,11 +544,9 @@ namespace WebApplication1.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IEC")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Trnno")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("address")
@@ -555,27 +565,21 @@ namespace WebApplication1.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("location")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("pobox")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("remarks")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("shortname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("web")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("customerid");
@@ -583,6 +587,75 @@ namespace WebApplication1.Migrations
                     b.HasIndex("countryid");
 
                     b.ToTable("Customer");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.customercontact", b =>
+                {
+                    b.Property<int>("customercontactid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("customercontactid"), 1L, 1);
+
+                    b.Property<int>("customerid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("designation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("extension")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("mobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("customercontactid");
+
+                    b.HasIndex("customerid");
+
+                    b.ToTable("customercontact");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Designation", b =>
+                {
+                    b.Property<int>("designationid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("designationname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("designationid");
+
+                    b.ToTable("designation");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Employeemaster", b =>
+                {
+                    b.Property<int>("empid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("empname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("empstatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("empid");
+
+                    b.ToTable("Employeemaster");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.estimation", b =>
@@ -684,6 +757,9 @@ namespace WebApplication1.Migrations
                     b.Property<int>("itemcode")
                         .HasColumnType("int");
 
+                    b.Property<string>("location")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("multiplyingfactor")
                         .HasColumnType("float");
 
@@ -711,8 +787,18 @@ namespace WebApplication1.Migrations
                     b.Property<int>("grnno")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("billofentrydate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("billofentryno")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("currencyid")
                         .HasColumnType("int");
+
+                    b.Property<string>("dono")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("grndate")
                         .HasColumnType("datetime2");
@@ -722,6 +808,9 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("pono")
                         .HasColumnType("int");
+
+                    b.Property<string>("remarks")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("grnno");
 
@@ -805,6 +894,9 @@ namespace WebApplication1.Migrations
                     b.Property<int>("jobid")
                         .HasColumnType("int");
 
+                    b.Property<string>("location")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("pono")
                         .HasColumnType("int");
 
@@ -883,8 +975,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("RId");
 
                     b.HasIndex("fromjobid");
-
-                    b.HasIndex("inventoryid");
 
                     b.HasIndex("invrcurrencyid");
 
@@ -1296,10 +1386,16 @@ namespace WebApplication1.Migrations
                     b.Property<int>("bomjobrevno2")
                         .HasColumnType("int");
 
+                    b.Property<int>("bomjobrevno3")
+                        .HasColumnType("int");
+
                     b.Property<int>("bomjobstatusid")
                         .HasColumnType("int");
 
                     b.Property<int>("bomjobstatusid2")
+                        .HasColumnType("int");
+
+                    b.Property<int>("bomjobstatusid3")
                         .HasColumnType("int");
 
                     b.Property<int>("currencyid")
@@ -1462,6 +1558,52 @@ namespace WebApplication1.Migrations
                     b.ToTable("JobType");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.manhour", b =>
+                {
+                    b.Property<int>("mid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("mid"), 1L, 1);
+
+                    b.Property<DateTime>("createddate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("empid")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("jobdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("jobid")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("mrate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("nh")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ot")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("site")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("mid");
+
+                    b.HasIndex("empid");
+
+                    b.HasIndex("jobid");
+
+                    b.ToTable("manhour");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.ManufacturingBay", b =>
                 {
                     b.Property<int>("BayId")
@@ -1555,11 +1697,16 @@ namespace WebApplication1.Migrations
                     b.Property<decimal>("rejectedqty")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("rtblid")
+                        .HasColumnType("int");
+
                     b.HasKey("mitblid");
 
                     b.HasIndex("itemid");
 
                     b.HasIndex("mid");
+
+                    b.HasIndex("rtblid");
 
                     b.ToTable("MIdetails");
                 });
@@ -1636,7 +1783,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("approveddrawings")
@@ -1672,6 +1818,9 @@ namespace WebApplication1.Migrations
 
                     b.Property<bool>("mtcpriortodispatch")
                         .HasColumnType("bit");
+
+                    b.Property<string>("paymenterm1description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("poauthorizedDate")
                         .HasColumnType("datetime2");
@@ -2277,6 +2426,22 @@ namespace WebApplication1.Migrations
                     b.ToTable("ReceivedEntryDetails");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.setmanhourrate", b =>
+                {
+                    b.Property<int>("rateid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("rateid"), 1L, 1);
+
+                    b.Property<decimal>("manhourrate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("rateid");
+
+                    b.ToTable("manhourrate");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.SubCategory", b =>
                 {
                     b.Property<int>("subcategoryid")
@@ -2583,6 +2748,17 @@ namespace WebApplication1.Migrations
                     b.Navigation("country");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.customercontact", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("customerid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.estimation", b =>
                 {
                     b.HasOne("WebApplication1.Models.Domain.ProductionStages", "ProductionStages")
@@ -2793,12 +2969,6 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.Inventory", "Inventory")
-                        .WithMany()
-                        .HasForeignKey("inventoryid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("WebApplication1.Models.Domain.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("invrcurrencyid")
@@ -2832,8 +3002,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Currency");
 
                     b.Navigation("FROMJob");
-
-                    b.Navigation("Inventory");
 
                     b.Navigation("PRDetails");
 
@@ -3200,6 +3368,25 @@ namespace WebApplication1.Migrations
                     b.Navigation("isldapp");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.manhour", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.Employeemaster", "employeemaster")
+                        .WithMany()
+                        .HasForeignKey("empid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("jobid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+
+                    b.Navigation("employeemaster");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.Materialinspection", b =>
                 {
                     b.HasOne("WebApplication1.Models.Domain.PO", "PO")
@@ -3233,9 +3420,17 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("WebApplication1.Models.Domain.ReceivedEntryDetails", "receivedEntryDetails")
+                        .WithMany()
+                        .HasForeignKey("rtblid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Materialinspection");
 
                     b.Navigation("Product");
+
+                    b.Navigation("receivedEntryDetails");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Miscost", b =>

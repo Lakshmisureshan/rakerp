@@ -7,6 +7,7 @@ using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
 using WebApplication1.Repositories.Implementation;
 using WebApplication1.Repositories.Interface;
+using static iTextSharp.text.pdf.events.IndexEvents;
 
 namespace WebApplication1.Controllers
 {
@@ -20,14 +21,17 @@ namespace WebApplication1.Controllers
         private readonly ITokenRepository tokenrepository;
 
         public ILogger<AuthController> Logger { get; }
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthController(ApplicationDBContext dbcontext,UserManager<ApplicationUser> userManager1,  IConfiguration configuration1,ITokenRepository  tokenrepository, ILogger<AuthController> logger)
+       
+        public AuthController(RoleManager<IdentityRole> roleManager,ApplicationDBContext dbcontext,UserManager<ApplicationUser> userManager1,  IConfiguration configuration1,ITokenRepository  tokenrepository, ILogger<AuthController> logger)
         {
             this.dbcontext = dbcontext;
             this.userManager1 = userManager1;
             this.configuration1 = configuration1;
             this.tokenrepository = tokenrepository;
             Logger = logger;
+            _roleManager = roleManager;
         }
 
 
@@ -394,75 +398,152 @@ namespace WebApplication1.Controllers
 
 
 
+        //[HttpPost("RegisterRE")]
+        //public async Task<IActionResult> RegisterRE([FromBody] RegisterREclass request)
+        //{
+        //    if (request == null || string.IsNullOrEmpty(request.UserId))
+        //    {
+        //        return BadRequest("Invalid request data");
+        //    }
+
+        //    var user = await userManager1.FindByIdAsync(request.UserId) ??
+        //               await userManager1.FindByEmailAsync(request.UserId);
+        //    if (user == null)
+        //    {
+        //        return Ok(new { Message = "User not found." });
+        //    }
+
+        //    using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+        //    {
+        //        try
+        //        {
+        //            foreach (var entry in request.redetails)
+        //            {
+        //                var purchaseDetails = await dbcontext.Purchasedetails
+        //                                                     .FirstOrDefaultAsync(pd => pd.potblid == entry.potblid);
+
+        //                if (purchaseDetails == null)
+        //                {
+        //                   // return NotFound($"Purchase details not found for potblid {entry.potblid}.");
+        //                    return Ok(new { Message = $"Purchase details not found for potblid {entry.potblid}.", Success = true });
+        //                }
+
+        //                var receivedHeader = await dbcontext.ReceivedEntry
+        //                                                    .FirstOrDefaultAsync(rh => rh.REID == request.reno);
+
+        //                if (receivedHeader == null)
+        //                {
+        //                  //  return NotFound($"Received header not found for rtblid {entry.rtblid}.");
+        //                    return Ok(new { Message = $"Received header not found for rtblid {entry.rtblid}." });
+        //                }
+
+        //                // ✅ Check if already registered
+        //                if (receivedHeader.isregistered == 1)
+        //                {
+        //                   // return BadRequest($"Received entry {entry.rtblid} is already registered.");
+
+        //                    return Ok(new { Message = $"Received entry {entry.rtblid} is already registered." });
+        //                }
+
+        //                // ✅ Validate quantity
+        //                var newReceivedQty = purchaseDetails.receivedentryqty + entry.receivedqty;
+
+        //                if (newReceivedQty > purchaseDetails.poquantity)
+        //                {
+        //                   // return BadRequest($"Received quantity for potblid {entry.potblid} exceeds the ordered quantity ({purchaseDetails.poquantity}).");
+
+        //                    return Ok(new { Message = $"Received quantity for potblid {entry.potblid} exceeds the ordered quantity ({purchaseDetails.poquantity})." });
+        //                }
+
+        //                purchaseDetails.receivedentryqty = newReceivedQty;
+        //                receivedHeader.isregistered = 1;
+        //            }
+
+        //            await dbcontext.SaveChangesAsync();
+        //            await transaction.CommitAsync();
+
+        //           // return Ok("Purchase details and received headers updated successfully.");
+        //            return Ok(new { Message = "Purchase details and received headers updated successfully" });
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await transaction.RollbackAsync();
+        //            return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
+        //        }
+        //    }
+        //}
 
 
 
 
 
+        //[HttpPost("RegisterRE")]
+        //public async Task<IActionResult> RegisterRE([FromBody] RegisterREclass request)
+        //{
+        //    if (request == null || string.IsNullOrEmpty(request.UserId))
+        //    {
+        //        return BadRequest("Invalid request data");
+        //    }
 
-        [HttpPost("RegisterRE")]
-        public async Task<IActionResult> RegisterRE([FromBody] RegisterREclass request)
-        {
-            if (request == null || string.IsNullOrEmpty(request.UserId))
-            {
-                return BadRequest("Invalid request data");
-            }
+        //    var user = await userManager1.FindByIdAsync(request.UserId) ??
+        //               await userManager1.FindByEmailAsync(request.UserId);
+        //    if (user == null)
+        //    {
+        //        return Unauthorized("User not found.");
+        //    }
 
-            var user = await userManager1.FindByIdAsync(request.UserId) ??
-                       await userManager1.FindByEmailAsync(request.UserId);
-            if (user == null)
-            {
-                return Unauthorized("User not found.");
-            }
+        //    // Assuming you have a context object to interact with the database
+        //    using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+        //    {
+        //        try
+        //        {
+        //            foreach (var entry in request.redetails)
+        //            {
+        //                var purchaseDetails = await dbcontext.Purchasedetails
+        //                                                     .FirstOrDefaultAsync(pd => pd.potblid == entry.potblid);
 
-            // Assuming you have a context object to interact with the database
-            using (var transaction = await dbcontext.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    foreach (var entry in request.redetails)
-                    {
-                        // Retrieve the purchase details based on potblid
-                        var purchaseDetails = await dbcontext.Purchasedetails
-                                                             .FirstOrDefaultAsync(pd => pd.potblid == entry.potblid);
+        //                if (purchaseDetails == null)
+        //                {
+        //                    return NotFound($"Purchase details not found for potblid {entry.potblid}.");
+        //                }
 
-                        if (purchaseDetails == null)
-                        {
-                            return NotFound($"Purchase details not found for potblid {entry.potblid}.");
-                        }
+        //                // Validate quantity
+        //                var newReceivedQty = purchaseDetails.receivedentryqty + entry.receivedqty;
 
-                        // Update the received quantity
-                        purchaseDetails.receivedentryqty += entry.receivedqty;
+        //                if (newReceivedQty > purchaseDetails.poquantity)
+        //                {
+        //                    return BadRequest($"Received quantity for potblid {entry.potblid} exceeds the ordered quantity ({purchaseDetails.poquantity}).");
+        //                }
 
-                        // Retrieve the received header based on rtblid
-                        var receivedHeader = await dbcontext.ReceivedEntry
-                                                            .FirstOrDefaultAsync(rh => rh.REID == request.reno);
+        //                purchaseDetails.receivedentryqty = newReceivedQty;
 
-                        if (receivedHeader == null)
-                        {
-                            return NotFound($"Received header not found for rtblid {entry.rtblid}.");
-                        }
+        //                var receivedHeader = await dbcontext.ReceivedEntry
+        //                                                    .FirstOrDefaultAsync(rh => rh.REID == request.reno);
 
-                        // Update the isregistered field
-                        receivedHeader.isregistered = 1;
-                    }
+        //                if (receivedHeader == null)
+        //                {
+        //                    return NotFound($"Received header not found for rtblid {entry.rtblid}.");
+        //                }
 
-                    // Save changes to the database
-                    await dbcontext.SaveChangesAsync();
+        //                receivedHeader.isregistered = 1;
+        //            }
 
-                    // Commit the transaction
-                    await transaction.CommitAsync();
+        //            // Save changes to the database
+        //            await dbcontext.SaveChangesAsync();
 
-                    return Ok("Purchase details and received headers updated successfully.");
-                }
-                catch (Exception ex)
-                {
-                    // Roll back the transaction if any error occurs
-                    await transaction.RollbackAsync();
-                    return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
-                }
-            }
-        }
+        //            // Commit the transaction
+        //            await transaction.CommitAsync();
+
+        //            return Ok("Purchase details and received headers updated successfully.");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            // Roll back the transaction if any error occurs
+        //            await transaction.RollbackAsync();
+        //            return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
+        //        }
+        //    }
+        //}
 
 
 
@@ -821,11 +902,14 @@ namespace WebApplication1.Controllers
 
                         // Update isregistered field
                         grnheader.isregistered = 1;
+                        var maxBatchId = await dbcontext.Inventory
+    .MaxAsync(inv => (int?)inv.batchid) ?? 0;
 
+                        var nextBatchId = maxBatchId + 1;
                         var inventory = new Inventory
                         {
                             productid = entry.itemcode,
-                            batchid = 1,
+                            batchid = nextBatchId,
                             jobid = purchaseheader.jobid,
                             pono = grnheader.pono,
                             quantity = entry.grnqty * (decimal)entry.multiplyingfactor,
@@ -1349,6 +1433,169 @@ namespace WebApplication1.Controllers
 
 
 
+
+        [HttpPost("assign-roles")]
+        public async Task<IActionResult> AssignRoles([FromBody] AssignRolesDto model)
+        {
+            var user = await userManager1.FindByIdAsync(model.UserId);
+            if (user == null)
+                return NotFound("User not found");
+
+        
+
+            // Assign new roles
+            var result = await userManager1.AddToRolesAsync(user, model.Roles);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok("Roles assigned successfully");
+        }
+
+        [HttpGet("GetRoles")]
+        public IActionResult GetRoles()
+        {
+            var roles = _roleManager.Roles.Select(r => new { r.Id, r.Name }).ToList();
+            return Ok(roles);
+        }
+
+
+        [HttpGet("GetUserRolesperuser/{userId}")]
+        public async Task<IActionResult> GetUserRolesperuser(string userId)
+        {
+            var user = await userManager1.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            var roles = await userManager1.GetRolesAsync(user);
+            return Ok(roles); // returns List<string> of role names
+        }
+
+
+
+        [HttpPost("UpdateUserRole")]
+        public async Task<IActionResult> UpdateUserRole([FromBody] UpdateUserRoleDto model)
+        {
+            var user = await userManager1.FindByIdAsync(model.UserId);
+            if (user == null)
+                return NotFound();
+
+            if (model.Assign)
+            {
+                if (!await userManager1.IsInRoleAsync(user, model.RoleName))
+                {
+                    var result = await userManager1.AddToRoleAsync(user, model.RoleName);
+                    if (!result.Succeeded)
+                        return BadRequest(result.Errors);
+                }
+            }
+            else
+            {
+                if (await userManager1.IsInRoleAsync(user, model.RoleName))
+                {
+                    var result = await userManager1.RemoveFromRoleAsync(user, model.RoleName);
+                    if (!result.Succeeded)
+                        return BadRequest(result.Errors);
+                }
+            }
+
+            return Ok();
+        }
+
+        public class UpdateUserRoleDto
+        {
+            public string UserId { get; set; }
+            public string RoleName { get; set; }
+            public bool Assign { get; set; }
+        }
+
+
+
+
+
+        [HttpPost("RegisterRE")]
+        public async Task<IActionResult> RegisterRE([FromBody] RegisterREclass request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.UserId))
+            {
+                return Ok(new { Message = "Invalid request data", Success = false });
+            }
+
+            var user = await userManager1.FindByIdAsync(request.UserId) ??
+                       await userManager1.FindByEmailAsync(request.UserId);
+            if (user == null)
+            {
+                return Ok(new { Message = "User not found", Success = false });
+            }
+
+            var messages = new List<string>();
+            bool anyUpdated = false;
+
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    foreach (var entry in request.redetails)
+                    {
+                        var purchaseDetails = await dbcontext.Purchasedetails
+                                                             .FirstOrDefaultAsync(pd => pd.potblid == entry.potblid);
+
+                        if (purchaseDetails == null)
+                        {
+                            messages.Add($"Purchase details not found for potblid {entry.potblid}.");
+                            continue;
+                        }
+
+                        var receivedHeader = await dbcontext.ReceivedEntry
+                                                            .FirstOrDefaultAsync(rh => rh.REID == request.reno);
+
+                        if (receivedHeader == null)
+                        {
+                            messages.Add($"Received header not found for rtblid {entry.rtblid}.");
+                            continue;
+                        }
+
+                        if (receivedHeader.isregistered == 1)
+                        {
+                            messages.Add($"Received entry {entry.rtblid} is already registered.");
+                            continue;
+                        }
+                        var totalAfterReceive = purchaseDetails.receivedentryqty + entry.receivedqty;
+                        var maxAllowed = purchaseDetails.poquantity + purchaseDetails.insprejectedqty;
+
+                        if (totalAfterReceive > maxAllowed)
+                        {
+                            messages.Add($"Cannot receive {entry.receivedqty} for potblid {entry.potblid} as it exceeds PO quantity + rejected allowance ({maxAllowed}).");
+                            continue;
+                        }
+
+                        // ✅ All checks passed: update
+                        purchaseDetails.receivedentryqty = totalAfterReceive;
+                        receivedHeader.isregistered = 1;
+                        anyUpdated = true;
+                    }
+
+                    if (anyUpdated)
+                    {
+                        await dbcontext.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                        messages.Add("Purchase details and received headers updated successfully.");
+                    }
+                    else
+                    {
+                        await transaction.RollbackAsync();
+                        messages.Add("No entries were updated due to validation issues.");
+                    }
+
+                    return Ok(new { Success = true, Messages = messages });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, new { Success = false, Message = $"An error occurred: {ex.Message}" });
+                }
+            }
+        }
 
 
 
