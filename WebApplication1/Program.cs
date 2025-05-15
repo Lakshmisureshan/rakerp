@@ -75,11 +75,11 @@ app.UseCors(options => {
     options.AllowAnyOrigin();
     options.AllowAnyMethod();
 });
-app.UseAuthorization();
+app.UseAuthorization(); 
 
 app.MapControllers();
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-app.Urls.Add("http://0.0.0.0:" + port);
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+//app.Urls.Add("http://0.0.0.0:" + port);
 
 app.UseStaticFiles();
 app.Run();
