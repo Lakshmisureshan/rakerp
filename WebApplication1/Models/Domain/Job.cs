@@ -90,15 +90,15 @@ namespace WebApplication1.Models.Domain
         public int bomjobrevno3 { get; set; } = 0;
         public int bomjobstatusid3 { get; set; } = 0;
 
+        public int bomjobrevno4 { get; set; } = 0;
+        public int bomjobstatusid4 { get; set; } = 0;
+
+        public int bomjobrevno5 { get; set; } = 0;
+        public int bomjobstatusid5 { get; set; } = 0;
 
 
-
-
-
-
-
-
-
+        public int bomjobrevno6 { get; set; } = 0;
+        public int bomjobstatusid6 { get; set; } = 0;
 
 
 
