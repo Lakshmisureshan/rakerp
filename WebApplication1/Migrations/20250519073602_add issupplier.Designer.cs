@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250519073602_add issupplier")]
+    partial class addissupplier
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -377,15 +379,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dd7073ee-b203-41c7-a171-689d0fe89f89",
+                            ConcurrencyStamp = "b19a37d7-4541-44b2-be21-593e45f54f81",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEF1EdowsdrCjPR9VmcaPnVI4dMuRx8aBgg6lhID71rA1eTyVBPp1yWlZGJHOwLSjpg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEr+UeemCsprvX/9DYtmpQ6urfyOROw9q/nnZVW3oqy7ogS9lMVOObndpKN+nOkEYg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e275bd33-d9ae-4308-983d-2af857427898",
+                            SecurityStamp = "7c6de369-de2c-44dc-9334-ce57291624a6",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1469,6 +1471,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("deliveryterms")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("enduserid")
@@ -1559,6 +1562,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("warrantyterms")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Jobid");
@@ -2531,21 +2535,6 @@ namespace WebApplication1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("supplierid"), 1L, 1);
 
-                    b.Property<DateTime>("createddate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("emailaddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("fax")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("phoneno")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("remarks")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("supplieraddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2554,13 +2543,8 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("supplierpoboxno")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("suppliertrnno")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("webaddress")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("supplierid");
@@ -2588,36 +2572,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("supplierid");
 
                     b.ToTable("SupplierContact");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Trackpage", b =>
-                {
-                    b.Property<int>("trackid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("trackid"), 1L, 1);
-
-                    b.Property<string>("createdbyuser")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("createddate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("docno")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("pagename")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("trackid");
-
-                    b.HasIndex("createdbyuser");
-
-                    b.ToTable("Trackpage");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.UOM", b =>
@@ -3948,17 +3902,6 @@ namespace WebApplication1.Migrations
                         .IsRequired();
 
                     b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Trackpage", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("createdbyuser")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.UomMultiplyingFactor", b =>

@@ -251,6 +251,7 @@ namespace WebApplication1.Controllers
       .Include(j => j.Customer). Include(t => t.JobType)
       .Include(t => t.ProjectEngineer)
         .Include(t => t.ProjectManager)
+         .Include(t => t.ProjectCategory)
       .ToListAsync();
             return Ok(jobs);
         }

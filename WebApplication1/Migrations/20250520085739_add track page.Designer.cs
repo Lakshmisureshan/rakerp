@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250520085739_add track page")]
+    partial class addtrackpage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -377,15 +379,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dd7073ee-b203-41c7-a171-689d0fe89f89",
+                            ConcurrencyStamp = "962cfa32-5e35-4c6e-b38f-23875dc13061",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEF1EdowsdrCjPR9VmcaPnVI4dMuRx8aBgg6lhID71rA1eTyVBPp1yWlZGJHOwLSjpg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHHiU1sEv0Dyya3G4zh68ZVAv0/IVTebWVEwzp5pc4mo8F0LT1YL636b+uba3bZE+Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e275bd33-d9ae-4308-983d-2af857427898",
+                            SecurityStamp = "822d78f6-4973-411c-b3c9-329936e6bdd2",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1469,6 +1471,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("deliveryterms")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("enduserid")
@@ -1559,6 +1562,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("warrantyterms")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Jobid");

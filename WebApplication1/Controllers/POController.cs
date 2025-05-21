@@ -164,7 +164,7 @@ namespace WebApplication1.Controllers
                     existingPO.Mtcrequired = request.Mtcrequired;
                     existingPO.Orderid = request.Orderid;
                     existingPO.Others = request.others;
-                    existingPO.supplierid = request.supplierid; 
+                    existingPO.supplierid = request.supplierid;
                     existingPO.popaymenttermsid = request.popaymenttermsid;
                     existingPO.POPaymentterms2id = request.POPaymentterms2id;
                     existingPO.podeliverytermsid = request.podeliverytermsid;
@@ -305,7 +305,7 @@ namespace WebApplication1.Controllers
 
         [HttpGet("GetPOHeaderDetailsbypoid")]
         public async Task<IActionResult> GetPOHeaderDetailsbypoid(int pono)
-       {
+        {
             try
             {
                 var POheaderdetails = await dbcontext.PO
@@ -380,7 +380,7 @@ namespace WebApplication1.Controllers
                                            po.pounitprice,
 
 
-                                           totalamount=po.pounitprice * po.poquantity
+                                           totalamount = po.pounitprice * po.poquantity
                                            // You can include other fields from PRPO if needed
                                        }).ToListAsync();
             if (POlinedetails == null)
@@ -1874,7 +1874,7 @@ namespace WebApplication1.Controllers
 
             var purchasedetails = await dbcontext.Purchasedetails
           .Where(p => p.orderid == pono
-                      && (p.poquantity - p.receivedentryqty+p.insprejectedqty)>0
+                      && (p.poquantity - p.receivedentryqty + p.insprejectedqty) > 0
 
                       && p.PO.postatusid == 3) // Assuming 'PO' is the navigation property for the PO table
           .Include(p => p.product) // Including the 'Product' navigation property
@@ -2200,7 +2200,7 @@ namespace WebApplication1.Controllers
                     existingEntry.currencyid = dto.currencyid;
                     existingEntry.billofentrydate = dto.billofentrydate;
                     existingEntry.billofentryno = dto.billofentryno;
-                    existingEntry.remarks =dto.remarks;
+                    existingEntry.remarks = dto.remarks;
                     existingEntry.dono = dto.dono;
                     dbcontext.GRNHeader.Update(existingEntry);
                 }
@@ -2213,10 +2213,10 @@ namespace WebApplication1.Controllers
                         grndate = dto.grndate,
                         grnno = dto.grnno,
                         currencyid = dto.currencyid,
-                        billofentrydate=dto.billofentrydate,
-                        billofentryno=dto.billofentryno,    
-                        dono= dto.dono,
-                        remarks=dto.remarks,
+                        billofentrydate = dto.billofentrydate,
+                        billofentryno = dto.billofentryno,
+                        dono = dto.dono,
+                        remarks = dto.remarks,
 
 
                     };
@@ -2408,7 +2408,7 @@ namespace WebApplication1.Controllers
             try
             {
                 var unregisteredIssueNotes = await dbcontext.IssueNoteheader
-      .Where(e => e.isregistered == 0 && e.issueref != dto.issueref && e.jobid == dto.jobid  && e.issuetype=="PO")
+      .Where(e => e.isregistered == 0 && e.issueref != dto.issueref && e.jobid == dto.jobid && e.issuetype == "PO")
       .ToListAsync();
 
                 if (unregisteredIssueNotes.Any())
@@ -2911,7 +2911,7 @@ namespace WebApplication1.Controllers
                                            PendingQty = red.prqty - (red.pocreatedqty + (float)red.prstockqty),  // Pending quantity calculation
                                            rh.jobid,  // Job ID
                                            red.prtblid,  // PR Details table ID
-                                         itemid=  ii.productcode  // Product ID
+                                           itemid = ii.productcode  // Product ID
                                        }).ToListAsync();
             return Ok(prpendinglist);
         }
@@ -3155,8 +3155,8 @@ namespace WebApplication1.Controllers
 
             public int budgetheaderid { get; set; }
 
-            public string  budgetheadername { get; set; }
-       
+            public string budgetheadername { get; set; }
+
 
 
 
@@ -3301,11 +3301,11 @@ namespace WebApplication1.Controllers
                                            jobid = g.Key.jobid,
 
 
-                                           jobtypename=g.Key.JobtypeName,
+                                           jobtypename = g.Key.JobtypeName,
 
 
-                                           budgetheadername =g.Key.budgetheadername,
-                                           budgetheaderid =g.Key.budgetheaderid
+                                           budgetheadername = g.Key.budgetheadername,
+                                           budgetheaderid = g.Key.budgetheaderid
                                        }).ToListAsync();
 
             // Total Issued Quantities
@@ -3392,7 +3392,7 @@ namespace WebApplication1.Controllers
                                            Itemname = g.Key.itemname,
                                            Rate = g.Key.exchangerate,
                                            jobid = g.Key.jobid,
-                                        
+
                                            jobtypename = g.Key.JobtypeName,
                                            budgetheadername = g.Key.budgetheadername,
                                            budgetheaderid = g.Key.budgetheaderid
@@ -3446,7 +3446,7 @@ namespace WebApplication1.Controllers
                     itemname = x.Received.Itemname,
                     rate = x.Received.Rate,
                     jobid = x.Received.jobid,
-                    jobtypename=x.Received.jobtypename  ,
+                    jobtypename = x.Received.jobtypename,
                     budgetheaderid = x.Received.budgetheaderid,
                     budgetheadername = x.Received.budgetheadername,
 
@@ -3466,7 +3466,7 @@ namespace WebApplication1.Controllers
                         jobid = i.jobid,
                         jobtypename = i.jobtypename,
                         budgetheaderid = i.budgetheaderid,
-                        budgetheadername =i.budgetheadername,
+                        budgetheadername = i.budgetheadername,
                     }))
                 .Union(totalReturned
                     .Where(r => !totalReceived.Any(grn => grn.Invid == r.Invid) && !totalIssued.Any(issue => issue.Invid == r.Invid))
@@ -3483,7 +3483,7 @@ namespace WebApplication1.Controllers
                         jobtypename = r.jobtypename,
 
                         budgetheaderid = r.budgetheaderid,
-                        budgetheadername =r.budgetheadername,
+                        budgetheadername = r.budgetheadername,
                     }))
                 .OrderBy(result => result.invid)
                 .Where(x => x.inventory != 0)
@@ -4050,7 +4050,7 @@ namespace WebApplication1.Controllers
                         issueprice = item.issueprice,
 
                         issuecurrencyid = item.invrcurrencyid,
-                        issueuomid =item.uomid
+                        issueuomid = item.uomid
 
 
 
@@ -4519,7 +4519,7 @@ namespace WebApplication1.Controllers
                                       where ih.jobid == jobid && ih.isregistered == 1 && po.issueqty > po.returnedqty
                                       select new
                                       {
-                                        itemid=  ii.productcode,
+                                          itemid = ii.productcode,
                                           po.rid,
                                           po.issuedetailid,
                                           ir.fromjobid,
@@ -4927,7 +4927,7 @@ namespace WebApplication1.Controllers
                                    join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
 
                                    join pp in dbcontext.Purchasedetails on po.Orderid equals pp.orderid
-                                   where po.postatusid == 3 && (pp.poquantity - pp.receivedentryqty +pp.insprejectedqty)>0
+                                   where po.postatusid == 3 && (pp.poquantity - pp.receivedentryqty + pp.insprejectedqty) > 0
                                    group po by new { po.Orderid, ss.suppliername, po.Podate } into grouped
                                    select new
                                    {
@@ -4954,10 +4954,10 @@ namespace WebApplication1.Controllers
 
                                    join pp in dbcontext.Purchasedetails on po.Orderid equals pp.orderid
 
-                                   join re in dbcontext.ReceivedEntryDetails on pp.potblid equals re.potblid 
+                                   join re in dbcontext.ReceivedEntryDetails on pp.potblid equals re.potblid
                                    join ree in dbcontext.ReceivedEntry on re.RENO equals ree.REID
-                                   where po.postatusid == 3   
-                                   && ree.isregistered==1 && re.receivedqty -(re.acceptedqty+re.holdqty+re.rejectedqty) >0
+                                   where po.postatusid == 3
+                                   && ree.isregistered == 1 && re.receivedqty - (re.acceptedqty + re.holdqty + re.rejectedqty) > 0
                                    group po by new { po.Orderid, ss.suppliername, po.Podate, re.RENO } into grouped
                                    select new
                                    {
@@ -4986,13 +4986,24 @@ namespace WebApplication1.Controllers
                                    join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
                                    join pp in dbcontext.Purchasedetails on po.Orderid equals pp.orderid
                                    join re in dbcontext.ReceivedEntryDetails on pp.potblid equals re.potblid
-                                join ii in dbcontext.Product on re.itemid equals  ii.productcode
-                                join reh in dbcontext.ReceivedEntry on re.RENO equals reh.REID
-                                   where po.postatusid == 3 && re.receivedqty - (re.acceptedqty + re.rejectedqty + re.holdqty) >0
-                                   && re.RENO  ==reno &&  reh.isregistered==1 
-                                   group po by new { po.Orderid, ss.suppliername, po.Podate, re.RENO , re.acceptedqty, re.receivedqty, re.rejectedqty, re.holdqty,
+                                   join ii in dbcontext.Product on re.itemid equals ii.productcode
+                                   join reh in dbcontext.ReceivedEntry on re.RENO equals reh.REID
+                                   where po.postatusid == 3 && re.receivedqty - (re.acceptedqty + re.rejectedqty + re.holdqty) > 0
+                                   && re.RENO == reno && reh.isregistered == 1
+                                   group po by new
+                                   {
+                                       po.Orderid,
+                                       ss.suppliername,
+                                       po.Podate,
+                                       re.RENO,
+                                       re.acceptedqty,
+                                       re.receivedqty,
+                                       re.rejectedqty,
+                                       re.holdqty,
                                        re.rtblid,
-                                       re.itemid, ii.itemname} into grouped
+                                       re.itemid,
+                                       ii.itemname
+                                   } into grouped
                                    select new
                                    {
                                        grouped.Key.Orderid,
@@ -5006,7 +5017,7 @@ namespace WebApplication1.Controllers
                                        grouped.Key.itemname,
                                        grouped.Key.itemid,
                                        grouped.Key.rtblid,
-                                       pending = (grouped.Key.receivedqty -(grouped.Key.acceptedqty + grouped.Key.holdqty)),
+                                       pending = (grouped.Key.receivedqty - (grouped.Key.acceptedqty + grouped.Key.holdqty)),
 
                                    }).ToListAsync();
 
@@ -5232,7 +5243,7 @@ namespace WebApplication1.Controllers
             public string budgetheadername { get; set; }
             public decimal Totalamt { get; set; }
 
-            public int  budgetheaderid { get; set; }
+            public int budgetheaderid { get; set; }
 
         }
 
@@ -5240,11 +5251,11 @@ namespace WebApplication1.Controllers
         public class InvoicereceiptPending
         {
             public int invoiceno { get; set; }
-            public int  jobid { get; set; }
+            public int jobid { get; set; }
             public decimal invoicevalueinbasecurrency { get; set; }
             public decimal invoicereceipts { get; set; }
-        
-         
+
+
 
 
 
@@ -5264,7 +5275,7 @@ namespace WebApplication1.Controllers
 
             public string jobtypename { get; set; }
 
-            
+
 
         }
 
@@ -5293,10 +5304,14 @@ namespace WebApplication1.Controllers
             public int BudgetHeaderId { get; set; }
             public int JobId { get; set; }
             public decimal Amount { get; set; }
-
             public decimal fixedamount { get; set; }
-
             public decimal poamount { get; set; }
+            public decimal issuedamount { get; set; }
+            public decimal returnedamount { get; set; }
+            public int bomrevno { get; set; }
+            public decimal fixedbudgetamountadditional { get; set; }
+            public decimal overallfixedbudget { get; set; }
+
         }
 
         //[HttpGet("GetBudgetSummary")]
@@ -5329,6 +5344,7 @@ namespace WebApplication1.Controllers
         //        }
         //    }
 
+        //    return budgetSummaries;
         //    return budgetSummaries;
         //}
 
@@ -5382,7 +5398,7 @@ namespace WebApplication1.Controllers
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     await conn.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand("sp_GetBudgetSummaryrv4", conn))
+                    using (SqlCommand cmd = new SqlCommand("sp_GetBudgetSummaryrv6", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@jobid", jobId);
@@ -5399,13 +5415,34 @@ namespace WebApplication1.Controllers
                                     Amount = reader.IsDBNull(reader.GetOrdinal("Amount"))
                                      ? 0
                                      : Convert.ToDecimal(reader["Amount"]),
-                                    fixedamount= reader.IsDBNull(reader.GetOrdinal("fixedamount"))
+                                    fixedamount = reader.IsDBNull(reader.GetOrdinal("fixedamount"))
                                      ? 0
                                      : Convert.ToDecimal(reader["fixedamount"]),
 
                                     poamount = reader.IsDBNull(reader.GetOrdinal("poamount"))
                                      ? 0
                                      : Convert.ToDecimal(reader["poamount"]),
+                                    issuedamount = reader.IsDBNull(reader.GetOrdinal("issuedamt"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["issuedamt"]),
+
+                                    returnedamount = reader.IsDBNull(reader.GetOrdinal("returnedamt"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["returnedamt"]),
+
+
+                                    fixedbudgetamountadditional = reader.IsDBNull(reader.GetOrdinal("fixedbudgetamountadditional"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["fixedbudgetamountadditional"]),
+
+
+                                    overallfixedbudget = reader.IsDBNull(reader.GetOrdinal("overallfixedbudget"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["overallfixedbudget"]),
+
+
+
+
 
 
                                 });
@@ -5429,6 +5466,101 @@ namespace WebApplication1.Controllers
                 return StatusCode(500, "An error occurred while fetching the budget summary.");
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetBomBudgetrevisiondetails")]
+        public async Task<ActionResult<List<BudgetSummary>>> GetBomBudgetrevisiondetails(int jobid, int budgetheaderid)
+        {
+            var budgetSummaries = new List<BudgetSummary>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetBomBudgetrevisiondetails", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@jobid", jobid);
+                        cmd.Parameters.AddWithValue("@budgetheaderid", budgetheaderid);
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                budgetSummaries.Add(new BudgetSummary
+                                {
+                                    BudgetHeadName = reader["budgetheadername"].ToString(),
+                                    BudgetHeaderId = reader.GetInt32(reader.GetOrdinal("budgetheaderid")),
+
+                                    Amount = reader.IsDBNull(reader.GetOrdinal("Amount"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["Amount"]),
+
+
+
+                                    bomrevno = reader.GetInt32(reader.GetOrdinal("bomrevno")),
+
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (budgetSummaries.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(budgetSummaries);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public class MainJobValue
         {
             public decimal MainOrderValueBase { get; set; }
@@ -6098,7 +6230,7 @@ namespace WebApplication1.Controllers
                     // Calculate total invoiced value in base currency
                     decimal totalInvoiced = job.totalinvoiceinbasecurrency;
                     decimal newTotal = totalInvoiced + request.invoiceValue * (decimal)job.exchangerate;
-                    decimal orderValueBaseCurrency = Convert.ToDecimal(job.ordervaluebasecurrency)  + Convert.ToDecimal(job.ordervaluebasecurrency) *5/100;
+                    decimal orderValueBaseCurrency = Convert.ToDecimal(job.ordervaluebasecurrency) + Convert.ToDecimal(job.ordervaluebasecurrency) * 5 / 100;
                     if (newTotal > orderValueBaseCurrency)
                     {
                         throw new Exception("Total invoice value exceeds job order value.");
@@ -6255,9 +6387,9 @@ namespace WebApplication1.Controllers
             {
                 budgetId = estimation.budgetId,
                 fixedamount = estimation.fixedamount,
-                revision = newRevision, 
-                
-                jobid=estimation.jobid
+                revision = newRevision,
+
+                jobid = estimation.jobid
             }).ToList();
 
             // 🔹 Save all new records in a single database operation
@@ -6296,6 +6428,30 @@ namespace WebApplication1.Controllers
         }
 
 
+        [HttpGet("GetLastRevisionEstimationsbyjobid")]
+        public async Task<IActionResult> GetLastRevisionEstimationsbyjobid([FromQuery] int jobno)
+        {
+            if (jobno <= 0)
+                return BadRequest("Valid jobno is required.");
+
+            int? latestRevision = await dbcontext.FixedBudget
+                .Where(fb => fb.jobid == jobno)
+                .MaxAsync(fb => (int?)fb.revision);
+
+            if (latestRevision == null)
+                return Ok(new List<object>());
+
+            var estimations = await dbcontext.FixedBudget
+                .Where(fb => fb.jobid == jobno && fb.revision == latestRevision)
+                .Select(fb => new
+                {
+                    budgetId = fb.budgetId,
+                    fixedamount = fb.fixedamount
+                })
+                .ToListAsync();
+
+            return Ok(estimations);
+        }
 
 
 
@@ -6318,8 +6474,8 @@ namespace WebApplication1.Controllers
             try
             {
                 // Find existing received entry
-              
-                  
+
+
 
                 // Insert or update details
                 foreach (var item in dto.estimationdetails)
@@ -6328,16 +6484,16 @@ namespace WebApplication1.Controllers
                     {
 
 
-                        applicationid = item.applicationid ,
+                        applicationid = item.applicationid,
                         // Associate with the received entry
                         jobid = item.jobid,
                         currencyid = item.currencyid,
                         uomid = item.uomid,
-                        quantity=item.qty,
-                        price=item.unitprice,
-                         revision=item.revision,
-                        itemid = item.itemid,   
-                       
+                        quantity = item.qty,
+                        price = item.unitprice,
+                        revision = item.revision,
+                        itemid = item.itemid,
+
                     };
 
                     await dbcontext.estimation.AddAsync(detail);
@@ -6382,28 +6538,28 @@ namespace WebApplication1.Controllers
             }
 
             var estimationdetails = await (from aa in dbcontext.estimation
-                                      join cc in dbcontext.Currency on aa.currencyid equals cc.currencyid
-                                      join pp in dbcontext.Product on aa.itemid equals pp.productcode
-                                      join bh in dbcontext.BudgettHeader on pp.itembudgetheaderid equals bh.budgetheaderid
-                                      join app in dbcontext.ProductionStages on aa.applicationid equals app.prostageid
-                                     
-                                      where aa.jobid == jobid 
-                             
+                                           join cc in dbcontext.Currency on aa.currencyid equals cc.currencyid
+                                           join pp in dbcontext.Product on aa.itemid equals pp.productcode
+                                           join bh in dbcontext.BudgettHeader on pp.itembudgetheaderid equals bh.budgetheaderid
+                                           join app in dbcontext.ProductionStages on aa.applicationid equals app.prostageid
 
-                                      select new
-                                      {
-                                          estimationid=aa.estimationid,
-                                          budgetheadername = bh.budgetheadername,
-                                          itemname = pp.itemname,
-                                          application = app.productionstagename,
-                                          unitprice = aa.price,
-                                          qty=aa.quantity,
-                                          revision = aa.revision,
-                                          totalpriceinbasecurrency =aa.quantity *  aa.price* Convert.ToDecimal(cc.exchangerate),
-                                          isconvertedtobom =aa.isconvertedtobom
+                                           where aa.jobid == jobid
 
 
-                                      })
+                                           select new
+                                           {
+                                               estimationid = aa.estimationid,
+                                               budgetheadername = bh.budgetheadername,
+                                               itemname = pp.itemname,
+                                               application = app.productionstagename,
+                                               unitprice = aa.price,
+                                               qty = aa.quantity,
+                                               revision = aa.revision,
+                                               totalpriceinbasecurrency = aa.quantity * aa.price * Convert.ToDecimal(cc.exchangerate),
+                                               isconvertedtobom = aa.isconvertedtobom
+
+
+                                           })
                                            .ToListAsync();
 
             if (!estimationdetails.Any())
@@ -6455,19 +6611,19 @@ namespace WebApplication1.Controllers
             }
 
             var podetails = await (from aa in dbcontext.PO
-                                           join re in dbcontext.ReceivedEntry on aa.Orderid equals re.pono
-                                       
-                                           where re.REID == reno
-                                           select new
-                                           {
-                                               jobid = aa.jobid,
-                                               pono = aa.Orderid,
-                                         
-                                         
+                                   join re in dbcontext.ReceivedEntry on aa.Orderid equals re.pono
+
+                                   where re.REID == reno
+                                   select new
+                                   {
+                                       jobid = aa.jobid,
+                                       pono = aa.Orderid,
 
 
 
-                                           })
+
+
+                                   })
                                            .FirstOrDefaultAsync();
 
             if (podetails == null)
@@ -6677,7 +6833,7 @@ namespace WebApplication1.Controllers
                                 acceptedqty = item.acceptedqty,
                                 rejectedqty = item.rejectedqty,
                                 holdqty = item.holdqty,
-                                rtblid=item.rtblid
+                                rtblid = item.rtblid
                             };
 
                             await dbcontext.MIdetails.AddAsync(detail);
@@ -6722,7 +6878,7 @@ namespace WebApplication1.Controllers
 
         [HttpGet("GetMIdetailsbymino")]
         public async Task<IActionResult> GetMIdetailsbymino([FromQuery] int mino)
-        
+
         {
             var miHeaderDetails = await (from mi in dbcontext.Materialinspection
                                          join po in dbcontext.PO on mi.pono equals po.Orderid
@@ -6744,7 +6900,7 @@ namespace WebApplication1.Controllers
                                              mi.qtyverified,
                                              jobid = po.jobid,
                                              mi.isregistered
-                                         }).  ToListAsync();
+                                         }).ToListAsync();
 
             return Ok(miHeaderDetails);
         }
@@ -6840,7 +6996,7 @@ namespace WebApplication1.Controllers
                                    join re in dbcontext.ReceivedEntryDetails on pp.potblid equals re.potblid
                                    join ii in dbcontext.Product on re.itemid equals ii.productcode
                                    join rh in dbcontext.ReceivedEntry on re.RENO equals rh.REID
-                                   where po.postatusid == 3 && re.receivedqty- (re.acceptedqty + re.holdqty+re.rejectedqty) >0 &&  rh.isregistered==1
+                                   where po.postatusid == 3 && re.receivedqty - (re.acceptedqty + re.holdqty + re.rejectedqty) > 0 && rh.isregistered == 1
                                    && re.RENO == reno && !midetailsItemIds.Contains(re.itemid)
                                    group po by new { po.Orderid, ss.suppliername, po.Podate, re.RENO, re.acceptedqty, re.receivedqty, re.rejectedqty, re.holdqty, re.itemid, ii.itemname, re.rtblid } into grouped
                                    select new
@@ -6856,7 +7012,7 @@ namespace WebApplication1.Controllers
                                        grouped.Key.itemname,
                                        grouped.Key.itemid,
                                        grouped.Key.rtblid,
-                                       pending = (grouped.Key.receivedqty - (grouped.Key.acceptedqty + grouped.Key.holdqty+grouped.Key.rejectedqty)),
+                                       pending = (grouped.Key.receivedqty - (grouped.Key.acceptedqty + grouped.Key.holdqty + grouped.Key.rejectedqty)),
 
                                    }).ToListAsync();
 
@@ -6969,7 +7125,7 @@ namespace WebApplication1.Controllers
                                 posummary.Add(new POSummary
                                 {
                                     budgetheadername = reader["budgetheadername"].ToString(),
-                                    
+
                                     Totalamt = reader.IsDBNull(reader.GetOrdinal("Totalamt"))
                                      ? 0
                                      : Convert.ToDecimal(reader["Totalamt"]),
@@ -7073,7 +7229,7 @@ namespace WebApplication1.Controllers
 
         [HttpGet("GetPrnosFromPrpo")]
         public async Task<ActionResult<List<int>>> GetPrnosFromPrpoAsync(int pono)
-        
+
         {
             var prnos = new List<int>();
 
@@ -7143,7 +7299,7 @@ namespace WebApplication1.Controllers
                 if (grnnos.Count == 0)
                 {
                     return Ok(new { message = "No GRN numbers found for the given PO number." });
-                   // return NotFound(new { message = "No GRN numbers found for the given PO number." });
+                    // return NotFound(new { message = "No GRN numbers found for the given PO number." });
                 }
 
                 return Ok(grnnos);
@@ -7151,7 +7307,7 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error fetching GRN numbers: {ex.Message}");
-               // return StatusCode(500, "An error occurred while fetching the GRN numbers.");
+                // return StatusCode(500, "An error occurred while fetching the GRN numbers.");
                 return Ok(new { message = "An error occurred while fetching the GRN numbers" });
             }
         }
@@ -7274,10 +7430,10 @@ namespace WebApplication1.Controllers
         [HttpGet("GetAllProductCategories")]
         public async Task<IActionResult> GetAllProductCategories()
         {
-          
-        var categorydetails = await dbcontext.Category
-      
-       .ToListAsync();
+
+            var categorydetails = await dbcontext.Category
+
+           .ToListAsync();
 
             if (categorydetails == null)
             {
@@ -7307,7 +7463,7 @@ namespace WebApplication1.Controllers
 
         [HttpGet("GetMiscostdetailsbyjobid")]
         public async Task<IActionResult> GetMiscostdetailsbyjobid(int jobid)
-        
+
         {
             if (jobid <= 0)
             {
@@ -7315,21 +7471,21 @@ namespace WebApplication1.Controllers
             }
 
             var misdetails = await (from aa in dbcontext.Miscost
-                                   
-
-                                           where aa.jobid == jobid
 
 
-                                           select new
-                                           {
+                                    where aa.jobid == jobid
 
-                                               misid = aa.misid,
-                                               misamount = aa.misamount,
-                                               jobid = aa.jobid,
-                                               description = aa.description,
-                                              
 
-                                           })
+                                    select new
+                                    {
+
+                                        misid = aa.misid,
+                                        misamount = aa.misamount,
+                                        jobid = aa.jobid,
+                                        description = aa.description,
+
+
+                                    })
                                            .ToListAsync();
 
             if (!misdetails.Any())
@@ -7412,7 +7568,7 @@ namespace WebApplication1.Controllers
 
         public class mrate
         {
-          
+
             public decimal rate { get; set; } // use nullable decimal if 0 is valid but null must be checked
         }
 
@@ -7436,7 +7592,7 @@ namespace WebApplication1.Controllers
                                 join im in dbcontext.Product on d.productid equals im.productcode
                                 join bh in dbcontext.BudgettHeader on im.itembudgetheaderid equals bh.budgetheaderid
                                 join cc in dbcontext.Currency on d.ircurrencyid equals cc.currencyid
-                                where  h.jobid == jobid
+                                where h.jobid == jobid
 
                                 && h.isregistered == 1
                                 group new { d, cc } by new { h.jobid, im.itembudgetheaderid, bh.budgetheadername } into g
@@ -7474,7 +7630,7 @@ namespace WebApplication1.Controllers
                 .Select(j => new
                 {
                     JobId = j.Jobid,
-                   // example field — include any other fields you want
+                    // example field — include any other fields you want
                     JobDate = j.jobdate,
                     ordervalueinbasecurrency = j.ordervaluebasecurrency,
                     // Add more fields as needed
@@ -7508,7 +7664,7 @@ namespace WebApplication1.Controllers
                     using (SqlCommand cmd = new SqlCommand("SP_GetInvoiceReceiptPending", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                      
+
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
                         {
@@ -7565,9 +7721,9 @@ namespace WebApplication1.Controllers
         public class Paymentpending
         {
 
-            public string  customername { get; set; }
+            public string customername { get; set; }
 
-            public int  totalinvoicecount  { get; set; }
+            public int totalinvoicecount { get; set; }
             public decimal totalbalance { get; set; }
             public int totalpending { get; set; }
             public int period { get; set; }
@@ -7586,7 +7742,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetPaymentpending")]
         public async Task<ActionResult<List<Paymentpending>>> GetPaymentpending()
         {
-            var paymentpending  = new List<Paymentpending>();
+            var paymentpending = new List<Paymentpending>();
 
             try
             {
@@ -7605,9 +7761,9 @@ namespace WebApplication1.Controllers
                                 paymentpending.Add(new Paymentpending
                                 {
                                     customername = reader["customername"].ToString(),
-                                    customerid= reader.GetInt32(reader.GetOrdinal("customerid")),
+                                    customerid = reader.GetInt32(reader.GetOrdinal("customerid")),
                                     totalinvoicecount = reader.GetInt32(reader.GetOrdinal("totalinvoicecount")),
-                                     totalpending= reader.GetInt32(reader.GetOrdinal("totalpending")),
+                                    totalpending = reader.GetInt32(reader.GetOrdinal("totalpending")),
                                     period = reader.GetInt32(reader.GetOrdinal("period")),
 
                                     totalbalance = reader.IsDBNull(reader.GetOrdinal("totalbalance"))
@@ -7659,9 +7815,9 @@ namespace WebApplication1.Controllers
 
             public DateTime InvoiceDate { get; set; }
 
-            public DateTime  DueDate { get; set; }
+            public DateTime DueDate { get; set; }
 
-            public decimal  Invoicevalueinbasecurrency { get; set; }
+            public decimal Invoicevalueinbasecurrency { get; set; }
 
             public decimal Invoicereceipts { get; set; }
             public decimal totalpending { get; set; }
@@ -7701,7 +7857,7 @@ namespace WebApplication1.Controllers
                                     jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
                                     invoiceno = reader.GetInt32(reader.GetOrdinal("invoiceno")),
 
-                                    InvoiceDate= reader.GetDateTime(reader.GetOrdinal("InvoiceDate")),
+                                    InvoiceDate = reader.GetDateTime(reader.GetOrdinal("InvoiceDate")),
                                     DueDate = reader.GetDateTime(reader.GetOrdinal("DueDate")),
                                     Invoicevalueinbasecurrency = reader.IsDBNull(reader.GetOrdinal("Invoicevalueinbasecurrency"))
                                      ? 0
@@ -7910,8 +8066,313 @@ namespace WebApplication1.Controllers
 
 
 
+        public class jobongoingwithreceipt
+        {
+            public int jobid { get; set; }
+            public string customername { get; set; }
+            public decimal ordervaluebasecurrencywithvat { get; set; }
+            public decimal ordervaluebasecurrencywithoutvat { get; set; }
+            public decimal totalinvoiced { get; set; }
+            public decimal  totalreceivedwithvat { get; set; }
+            public decimal totalreceivedwithoutvat { get; set; }
+            public decimal balancetobeinvoiced { get; set; }
+            public decimal balancereceivablewithoutvat { get; set; }
+            public decimal balancereceivablewithvat { get; set; }
+            public decimal totalreceipts { get; set; }
+            public string  projectname { get; set; }
+
+        }
+
+
+
+
+
+        [HttpGet("getJobOngoingReportwithreceipt")]
+        public async Task<ActionResult<List<Invoicepending>>> getJobOngoingReportwithreceipt()
+        {
+            var jobongoingwithreceipt = new List<jobongoingwithreceipt>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_getJobOngoingWithReceipts", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                jobongoingwithreceipt.Add(new jobongoingwithreceipt
+                                {
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+                                  
+                                    customername = reader["customername"].ToString(),
+
+                                    ordervaluebasecurrencywithoutvat = reader.IsDBNull(reader.GetOrdinal("ordervalue_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervalue_withoutvat"]),
+
+                                    ordervaluebasecurrencywithvat = reader.IsDBNull(reader.GetOrdinal("ordervalue_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervalue_withvat"]),
+
+                                    totalreceivedwithoutvat = reader.IsDBNull(reader.GetOrdinal("totalreceived_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalreceived_withoutvat"]),
+                                    totalreceivedwithvat = reader.IsDBNull(reader.GetOrdinal("totalreceived_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalreceived_withvat"]),
+
+
+                                    totalinvoiced = reader.IsDBNull(reader.GetOrdinal("totalinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalinvoiced"]),
+                                    projectname = reader["projectname"].ToString(),
+                                    balancetobeinvoiced = reader.IsDBNull(reader.GetOrdinal("balancetobeinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balancetobeinvoiced"]),
+
+                                    balancereceivablewithoutvat = reader.IsDBNull(reader.GetOrdinal("balance_receivable_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balance_receivable_withoutvat"]),
+                                    balancereceivablewithvat= reader.IsDBNull(reader.GetOrdinal("balance_receivable_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balance_receivable_withvat"]),
+                                  
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (jobongoingwithreceipt.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(jobongoingwithreceipt);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("jobInvoicependingWithReceipts")]
+        public async Task<ActionResult<List<Invoicepending>>> jobInvoicependingWithReceipts()
+        {
+            var jobongoingwithreceipt = new List<jobongoingwithreceipt>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_jobInvoicependingWithReceipts", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                jobongoingwithreceipt.Add(new jobongoingwithreceipt
+                                {
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+
+                                    customername = reader["customername"].ToString(),
+
+                                    ordervaluebasecurrencywithoutvat = reader.IsDBNull(reader.GetOrdinal("ordervalue_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervalue_withoutvat"]),
+
+                                    ordervaluebasecurrencywithvat = reader.IsDBNull(reader.GetOrdinal("ordervalue_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervalue_withvat"]),
+
+                                    totalreceivedwithoutvat = reader.IsDBNull(reader.GetOrdinal("totalreceived_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalreceived_withoutvat"]),
+                                    totalreceivedwithvat = reader.IsDBNull(reader.GetOrdinal("totalreceived_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalreceived_withvat"]),
+
+
+                                    totalinvoiced = reader.IsDBNull(reader.GetOrdinal("totalinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalinvoiced"]),
+                                    projectname = reader["projectname"].ToString(),
+                                    balancetobeinvoiced = reader.IsDBNull(reader.GetOrdinal("balancetobeinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balancetobeinvoiced"]),
+
+                                    balancereceivablewithoutvat = reader.IsDBNull(reader.GetOrdinal("balance_receivable_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balance_receivable_withoutvat"]),
+                                    balancereceivablewithvat = reader.IsDBNull(reader.GetOrdinal("balance_receivable_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balance_receivable_withvat"]),
+
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (jobongoingwithreceipt.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(jobongoingwithreceipt);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+        [HttpGet("GetJoballjoboverview")]
+        public async Task<ActionResult<List<Invoicepending>>> GetJoballjoboverview()
+        {
+            var jobongoingwithreceipt = new List<jobongoingwithreceipt>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_GetJobDetailsAllrv2", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                jobongoingwithreceipt.Add(new jobongoingwithreceipt
+                                {
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+
+                                    customername = reader["customername"].ToString(),
+
+                                    ordervaluebasecurrencywithoutvat = reader.IsDBNull(reader.GetOrdinal("ordervalue_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervalue_withoutvat"]),
+
+                                    ordervaluebasecurrencywithvat = reader.IsDBNull(reader.GetOrdinal("ordervalue_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["ordervalue_withvat"]),
+
+                                    totalreceivedwithoutvat = reader.IsDBNull(reader.GetOrdinal("totalreceived_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalreceived_withoutvat"]),
+                                    totalreceivedwithvat = reader.IsDBNull(reader.GetOrdinal("totalreceived_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalreceived_withvat"]),
+
+
+                                    totalinvoiced = reader.IsDBNull(reader.GetOrdinal("totalinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["totalinvoiced"]),
+                                    projectname = reader["projectname"].ToString(),
+                                    balancetobeinvoiced = reader.IsDBNull(reader.GetOrdinal("balancetobeinvoiced"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balancetobeinvoiced"]),
+
+                                    balancereceivablewithoutvat = reader.IsDBNull(reader.GetOrdinal("balance_receivable_withoutvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balance_receivable_withoutvat"]),
+                                    balancereceivablewithvat = reader.IsDBNull(reader.GetOrdinal("balance_receivable_withvat"))
+                                     ? 0
+                                     : Convert.ToDecimal(reader["balance_receivable_withvat"]),
+
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (jobongoingwithreceipt.Count == 0)
+                {
+                    // Return a valid JSON response with 404 status and a message
+                    return NotFound(new { message = "No data found for the provided jobId." });
+                }
+
+                return Ok(jobongoingwithreceipt);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (implement proper logging in a real app)
+                Console.WriteLine($"Error fetching budget summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching the budget summary.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpPost("Addorupdatereceiptvoucher")]
-        public async Task<IActionResult> Addorupdatereceiptvoucher([FromBody]  AddorupdateReceiptVoucher dto)
+        public async Task<IActionResult> Addorupdatereceiptvoucher([FromBody] AddorupdateReceiptVoucher dto)
         {
             try
             {
@@ -7953,7 +8414,7 @@ namespace WebApplication1.Controllers
                         rvamount = dto.rvamount,
                         customerid = dto.customerid,
                         receiptdate = dto.receiptdate,
-                        rvamountwords=dto.rvamountwords
+                        rvamountwords = dto.rvamountwords
                     };
 
                     await dbcontext.ReceiptVoucher.AddAsync(newEntry);
@@ -7980,7 +8441,7 @@ namespace WebApplication1.Controllers
 
 
 
-        
+
 
 
 
@@ -8106,7 +8567,7 @@ namespace WebApplication1.Controllers
         public class ReceiptRV
         {
             public int receiptid { get; set; }
-            
+
         }
 
 
@@ -8219,18 +8680,18 @@ namespace WebApplication1.Controllers
 
         public class ReceiptPendinginvoicedetails
         {
-            public int  invoiceno { get; set; }
-            public int  jobid { get; set; }
+            public int invoiceno { get; set; }
+            public int jobid { get; set; }
             public DateTime invoicedate { get; set; }
             public decimal invoicevalue { get; set; }
-            public decimal  invoicevalueinbasecurrency { get; set; }
+            public decimal invoicevalueinbasecurrency { get; set; }
 
             public decimal receiptpending { get; set; }
 
         }
 
         [HttpGet("GetReceiptPendingInvoiceDetails")]
-        public async Task<ActionResult<List<ReceiptPendinginvoicedetails>>> GetReceiptPendingInvoiceDetails(int customerid )
+        public async Task<ActionResult<List<ReceiptPendinginvoicedetails>>> GetReceiptPendingInvoiceDetails(int customerid)
         {
             var invoicelist = new List<ReceiptPendinginvoicedetails>();
 
@@ -8255,7 +8716,7 @@ namespace WebApplication1.Controllers
 
                                     invoicedate = reader.GetDateTime(reader.GetOrdinal("invoicedate")),
 
-                                      invoicevalue = reader.IsDBNull(reader.GetOrdinal("invoicevalue"))
+                                    invoicevalue = reader.IsDBNull(reader.GetOrdinal("invoicevalue"))
                                      ? 0
                                      : Convert.ToDecimal(reader["invoicevalue"]),
                                     invoicevalueinbasecurrency = reader.IsDBNull(reader.GetOrdinal("Invoicevalueinbasecurrency"))
@@ -8374,8 +8835,8 @@ namespace WebApplication1.Controllers
         {
             var result = from re in dbcontext.receipt
                          join inv in dbcontext.InvoiceReg on re.invoiceid equals inv.invoiceno
-                         join cc in dbcontext.Customer on re.customerid equals cc.customerid    
-                   join aa in dbcontext.Users on re.Createdbyid equals aa.Id
+                         join cc in dbcontext.Customer on re.customerid equals cc.customerid
+                         join aa in dbcontext.Users on re.Createdbyid equals aa.Id
                          select new
                          {
                              re.receiptid,
@@ -8398,14 +8859,14 @@ namespace WebApplication1.Controllers
         public class jobreceiptpending
         {
             public int jobid { get; set; }
-            public decimal  ordervaluebasecurrency { get; set; }
-            public decimal  totalreceivedwithvat { get; set; }
+            public decimal ordervaluebasecurrency { get; set; }
+            public decimal totalreceivedwithvat { get; set; }
             public decimal totalreceivedwithoutvat { get; set; }
             public decimal totalpendingwithoutvat { get; set; }
 
             public decimal totalpendingwithvat { get; set; }
 
-            public string  cutomername { get; set; }
+            public string cutomername { get; set; }
 
         }
 
@@ -8423,14 +8884,14 @@ namespace WebApplication1.Controllers
                     using (SqlCommand cmd = new SqlCommand("SP_GetjobreceiptPending", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                  
+
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
                         {
                             while (await reader.ReadAsync())
                             {
                                 invoicelist.Add(new jobreceiptpending
                                 {
-                                    
+
                                     jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
 
                                     ordervaluebasecurrency = reader.IsDBNull(reader.GetOrdinal("ordervaluebasecurrency"))
@@ -8476,14 +8937,14 @@ namespace WebApplication1.Controllers
         public class InvoiceregAll
         {
             public int invoiceno { get; set; }
-            public int  jobid { get; set; }
+            public int jobid { get; set; }
             public decimal invoicevalue_withvat { get; set; }
             public decimal received_withvat { get; set; }
             public decimal received_withoutvat { get; set; }
             public decimal pending_withoutvat { get; set; }
             public string customername { get; set; }
             public decimal pending_withvat { get; set; }
-            public DateTime  invoicedate  { get; set; }
+            public DateTime invoicedate { get; set; }
             public decimal invoicevalue_withoutvat { get; set; }
 
         }
@@ -8514,8 +8975,8 @@ namespace WebApplication1.Controllers
                                     jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
                                     customername = reader["customername"].ToString(),
 
-                                  invoicedate = reader.GetDateTime(reader.GetOrdinal("invoicedate")),
-                                  invoicevalue_withvat = reader.IsDBNull(reader.GetOrdinal("invoicevalue_withvat"))
+                                    invoicedate = reader.GetDateTime(reader.GetOrdinal("invoicedate")),
+                                    invoicevalue_withvat = reader.IsDBNull(reader.GetOrdinal("invoicevalue_withvat"))
                                      ? 0
                                      : Convert.ToDecimal(reader["invoicevalue_withvat"]),
 
@@ -8573,7 +9034,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Getmaxrevisionestimation(int jobid)
         {
             var maxRevision = await dbcontext.estimation
-                .Where(e => e.jobid == jobid )
+                .Where(e => e.jobid == jobid)
                 .MaxAsync(e => (int?)e.revision) ?? 0;
 
             var nextRevision = maxRevision + 1;
@@ -8594,12 +9055,12 @@ namespace WebApplication1.Controllers
 
         public class listestimation
         {
-          
+
             public int jobid { get; set; }
-            public string  customername { get; set; }
+            public string customername { get; set; }
             public string projectname { get; set; }
         }
-            [HttpGet("GetDistinctjobestimationdetails")]
+        [HttpGet("GetDistinctjobestimationdetails")]
         public async Task<ActionResult<List<listestimation>>> GetDistinctjobestimationdetails()
         {
             var listestimation = new List<listestimation>();
@@ -8612,7 +9073,7 @@ namespace WebApplication1.Controllers
                     using (SqlCommand cmd = new SqlCommand("SP_GetDistinctjobestimationdetails", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                      
+
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
                         {
@@ -8622,10 +9083,10 @@ namespace WebApplication1.Controllers
                                 {
                                     customername = reader["customername"].ToString(),
                                     //                        BudgetHeaderId = Convert.ToInt32(reader["BudgetHeaderId"]),
-                                                 jobid = Convert.ToInt32(reader["jobid"]),
+                                    jobid = Convert.ToInt32(reader["jobid"]),
 
                                     projectname = reader["projectname"].ToString(),
-                                   
+
 
                                 });
                             }
@@ -8651,7 +9112,7 @@ namespace WebApplication1.Controllers
 
 
 
-          
+
 
 
 
@@ -8743,15 +9204,15 @@ namespace WebApplication1.Controllers
 
             if (po == null)
                 return NotFound("PO not found.");
-           
+
             po.postatusid = 1;
             po.poverifiedbyid = null;
             po.poverifiedDate = null;
             po.PoAuthorizedbyid = null;
-            po.poauthorizedDate = null; 
+            po.poauthorizedDate = null;
 
 
-                // Set status to 'Created'
+            // Set status to 'Created'
             await dbcontext.SaveChangesAsync();
 
             return Ok(new { message = "PO Authorized successfully.", newStatus = po.postatusid });
@@ -8769,19 +9230,19 @@ namespace WebApplication1.Controllers
 
 
             var listreceivedentry = from re in dbcontext.ReceivedEntry
-                         join po in dbcontext.PO on re.pono equals po.Orderid
-                      join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid   
+                                    join po in dbcontext.PO on re.pono equals po.Orderid
+                                    join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
 
-                         select new
-                         {
-                             re.REID,
-                             po.Orderid,
-                             re.REDate,
-                             ss.suppliername,
-                             re.isregistered,
-                      
-                             // Add other properties as needed
-                         };
+                                    select new
+                                    {
+                                        re.REID,
+                                        po.Orderid,
+                                        re.REDate,
+                                        ss.suppliername,
+                                        re.isregistered,
+
+                                        // Add other properties as needed
+                                    };
 
             var filteredData = await listreceivedentry.ToListAsync();
 
@@ -8804,8 +9265,8 @@ namespace WebApplication1.Controllers
             var issuedetails = await (from aa in dbcontext.ReceivedEntryDetails
                                       join bb in dbcontext.ReceivedEntry on aa.RENO equals bb.REID
                                       join ii in dbcontext.Product on aa.itemid equals ii.productcode
-                                
-                                      where aa.RENO == reno 
+
+                                      where aa.RENO == reno
                                       select new
                                       {
                                           aa.RENO,
@@ -8813,7 +9274,7 @@ namespace WebApplication1.Controllers
                                           ii.itemname,
                                           aa.receivedqty
 
-                                       
+
                                       })
                                       .Distinct() // Ensures distinct combinations
                                       .ToListAsync();
@@ -8839,19 +9300,19 @@ namespace WebApplication1.Controllers
 
 
             var listmi = from re in dbcontext.Materialinspection
-                                    join po in dbcontext.PO on re.pono equals po.Orderid
-                                    join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
+                         join po in dbcontext.PO on re.pono equals po.Orderid
+                         join ss in dbcontext.Supplier on po.supplierid equals ss.supplierid
 
-                                    select new
-                                    {
-                                        re.mid,
-                                        po.Orderid,
-                                        re.midate,
-                                        ss.suppliername,
-                                        re.isregistered,
+                         select new
+                         {
+                             re.mid,
+                             po.Orderid,
+                             re.midate,
+                             ss.suppliername,
+                             re.isregistered,
 
-                                        // Add other properties as needed
-                                    };
+                             // Add other properties as needed
+                         };
 
             var filteredData = await listmi.ToListAsync();
 
@@ -8877,19 +9338,19 @@ namespace WebApplication1.Controllers
             }
 
             var midetails = await (from aa in dbcontext.MIdetails
-                                      join bb in dbcontext.Materialinspection on aa.mid equals bb.mid
-                                      join ii in dbcontext.Product on aa.itemid equals ii.productcode
+                                   join bb in dbcontext.Materialinspection on aa.mid equals bb.mid
+                                   join ii in dbcontext.Product on aa.itemid equals ii.productcode
 
-                                      where aa.mid == mid
-                                      select new
-                                      {
-                                          aa.mid,
-                                          ii.productcode,
-                                          ii.itemname,
-                                          aa.acceptedqty,
-                                          aa.rejectedqty,
-                                          aa.holdqty,
-                                      })
+                                   where aa.mid == mid
+                                   select new
+                                   {
+                                       aa.mid,
+                                       ii.productcode,
+                                       ii.itemname,
+                                       aa.acceptedqty,
+                                       aa.rejectedqty,
+                                       aa.holdqty,
+                                   })
                                       .Distinct() // Ensures distinct combinations
                                       .ToListAsync();
 
@@ -9010,18 +9471,18 @@ namespace WebApplication1.Controllers
             }
 
             var issuereturndetails = await (from aa in dbcontext.Issuereturn
-                                      join bb in dbcontext.Issuereturndetails on aa.issuereturnref equals bb.issuereturnref
-                                      join ii in dbcontext.Product on bb.productid equals ii.productcode
-                              
-                                      where aa.jobid == jobid && ii.itembudgetheaderid == budgetheaderid
-                                      select new
-                                      {
-                                          aa.issuereturnref,
-                                          bb.quantityreturned,
-                                          ii.itemname,
+                                            join bb in dbcontext.Issuereturndetails on aa.issuereturnref equals bb.issuereturnref
+                                            join ii in dbcontext.Product on bb.productid equals ii.productcode
 
-                                         ii.productcode
-                                      })
+                                            where aa.jobid == jobid && ii.itembudgetheaderid == budgetheaderid
+                                            select new
+                                            {
+                                                aa.issuereturnref,
+                                                bb.quantityreturned,
+                                                ii.itemname,
+
+                                                ii.productcode
+                                            })
                                       .Distinct() // Ensures distinct combinations
                                       .ToListAsync();
 
@@ -9204,7 +9665,7 @@ namespace WebApplication1.Controllers
         public class Itemdetails
         {
             public decimal totalqty { get; set; }
-         
+
         }
 
         [HttpGet("Getstockstorecountdetailsbyitemid")]
@@ -9227,7 +9688,7 @@ namespace WebApplication1.Controllers
                             if (await reader.ReadAsync())
                             {
                                 itemdetails.totalqty = reader.IsDBNull(reader.GetOrdinal("itemqty")) ? 0 : reader.GetDecimal(reader.GetOrdinal("itemqty"));
-                                
+
                             }
                         }
                     }
@@ -9260,7 +9721,7 @@ namespace WebApplication1.Controllers
                     var inventoryItems = (from inv in dbcontext.Inventory
                                           join jj in dbcontext.Job on inv.jobid equals jj.Jobid
                                           join jy in dbcontext.JobType on jj.jobtypeid equals jy.jobtypeid
-                                          where jy.JobtypeName == "Miscellaneous" && inv.productid == request.ItemId 
+                                          where jy.JobtypeName == "Miscellaneous" && inv.productid == request.ItemId
                                           orderby inv.Entrydate
                                           select inv).ToList();
 
@@ -9305,7 +9766,7 @@ namespace WebApplication1.Controllers
         private void DeductFromBatchconsumables(int itemId, int batchId, decimal quantity, int jobid, int issueref, int invid, int Currencyid, int Uomid, decimal Price)
         {
             var inventoryItem = dbcontext.Inventory
-                .FirstOrDefault(i => i.productid == itemId && i.batchid == batchId );
+                .FirstOrDefault(i => i.productid == itemId && i.batchid == batchId);
 
             if (inventoryItem != null)
             {
@@ -9428,20 +9889,20 @@ namespace WebApplication1.Controllers
 
         public class freezedbomdetails
         {
-            public int  bomid { get; set; }
+            public int bomid { get; set; }
             public int itemid { get; set; }
             public decimal bomqty { get; set; }
-            public int  bomuomid { get; set; }
+            public int bomuomid { get; set; }
             public decimal price { get; set; }
-            public int  currencyid { get; set; }
+            public int currencyid { get; set; }
             public int prodstageid { get; set; }
 
             public DateTime RequiredDate { get; set; }
 
-            public int  bomstatus { get; set; }
+            public int bomstatus { get; set; }
             public string itemname { get; set; }
 
-            public string  uomname { get; set; }
+            public string uomname { get; set; }
 
             public decimal prcreatedqty { get; set; }
             public string currency { get; set; }
@@ -9569,14 +10030,14 @@ namespace WebApplication1.Controllers
                     return NotFound("No BOM found with the given ID.");
                 }
 
-            
+
                 existingBom.bomqty = updatedBom.bomqty;
                 existingBom.bomuomid = updatedBom.bomuomid;
                 existingBom.price = updatedBom.price;
-      
+
                 existingBom.prodstageid = updatedBom.prodstageid;
                 existingBom.RequiredDate = updatedBom.requiredDate;
-           
+
                 existingBom.currencyid = updatedBom.currencyid;
 
                 await dbcontext.SaveChangesAsync();
@@ -9653,7 +10114,8 @@ namespace WebApplication1.Controllers
         {
             var product = await dbcontext.Currency
                                          .Where(p => p.currencyid == currencyid)
-                                         .Select(p => new {
+                                         .Select(p => new
+                                         {
                                              p.exchangerate
                                          })
                                          .FirstOrDefaultAsync();
@@ -9664,6 +10126,157 @@ namespace WebApplication1.Controllers
             }
 
             return Ok(product.exchangerate);
+        }
+
+
+
+
+        [HttpPost("AddDesignation")]
+        public async Task<IActionResult> AddDesignation([FromBody] Designation designation)
+        {
+
+
+            bool exists = await dbcontext.designation
+                .AnyAsync(d => d.designationname.ToLower() == designation.designationname.ToLower());
+
+            if (exists)
+            {
+                return Conflict(new
+                {
+                    message = "A designation with the same name already exists."
+                });
+            }
+
+            dbcontext.designation.Add(designation);
+            await dbcontext.SaveChangesAsync();
+            return Ok(designation);
+        }
+
+
+
+
+
+
+
+
+
+        [HttpPost("Addcompany")]
+        public async Task<IActionResult> Addcompany([FromBody] Company company)
+        {
+            bool exists = await dbcontext.Company
+                 .AnyAsync(d => d.companyname.ToLower() == company.companyname.ToLower());
+            if (exists)
+            {
+                return Conflict(new
+                {
+                    message = "A company with the same name already exists."
+                });
+            }
+            dbcontext.Company.Add(company);
+            await dbcontext.SaveChangesAsync();
+            return Ok(company);
+        }
+        [HttpGet("Listdesignation")]
+        public async Task<IActionResult> Listdesignation()
+        {
+            var listdesignation = await dbcontext.designation.ToListAsync();
+            return Ok(listdesignation);
+        }
+
+
+        [HttpGet("listcompany")]
+        public async Task<IActionResult> listcompany()
+        {
+            var listcompany = await dbcontext.Company.ToListAsync();
+            return Ok(listcompany);
+        }
+
+        [HttpGet("GetDesignationById/{id}")]
+        public async Task<IActionResult> GetDesignationById(int id)
+        {
+            var designation = await dbcontext.designation.FindAsync(id);
+
+            if (designation == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(designation);
+        }
+
+
+        [HttpPost("AddOrUpdateEmployee")]
+        public async Task<IActionResult> AddOrUpdateEmployee([FromBody] Addemployee employee)
+        {
+            var existingEmployee = await dbcontext.Employeemaster
+                .FirstOrDefaultAsync(e => e.empid == employee.empid);
+
+            if (existingEmployee != null)
+            {
+                existingEmployee.empname = employee.empname;
+                existingEmployee.companyid = employee.companyid;
+                existingEmployee.designationid = employee.designationid;
+                existingEmployee.empstatus = employee.empstatus;
+
+                dbcontext.Employeemaster.Update(existingEmployee);
+            }
+            else
+            {
+                var newEmployee = new Employeemaster
+                {
+                    empid = employee.empid,
+                    empname = employee.empname,
+                    companyid = employee.companyid,
+                    designationid = employee.designationid,
+                    empstatus = employee.empstatus
+                };
+
+                dbcontext.Employeemaster.Add(newEmployee);
+            }
+
+            await dbcontext.SaveChangesAsync();
+            return Ok(new { Message = "Employee Created Successfully" });
+        }
+
+        [HttpGet("listemployee")]
+        public async Task<IActionResult> ListEmployee()
+        {
+            var list = await (from emp in dbcontext.Employeemaster
+                              join comp in dbcontext.Company on emp.companyid equals comp.companyid
+                              join desig in dbcontext.designation on emp.designationid equals desig.designationid
+                              select new
+                              {
+                                  emp.empid,
+                                  emp.empname,
+                                  emp.empstatus,
+                                  companyname = comp.companyname,
+                                  designationname = desig.designationname
+                              }).ToListAsync();
+
+            return Ok(list);
+        }
+
+
+
+        [HttpGet("listsupplier")]
+        public async Task<IActionResult> listsupplier()
+        {
+            var list = await (from sup in dbcontext.Supplier
+
+                              select new
+                              {
+                                  sup.supplierid,
+                                  sup.supplieraddress,
+                                  sup.suppliertrnno,
+                                  sup.fax,
+                                  sup.emailaddress,
+                                  sup.phoneno,
+                                  sup.suppliername,
+                                  sup.supplierpoboxno
+
+                              }).ToListAsync();
+
+            return Ok(list);
         }
 
 
@@ -9683,15 +10296,57 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpPost("AddOrUpdateSupplier")]
+        public async Task<IActionResult> AddOrUpdateSupplier([FromBody] Supplier supplier)
+        {
+            if (string.IsNullOrWhiteSpace(supplier.suppliername))
+                return BadRequest("Supplier name is required.");
 
+            var existingSupplier = await dbcontext.Supplier
+                .FirstOrDefaultAsync(s => s.suppliername.ToLower() == supplier.suppliername.ToLower());
 
+            if (existingSupplier != null)
+            {
+                // Update fields
+                existingSupplier.supplieraddress = supplier.supplieraddress;
+                existingSupplier.suppliertrnno = supplier.suppliertrnno;
+                existingSupplier.supplierpoboxno = supplier.supplierpoboxno;
+                existingSupplier.webaddress = supplier.webaddress;
+                existingSupplier.emailaddress = supplier.emailaddress;
+                existingSupplier.phoneno = supplier.phoneno;
+                existingSupplier.fax = supplier.fax;
+                existingSupplier.remarks = supplier.remarks;
+                existingSupplier.createddate = DateTime.Now;
+
+                dbcontext.Supplier.Update(existingSupplier);
+                await dbcontext.SaveChangesAsync();
+
+                return Ok(new { Message = "Supplier Updated Successfully" });
+            }
+            else
+            {
+                supplier.createddate = DateTime.Now;
+                dbcontext.Supplier.Add(supplier);
+                await dbcontext.SaveChangesAsync();
+
+                return Ok(new { Message = "Supplier created Successfully" });
+            }
+        }
+
+        [HttpGet("getSupplierbysupplierid/{supplierid}")]
+        public async Task<IActionResult> getSupplierbysupplierid(int supplierid)
+        {
+            var supplierdetails = await dbcontext.Supplier.FindAsync(supplierid);
+
+            if (supplierdetails == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(supplierdetails);
+        }
 
     }
-
-
-
-
-
 }
 
 

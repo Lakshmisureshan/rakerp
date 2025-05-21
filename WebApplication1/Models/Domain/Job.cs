@@ -57,8 +57,8 @@ namespace WebApplication1.Models.Domain
         public double ordervaluebasecurrency { get; set; }
         public string projectname  { get; set; }
         public string paymentterms { get; set; }
-        public string warrantyterms { get; set; }
-        public string deliveryterms { get; set; }
+        public string ? warrantyterms { get; set; }
+        public string ? deliveryterms { get; set; }
         public int bomjobrevno { get; set; } = 0;
         public int bomjobstatusid { get; set; } = 0;
 

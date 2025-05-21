@@ -876,6 +876,130 @@ namespace WebApplication1.Controllers
 
 
 
+
+
+
+        [HttpPost("UnFreezeBom4")]
+        public async Task<IActionResult> UnFreezeBom4(int jobid)
+        {
+            // Retrieve the job based on job ID
+            var job = await dbcontext.Job
+                .FirstOrDefaultAsync(j => j.Jobid == jobid);
+
+            if (job == null)
+            {
+                // Return a NotFound result if the job is not found
+                return NotFound($"Job with ID {jobid} not found.");
+            }
+
+
+
+            // Increment the revision number in the job table
+            job.bomjobstatusid4 = 0;
+            ;
+
+            try
+            {
+                // Save the changes to the database
+                await dbcontext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during save
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+            // Return a success result
+            return Ok(new { message = "Job has been Un frozen successfully", jobid });
+        }
+
+
+
+
+        [HttpPost("UnFreezeBom5")]
+        public async Task<IActionResult> UnFreezeBom5(int jobid)
+        {
+            // Retrieve the job based on job ID
+            var job = await dbcontext.Job
+                .FirstOrDefaultAsync(j => j.Jobid == jobid);
+
+            if (job == null)
+            {
+                // Return a NotFound result if the job is not found
+                return NotFound($"Job with ID {jobid} not found.");
+            }
+
+
+
+            // Increment the revision number in the job table
+            job.bomjobstatusid5 = 0;
+            ;
+
+            try
+            {
+                // Save the changes to the database
+                await dbcontext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during save
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+            // Return a success result
+            return Ok(new { message = "Job has been Un frozen successfully", jobid });
+        }
+
+
+
+
+        [HttpPost("UnFreezeBom6")]
+        public async Task<IActionResult> UnFreezeBom6(int jobid)
+        {
+            // Retrieve the job based on job ID
+            var job = await dbcontext.Job
+                .FirstOrDefaultAsync(j => j.Jobid == jobid);
+
+            if (job == null)
+            {
+                // Return a NotFound result if the job is not found
+                return NotFound($"Job with ID {jobid} not found.");
+            }
+
+
+
+            // Increment the revision number in the job table
+            job.bomjobstatusid6 = 0;
+            ;
+
+            try
+            {
+                // Save the changes to the database
+                await dbcontext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during save
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+            // Return a success result
+            return Ok(new { message = "Job has been Un frozen successfully", jobid });
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpPost("FreezeBom3")]
         public async Task<IActionResult> FreezeBom3(int jobid)
         {
@@ -918,6 +1042,163 @@ namespace WebApplication1.Controllers
             // Return a success result with JSON response
             return Ok(new { message = "Job has been frozen successfully", jobid });
         }
+
+
+
+
+
+
+
+
+
+        [HttpPost("FreezeBom4")]
+        public async Task<IActionResult> FreezeBom4(int jobid)
+        {
+            // Retrieve the job based on job ID
+            var job = await dbcontext.Job
+                .FirstOrDefaultAsync(j => j.Jobid == jobid);
+
+            if (job == null)
+            {
+                // Return a NotFound result if the job is not found
+                return NotFound($"Job with ID {jobid} not found.");
+            }
+
+            var boms = await dbcontext.Bom
+                .Where(b => b.jobid == jobid && b.bomnumber == 4)
+                .ToListAsync();
+
+            foreach (var bom in boms)
+            {
+                bom.bomstatus = 1;  // Set bomstatus to 1
+            }
+
+            // Increment the revision number in the job table
+            job.bomjobrevno4 += 1;
+
+            // Set the job status to frozen (assuming 1 means frozen)
+            job.bomjobstatusid4 = 1;
+
+            try
+            {
+                // Save the changes to the database
+                await dbcontext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during save
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+            // Return a success result with JSON response
+            return Ok(new { message = "Job has been frozen successfully", jobid });
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("FreezeBom5")]
+        public async Task<IActionResult> FreezeBom5(int jobid)
+        {
+            // Retrieve the job based on job ID
+            var job = await dbcontext.Job
+                .FirstOrDefaultAsync(j => j.Jobid == jobid);
+
+            if (job == null)
+            {
+                // Return a NotFound result if the job is not found
+                return NotFound($"Job with ID {jobid} not found.");
+            }
+
+            var boms = await dbcontext.Bom
+                .Where(b => b.jobid == jobid && b.bomnumber == 4)
+                .ToListAsync();
+
+            foreach (var bom in boms)
+            {
+                bom.bomstatus = 1;  // Set bomstatus to 1
+            }
+
+            // Increment the revision number in the job table
+            job.bomjobrevno5 += 1;
+
+            // Set the job status to frozen (assuming 1 means frozen)
+            job.bomjobstatusid5 = 1;
+
+            try
+            {
+                // Save the changes to the database
+                await dbcontext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during save
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+            // Return a success result with JSON response
+            return Ok(new { message = "Job has been frozen successfully", jobid });
+        }
+
+
+
+        [HttpPost("FreezeBom6")]
+        public async Task<IActionResult> FreezeBom6(int jobid)
+        {
+            // Retrieve the job based on job ID
+            var job = await dbcontext.Job
+                .FirstOrDefaultAsync(j => j.Jobid == jobid);
+
+            if (job == null)
+            {
+                // Return a NotFound result if the job is not found
+                return NotFound($"Job with ID {jobid} not found.");
+            }
+
+            var boms = await dbcontext.Bom
+                .Where(b => b.jobid == jobid && b.bomnumber == 4)
+                .ToListAsync();
+
+            foreach (var bom in boms)
+            {
+                bom.bomstatus = 1;  // Set bomstatus to 1
+            }
+
+            // Increment the revision number in the job table
+            job.bomjobrevno6 += 1;
+
+            // Set the job status to frozen (assuming 1 means frozen)
+            job.bomjobstatusid6 = 1;
+
+            try
+            {
+                // Save the changes to the database
+                await dbcontext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during save
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+            // Return a success result with JSON response
+            return Ok(new { message = "Job has been frozen successfully", jobid });
+        }
+
+
 
 
 
@@ -977,6 +1258,83 @@ namespace WebApplication1.Controllers
 
 
 
+
+
+        [HttpGet("GetLastBomRevbom4")]
+        public async Task<int> GetLastBomRevbom4(int jobid)
+
+        {
+            // Retrieve the job status
+            var job = await dbcontext.Job
+                .Where(j => j.Jobid == jobid)
+                .Select(j => new { j.bomjobrevno4 })
+                .FirstOrDefaultAsync();
+
+            // Check if job is null
+            if (job == null)
+            {
+                // Handle the case where the job is not found
+                // For example, you can return false or throw an exception if desired
+                return 0; // Assuming that if the job is not found, it's not frozen
+            }
+
+            // Return true if the job status indicates that it's frozen (status = 1)
+            return job.bomjobrevno4;
+        }
+
+
+
+        [HttpGet("GetLastBomRevbom5")]
+        public async Task<int> GetLastBomRevbom5(int jobid)
+
+        {
+            // Retrieve the job status
+            var job = await dbcontext.Job
+                .Where(j => j.Jobid == jobid)
+                .Select(j => new { j.bomjobrevno5 })
+                .FirstOrDefaultAsync();
+
+            // Check if job is null
+            if (job == null)
+            {
+                // Handle the case where the job is not found
+                // For example, you can return false or throw an exception if desired
+                return 0; // Assuming that if the job is not found, it's not frozen
+            }
+
+            // Return true if the job status indicates that it's frozen (status = 1)
+            return job.bomjobrevno5;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet("getAllBom3byJobId")]
         public async Task<IActionResult> getAllBom3byJobId(int jobid, int bomnumber)
         {
@@ -993,6 +1351,158 @@ namespace WebApplication1.Controllers
                 return NotFound("Bom not found");
             }
             return Ok(bom);
+        }
+
+
+
+
+
+
+        [HttpGet("getAllBom4byJobId")]
+        public async Task<IActionResult> getAllBom4byJobId(int jobid, int bomnumber)
+        {
+            var bom = await dbcontext.Bom
+                .Include(b => b.UOM)
+                .Include(b => b.Product)
+                .Include(c => c.currency) // Eager load the UOM related entity
+                .Where(p => p.jobid == jobid && p.bomnumber == bomnumber)
+                .OrderBy(b => b.bomrevno) // Order by revision field
+                .ToListAsync();
+
+            if (bom == null || bom.Count == 0)
+            {
+                return NotFound("Bom not found");
+            }
+            return Ok(bom);
+        }
+
+
+
+
+
+
+        [HttpGet("getAllBom5byJobId")]
+        public async Task<IActionResult> getAllBom5byJobId(int jobid, int bomnumber)
+        {
+            var bom = await dbcontext.Bom
+                .Include(b => b.UOM)
+                .Include(b => b.Product)
+                .Include(c => c.currency) // Eager load the UOM related entity
+                .Where(p => p.jobid == jobid && p.bomnumber == bomnumber)
+                .OrderBy(b => b.bomrevno) // Order by revision field
+                .ToListAsync();
+
+            if (bom == null || bom.Count == 0)
+            {
+                return NotFound("Bom not found");
+            }
+            return Ok(bom);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("IsJobFrozenbom4Async")]
+        public async Task<bool> IsJobFrozenbom4Async(int jobid)
+
+        {
+            // Retrieve the job status
+            var job = await dbcontext.Job
+                .Where(j => j.Jobid == jobid)
+                .Select(j => new { j.bomjobstatusid4 })
+                .FirstOrDefaultAsync();
+
+            // Check if job is null
+            if (job == null)
+            {
+                // Handle the case where the job is not found
+                // For example, you can return false or throw an exception if desired
+                return false; // Assuming that if the job is not found, it's not frozen
+            }
+
+            // Return true if the job status indicates that it's frozen (status = 1)
+            return job.bomjobstatusid4 == 1;
+        }
+
+
+
+
+
+
+
+
+        [HttpGet("IsJobFrozenbom5Async")]
+        public async Task<bool> IsJobFrozenbom5Async(int jobid)
+
+        {
+            // Retrieve the job status
+            var job = await dbcontext.Job
+                .Where(j => j.Jobid == jobid)
+                .Select(j => new { j.bomjobstatusid5 })
+                .FirstOrDefaultAsync();
+
+            // Check if job is null
+            if (job == null)
+            {
+                // Handle the case where the job is not found
+                // For example, you can return false or throw an exception if desired
+                return false; // Assuming that if the job is not found, it's not frozen
+            }
+
+            // Return true if the job status indicates that it's frozen (status = 1)
+            return job.bomjobstatusid5 == 1;
         }
 
 
