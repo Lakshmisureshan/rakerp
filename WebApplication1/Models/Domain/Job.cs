@@ -52,9 +52,9 @@ namespace WebApplication1.Models.Domain
 
         public Currency Currency { get; set; }
         public int currencyid { get; set; }
-        public double  exchangerate { get; set; }
-        public double ordervalue { get; set; }
-        public double ordervaluebasecurrency { get; set; }
+        public decimal  exchangerate { get; set; }
+        public decimal ordervalue { get; set; }
+        public decimal ordervaluebasecurrency { get; set; }
         public string projectname  { get; set; }
         public string paymentterms { get; set; }
         public string ? warrantyterms { get; set; }
@@ -99,7 +99,8 @@ namespace WebApplication1.Models.Domain
 
         public int bomjobrevno6 { get; set; } = 0;
         public int bomjobstatusid6 { get; set; } = 0;
-
+        public decimal  vatpercent { get; set; } = 0;
+        public decimal ordervaluewithvat { get; set; } = 0;
 
 
     }

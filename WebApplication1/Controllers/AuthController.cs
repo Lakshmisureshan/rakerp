@@ -1600,10 +1600,31 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+        {
+            var user = await userManager1.FindByEmailAsync(model.Email);
+            if (user == null)
+                return NotFound("User not found");
+            var token = await userManager1.GeneratePasswordResetTokenAsync(user);
+
+            // Optional: Encode token for use in URL
+            var encodedToken = System.Net.WebUtility.UrlEncode(token);
+            var result = await userManager1.ResetPasswordAsync(user, token, model.NewPassword);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok(new { message = "Password has been reset successfully" });
+        }
 
 
-
-
+        public class ResetPasswordDto
+        {
+            public string Email { get; set; }
+          
+            public string NewPassword { get; set; }
+        }
 
     }
 }

@@ -10,6 +10,7 @@ namespace WebApplication1.Models.DTO
         public int jobid  { get; set; }
         public DateTime issuedate { get; set; }
         public string  Remarks { get; set; }
+        public string issuetype { get; set; }
         public ICollection<Addissuenotedetails> issuedetails { get; set; }
     }
 }

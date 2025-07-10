@@ -24,9 +24,10 @@ namespace WebApplication1.Models
 
         public int isregistered { get; set; } = 0;
 
+        public customercontact customercontact { get; set; }
+        public int customercontactid { get; set; }
 
-
-
+        public ICollection<Invoicedetails> Invoicedetails { get; set; }
 
 
 

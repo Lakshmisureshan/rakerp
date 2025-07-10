@@ -10,9 +10,9 @@ namespace WebApplication1.Models.Domain
         public int issuenoteref  { get; set; }
         public Product Product { get; set; }
         public int itemid { get; set; }
-        public decimal issueqty { get; set; } 
+        public decimal issueqty { get; set; }
 
-
+        public decimal issueunitprice { get; set; } = 0;
 
     }
 }

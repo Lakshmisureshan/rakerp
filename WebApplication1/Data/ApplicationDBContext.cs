@@ -109,8 +109,13 @@ namespace WebApplication1.Data
         public DbSet<Company> Company { get; set; }
         public DbSet<Designation> Designation { get; set; }
 
+        public DbSet<CompanyInfo> CompanyInfo { get; set; }
 
+        public DbSet<DeliveryNote> DeliveryNote { get; set; }
+        public DbSet<deliverydetails> deliverydetails { get; set; }
 
+        public DbSet<Preferreduomperproducts> Preferreduomperproducts { get; set; }
+        public DbSet<jobamend> jobamend { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -352,6 +357,27 @@ ConcurrencyStamp =PRUexpenserole
 
 
 
+            modelBuilder.Entity<DeliveryNote>()
+          .HasOne(pd => pd.Customer)
+          .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+          .HasForeignKey(pd => pd.buyerid)
+          .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<DeliveryNote>()
+       .HasOne(pd => pd.customercontact)
+       .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+       .HasForeignKey(pd => pd.buyercontactid)
+       .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<DeliveryNote>()
+     .HasOne(pd => pd.Job)
+     .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+     .HasForeignKey(pd => pd.jobid)
+     .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
@@ -359,8 +385,12 @@ ConcurrencyStamp =PRUexpenserole
 
 
 
-
-
+            modelBuilder.Entity<deliverydetails>()
+        .HasOne(pd => pd.DeliveryNote)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.deliveryid)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
@@ -1110,7 +1140,12 @@ base.OnModelCreating(modelBuilder);
 
 
 
-
+            modelBuilder.Entity<PO>()
+           .HasOne(pd => pd.BudgettHeader)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.budgetheaderid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
@@ -1387,6 +1422,90 @@ base.OnModelCreating(modelBuilder);
                  .HasForeignKey(pd => pd.jobid)
                  .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+
+
+
+
+            modelBuilder.Entity<CompanyInfo>().HasData(
+              new CompanyInfo
+              {
+                  Id = 1,
+                  CompanyName = "Ace Cranes & Engineering FZ-LLC",
+                  Companypobox = "P.O Box 85652",
+                  Companycountry =  "UAE",
+                  CompanyAddressLine2 =  "RAKEZ, Al Hamra, RAK",
+                  CompanyPhone = "+971 7 2445002",
+                  CompanyFax = "+971 6 5269062",
+                  CompanyEmail = "info@ace-me.com",
+                  CompanyWebsite = "www.ace-me.com",
+                  CompanyTRN = "100296598400003",
+                  InvoiceFormatNo = "ACE-ACC-F-03, REV.00",
+                  ClarificationContact = "00971 56 610 3421",
+                  ClarificationDays = 7,
+                  Bank1Name = "Mashreq Bank Psc",
+                  Bank1Branch = "Branch 12, King Abdul Aziz Branch Sharjah, UAE",
+                  Bank1AEDAccount = "AE 41 0330 0000 1900 0028 744",
+                  Bank1USDAccount = "AE 29 0330 0000 1900 0036 332",
+                  Bank1SWIFT = "BOMLAEAD",
+                  Bank2Name = "NBAD",
+                  Bank2Branch = "Ras Al Riffa Branch, Ras Al Khaimah, UAE",
+                  Bank2AEDAccount = "AE 89 0350 0000 0620 6483 580",
+                  Bank2USDAccount = "AE 50 0350 0000 0620 6483 603",
+                  Bank2SWIFT = "NBADAEAARAK"
+              }
+          );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            modelBuilder.Entity<Invoice>()
+           .HasOne(pd => pd.customercontact)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.customercontactid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+
             modelBuilder.Entity<Invoice>()
                            .HasOne(pd => pd.Currency)
                            .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
@@ -1416,6 +1535,26 @@ base.OnModelCreating(modelBuilder);
                       .HasForeignKey(pd => pd.budgetId)
                       .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<Invoicedetails>()
+      .HasOne(d => d.Invoice)
+      .WithMany(i => i.Invoicedetails)
+      .HasForeignKey(d => d.invoiceno)
+      .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1682,6 +1821,21 @@ base.OnModelCreating(modelBuilder);
 
 
 
+            modelBuilder.Entity<Preferreduomperproducts>()
+        .HasOne(pd => pd.Product)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.itemcode)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Preferreduomperproducts>()
+                  .HasOne(pd => pd.Prefuom)
+                  .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                  .HasForeignKey(pd => pd.prefuomid)
+                  .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
 
             modelBuilder.Entity<Job>()
       .Property(j => j.qualitylevelid)
@@ -1697,12 +1851,22 @@ base.OnModelCreating(modelBuilder);
 
 
 
+            modelBuilder.Entity<jobamend>()
+           .HasOne(pd => pd.Job)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.jobid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 
 
-
-
+            modelBuilder.Entity<jobamend>()
+           .HasOne(pd => pd.Amendedby)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.amenduserid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 

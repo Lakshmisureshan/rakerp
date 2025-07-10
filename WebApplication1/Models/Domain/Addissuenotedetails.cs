@@ -2,9 +2,8 @@
 {
     public class Addissuenotedetails
     {
-
-
-        public int itemid { get; set; }
+       public int itemid { get; set; }
         public decimal issueqty { get; set; }
+        public decimal issueunitprice { get; set; }
     }
 }

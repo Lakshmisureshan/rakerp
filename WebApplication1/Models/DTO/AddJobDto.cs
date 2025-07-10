@@ -52,11 +52,11 @@ namespace WebApplication1.Models.DTO
         public int currencyid { get; set; }
 
 
-        public double exchangerate { get; set; }
-        public double ordervalue { get; set; }
+        public decimal exchangerate { get; set; }
+        public decimal ordervalue { get; set; }
 
 
-        public double ordervaluebasecurrency { get; set; }
+        public decimal ordervaluebasecurrency { get; set; }
 
         public string projectname { get; set; }
         public string paymentterms { get; set; }

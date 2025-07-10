@@ -90,8 +90,55 @@ namespace WebApplication1.Controllers
 
 
 
-        [HttpPost("uploadpr")]
-        public async Task<IActionResult> Uploadpr([FromForm] IFormFile file, string prid)
+        //[HttpPost("uploadpr")]
+        //public async Task<IActionResult> Uploadpr([FromForm] IFormFile file, string prid)
+        //{
+        //    if (file == null || file.Length == 0)
+        //    {
+        //        return BadRequest("No file uploaded.");
+        //    }
+
+        //    // Check if the file is a PDF
+        //    if (file.ContentType != "application/pdf")
+        //    {
+        //        return BadRequest("Only PDF files are allowed.");
+        //    }
+
+        //    // Validate file extension as additional security
+        //    var extension = Path.GetExtension(file.FileName);
+        //    if (string.IsNullOrEmpty(extension) || !extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        return BadRequest("Invalid file format. Only PDF files are allowed.");
+        //    }
+
+        //    // Create a directory for the job ID if it doesn't exist
+        //    var prfolderpath = Path.Combine(_PRStoragePath, prid);
+        //    if (!Directory.Exists(prfolderpath))
+        //    {
+        //        Directory.CreateDirectory(prfolderpath);
+        //    }
+
+        //    var filePath = Path.Combine(prfolderpath, file.FileName);
+
+        //    try
+        //    {
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await file.CopyToAsync(stream);
+        //        }
+
+        //        return Ok(new { message = "File uploaded successfully!", filePath });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while uploading the file: {ex.Message}");
+        //    }
+        //}
+
+
+
+        [HttpPost("uploadprrv1")]
+        public async Task<IActionResult> Uploadprrv1([FromForm] IFormFile file, string prid)
         {
             if (file == null || file.Length == 0)
             {
@@ -111,17 +158,20 @@ namespace WebApplication1.Controllers
                 return BadRequest("Invalid file format. Only PDF files are allowed.");
             }
 
-            // Create a directory for the job ID if it doesn't exist
+            // Create a directory for the PR ID if it doesn't exist
             var prfolderpath = Path.Combine(_PRStoragePath, prid);
             if (!Directory.Exists(prfolderpath))
             {
                 Directory.CreateDirectory(prfolderpath);
             }
 
-            var filePath = Path.Combine(prfolderpath, file.FileName);
+            // Modify this line to save the file with the prid as its name and .pdf extension
+            var filePath = Path.Combine(prfolderpath, $"{prid}.pdf");
 
             try
             {
+                // Ensure that if a file with the same name already exists, it is overwritten or handled as per your requirement.
+                // FileMode.Create will overwrite an existing file.
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
@@ -134,10 +184,6 @@ namespace WebApplication1.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while uploading the file: {ex.Message}");
             }
         }
-
-
-
-
 
 
 

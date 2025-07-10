@@ -27,5 +27,7 @@
         public string poverifiedusername { get; set; }
         public string currencyname { get; set; }
 
+        public int supplierid { get; set; }
+
     }
 }

@@ -13,6 +13,7 @@
         public string invoiceaddress { get; set; }
          public DateTime DueDate { get; set; }
         public int currencyid { get; set; }
+        public int customercontactid { get; set; }
         public ICollection<AddInvoicedetails> invoicedetails { get; set; }
 
 

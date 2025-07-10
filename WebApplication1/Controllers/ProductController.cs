@@ -95,6 +95,125 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetBudgetHeadersforBom1")]
+        public async Task<IActionResult> GetBudgetHeadersforBom1()
+        {
+            // Hardcoded list of allowed BudgetHeaderIds
+            var allowedBudgetHeaderIds = new List<int> { 1, 3, 4, 5 }; // 👈 Your specific IDs
+
+            var products = await dbcontext.Product
+                .Include(p => p.Category)
+                .Include(p => p.SubCategory)
+                .Include(p => p.UOM)
+                 .Include(p => p.BudgettHeader)
+                .Where(p => allowedBudgetHeaderIds.Contains(p.BudgettHeader.budgetheaderid)) // 👈 Filter
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+
+
+
+
+        [HttpGet("GetBudgetHeadersforBom2")]
+        public async Task<IActionResult> GetBudgetHeadersforBom2()
+        {
+            // Hardcoded list of allowed BudgetHeaderIds
+            var allowedBudgetHeaderIds = new List<int> { 6,12,16,17 }; // 👈 Your specific IDs
+
+            var products = await dbcontext.Product
+                .Include(p => p.Category)
+                .Include(p => p.SubCategory)
+                .Include(p => p.UOM)
+                 .Include(p => p.BudgettHeader)
+                .Where(p => allowedBudgetHeaderIds.Contains(p.BudgettHeader.budgetheaderid)) // 👈 Filter
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+        [HttpGet("GetBudgetHeadersforBom6")]
+        public async Task<IActionResult> GetBudgetHeadersforBom6()
+        {
+            // Hardcoded list of allowed BudgetHeaderIds
+            var allowedBudgetHeaderIds = new List<int> { 2}; // 👈 Your specific IDs
+
+            var products = await dbcontext.Product
+                .Include(p => p.Category)
+                .Include(p => p.SubCategory)
+                .Include(p => p.UOM)
+                 .Include(p => p.BudgettHeader)
+                .Where(p => allowedBudgetHeaderIds.Contains(p.BudgettHeader.budgetheaderid)) // 👈 Filter
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+
+        [HttpGet("GetBudgetHeadersforBom4")]
+        public async Task<IActionResult> GetBudgetHeadersforBom4()
+        {
+            // Hardcoded list of allowed BudgetHeaderIds
+            var allowedBudgetHeaderIds = new List<int> { 13,7,15,23 }; // 👈 Your specific IDs
+
+            var products = await dbcontext.Product
+                .Include(p => p.Category)
+                .Include(p => p.SubCategory)
+                .Include(p => p.UOM)
+                 .Include(p => p.BudgettHeader)
+                .Where(p => allowedBudgetHeaderIds.Contains(p.BudgettHeader.budgetheaderid)) // 👈 Filter
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+        [HttpGet("GetBudgetHeadersforBom5")]
+        public async Task<IActionResult> GetBudgetHeadersforBom5()
+        {
+            // Hardcoded list of allowed BudgetHeaderIds
+            var allowedBudgetHeaderIds = new List<int> { 22 }; // 👈 Your specific IDs
+
+            var products = await dbcontext.Product
+                .Include(p => p.Category)
+                .Include(p => p.SubCategory)
+                .Include(p => p.UOM)
+                 .Include(p => p.BudgettHeader)
+                .Where(p => allowedBudgetHeaderIds.Contains(p.BudgettHeader.budgetheaderid)) // 👈 Filter
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+
+
+
+        [HttpGet("GetBudgetHeadersforBom3")]
+        public async Task<IActionResult> GetBudgetHeadersforBom3()
+        {
+            // Hardcoded list of allowed BudgetHeaderIds
+            var allowedBudgetHeaderIds = new List<int> { 8,9,10 }; // 👈 Your specific IDs
+
+            var products = await dbcontext.Product
+                .Include(p => p.Category)
+                .Include(p => p.SubCategory)
+                .Include(p => p.UOM)
+                 .Include(p => p.BudgettHeader)
+                .Where(p => allowedBudgetHeaderIds.Contains(p.BudgettHeader.budgetheaderid)) // 👈 Filter
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+
+
+
+
+
+
+
+
+
         [HttpGet("GetMaxProductCodeAsync")]
         public async Task<int> GetMaxProductCodeAsync()
         {

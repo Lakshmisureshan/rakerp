@@ -236,14 +236,6 @@ namespace WebApplication1.Controllers
 
 
 
-
-
-
-
-
-
-
-
         [HttpGet("GetAllJob")]
         public async Task<IActionResult> GetAllJob()
         {

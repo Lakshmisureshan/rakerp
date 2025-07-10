@@ -25,8 +25,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-       .AddEntityFrameworkStores<ApplicationDBContext>()
-       .AddDefaultTokenProviders();
+        .AddEntityFrameworkStores<ApplicationDBContext>()
+        .AddDefaultTokenProviders();
 
 
 
@@ -47,8 +47,21 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDBContext>();
 
-
-
+// CORS Policy Definition - CORRECT
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendOrigin", // Policy Name
+        builder =>
+        {
+            // Allowed Origins
+            builder.WithOrigins("http://localhost:4200", // <-- ADD THIS
+                                "http://localhost:8000",
+                                "http://frontend")
+                   .AllowAnyHeader() // Allows all headers
+                   .AllowAnyMethod() // Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
+           .AllowCredentials(); // <-- UNCOMMENT THIS IF YOUR ANGULAR APP SENDS AUTHENTICATION HEADERS (e.g., JWT) OR COOKIES
+        });
+});
 
 
 builder.Services.Configure<IdentityOptions>(options => {
@@ -69,18 +82,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseCors(options => {
-    options.AllowAnyHeader(); 
-    options.AllowAnyOrigin();
-    options.AllowAnyMethod();
+// app.UseHttpsRedirection(); // Commented out, which is good for Docker HTTP inter-container communication
 
-});
-app.UseAuthorization(); 
+// Routing Middleware - CORRECT PLACEMENT
+app.UseRouting();
 
-app.MapControllers(); 
-//var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-//app.Urls.Add("http://0.0.0.0:" + port);
+// CORS Middleware - CORRECT PLACEMENT (After UseRouting, Before UseAuthorization)
+app.UseCors("AllowFrontendOrigin"); // Applying the named policy
 
-app.UseStaticFiles();   
+// Authorization Middleware - CORRECT PLACEMENT
+app.UseAuthorization();
+
+app.MapControllers();
+
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "5000"; // This is commented out, so Kestrel will use default ports (80/443)
+//app.Urls.Add("http://0.0.0.0:" + port); // This is commented out
+
+app.UseStaticFiles();
 app.Run();

@@ -361,6 +361,65 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpPost("AddSupplierContact")] // Consider renaming to something like "SaveSupplierContacts" as it now updates and adds
+        public async Task<IActionResult> AddSupplierContact(Addorupdatesuppliercontactdto request)
+        {
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    foreach (var item in request.contactdetails) // Use the renamed property
+                    {
+                        // Check if it's an existing contact (assuming ContactId > 0 means existing)
+                        if (item.suppliercontectid > 0)
+                        {
+                            // Find the existing contact in the database
+                            var existingContact = await dbcontext.SupplierContact
+                             .FirstOrDefaultAsync(sc => sc.suppliercontectid == item.suppliercontectid && sc.supplierid == item.supplierid); // Assuming 'Id' is your PK for SupplierContact
+                            if (existingContact != null)
+                            {
+                                // Update existing properties
+                                existingContact.suppliercontactname = item.suppliercontactname;
+                                existingContact.email = item.email;
+                                existingContact.phoneno = item.phoneno; // Map back to PhoneNo if that's your DB column
+                                existingContact.mobile = item.mobile;
+                                dbcontext.SupplierContact.Update(existingContact); // Mark as modified
+                            }
+                            else
+                            {
+                                // If ContactId was provided but not found, it could be an error or
+                                // a race condition. For simplicity, we'll return an error,
+                                // or you could log it and skip.
+                                return NotFound($"Supplier contact with ID {item.suppliercontectid} not found for update.");
+                            }
+                        }
+                        else
+                        {
+                            // Add new contact (ContactId is 0 or not provided)
+                            var newSupplierContact = new SupplierContact
+                            {
+                                supplierid = item.supplierid,
+                                suppliercontactname = item.suppliercontactname,
+                                email = item.email,
+                                phoneno = item.phoneno, // Map back to PhoneNo if that's your DB column
+                                mobile = item.mobile
+                                // Add other fields as needed
+                            };
+                            await dbcontext.SupplierContact.AddAsync(newSupplierContact);
+                        }
+                    }
+                    await dbcontext.SaveChangesAsync(); // Save all changes (adds and updates)
+                    await transaction.CommitAsync();
+                    return StatusCode(200, new { Message = "Supplier contacts saved/updated successfully" });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    // Log the exception details (ex.InnerException, ex.StackTrace) for better debugging
+                    return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+                }
+            }
+        }
 
 
 
@@ -370,7 +429,5 @@ namespace WebApplication1.Controllers
 
 
 
-
-
-    }
+        }
 }

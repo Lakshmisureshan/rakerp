@@ -2,8 +2,8 @@
 {
     public class Adddatatosavedinprdetails
     {
-       
-            public int prtblid { get; set; }
+      
+        public int prtblid { get; set; }
         public int pocreatedqty { get; set; }
 
     }

@@ -2,11 +2,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using WebApplication1.Data;
 
 using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
+using static WebApplication1.Controllers.POController;
 namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
@@ -287,7 +290,8 @@ namespace WebApplication1.Controllers
         {
             // Query the database for a job with the specified jobId
             var pr = await dbcontext.PR
-                                  .Include(p => p.verifiedby) // Include the related ApplicationUser
+                                  .Include(p => p.verifiedby)
+                                  .Include(p => p.prcreatedby) // Include the related ApplicationUser
                                   .SingleOrDefaultAsync(j => j.PRID == prid);
 
             // Check if the job was found
@@ -764,6 +768,31 @@ namespace WebApplication1.Controllers
 
             return Ok(product);
         }
+
+
+
+
+
+
+
+
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

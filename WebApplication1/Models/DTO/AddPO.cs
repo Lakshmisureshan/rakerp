@@ -39,8 +39,8 @@ namespace WebApplication1.Models.DTO
         public Boolean approveddrawings { get; set; }
         public Boolean others { get; set; }
         public string Remarks { get; set; }
-        
 
+        public string otherpaymentremarks { get; set; }
 
     }
 }

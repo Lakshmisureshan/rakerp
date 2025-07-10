@@ -62,6 +62,13 @@ namespace WebApplication1.Models.Domain
         public decimal discount { get; set; }
 
         public string?  paymenterm1description { get; set; }
-       
+
+        public string? otherpaymentremarks { get; set; }
+
+
+        public BudgettHeader BudgettHeader { get; set; }
+
+        public int  budgetheaderid { get; set; }
+
     }
 }

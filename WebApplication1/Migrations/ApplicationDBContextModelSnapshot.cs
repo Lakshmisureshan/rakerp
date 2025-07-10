@@ -377,15 +377,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dd7073ee-b203-41c7-a171-689d0fe89f89",
+                            ConcurrencyStamp = "b410d883-f01c-4ea3-96d4-97d2042262b7",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEF1EdowsdrCjPR9VmcaPnVI4dMuRx8aBgg6lhID71rA1eTyVBPp1yWlZGJHOwLSjpg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDkUBEtCZlArgMvbdFk9lHSow2TgR+R4BCyI+7FLDZT63XEBQ7Ik38Gi9MQKZ9ZDIQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e275bd33-d9ae-4308-983d-2af857427898",
+                            SecurityStamp = "034a46ea-0b4b-480c-a9a2-83f70513dfbc",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -530,6 +530,134 @@ namespace WebApplication1.Migrations
                     b.ToTable("Company");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.CompanyInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Bank1AEDAccount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank1Branch")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank1Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank1SWIFT")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank1USDAccount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank2AEDAccount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank2Branch")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank2Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank2SWIFT")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bank2USDAccount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClarificationContact")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ClarificationDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CompanyAddressLine2")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyFax")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyTRN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyWebsite")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Companycountry")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Companypobox")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvoiceFormatNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CompanyInfo");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Bank1AEDAccount = "AE 41 0330 0000 1900 0028 744",
+                            Bank1Branch = "Branch 12, King Abdul Aziz Branch Sharjah, UAE",
+                            Bank1Name = "Mashreq Bank Psc",
+                            Bank1SWIFT = "BOMLAEAD",
+                            Bank1USDAccount = "AE 29 0330 0000 1900 0036 332",
+                            Bank2AEDAccount = "AE 89 0350 0000 0620 6483 580",
+                            Bank2Branch = "Ras Al Riffa Branch, Ras Al Khaimah, UAE",
+                            Bank2Name = "NBAD",
+                            Bank2SWIFT = "NBADAEAARAK",
+                            Bank2USDAccount = "AE 50 0350 0000 0620 6483 603",
+                            ClarificationContact = "00971 56 610 3421",
+                            ClarificationDays = 7,
+                            CompanyAddressLine2 = "RAKEZ, Al Hamra, RAK",
+                            CompanyEmail = "info@ace-me.com",
+                            CompanyFax = "+971 6 5269062",
+                            CompanyName = "Ace Cranes & Engineering FZ-LLC",
+                            CompanyPhone = "+971 7 2445002",
+                            CompanyTRN = "100296598400003",
+                            CompanyWebsite = "www.ace-me.com",
+                            Companycountry = "UAE",
+                            Companypobox = "P.O Box 85652",
+                            InvoiceFormatNo = "ACE-ACC-F-03, REV.00"
+                        });
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.Country", b =>
                 {
                     b.Property<int>("countryid")
@@ -658,6 +786,114 @@ namespace WebApplication1.Migrations
                     b.HasIndex("customerid");
 
                     b.ToTable("customercontact");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.deliverydetails", b =>
+                {
+                    b.Property<int>("did")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("did"), 1L, 1);
+
+                    b.Property<int>("counter")
+                        .HasColumnType("int");
+
+                    b.Property<int>("deliveryid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("qty")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("srno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("uom")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("did");
+
+                    b.HasIndex("deliveryid");
+
+                    b.ToTable("deliverydetails");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.DeliveryNote", b =>
+                {
+                    b.Property<int>("deliveryno")
+                        .HasColumnType("int");
+
+                    b.Property<int>("buyercontactid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("buyerdeliveryaddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("buyerid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("buyeriec")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("buyerlpodate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("buyerlpono")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("buyertrnno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("consigneeaddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("consigneeiec")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("consigneelpodate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("consigneelpono")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("consigneename")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("consigneetrnno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("deliveredby")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("deliverydate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("jobid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("receivedby")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("vehicleno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("deliveryno");
+
+                    b.HasIndex("buyercontactid");
+
+                    b.HasIndex("buyerid");
+
+                    b.HasIndex("jobid");
+
+                    b.ToTable("DeliveryNote");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Designation", b =>
@@ -1210,6 +1446,9 @@ namespace WebApplication1.Migrations
                     b.Property<decimal>("issueqty")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("issueunitprice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("itemid")
                         .HasColumnType("int");
 
@@ -1474,8 +1713,8 @@ namespace WebApplication1.Migrations
                     b.Property<int>("enduserid")
                         .HasColumnType("int");
 
-                    b.Property<double>("exchangerate")
-                        .HasColumnType("float");
+                    b.Property<decimal>("exchangerate")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("expecteddeliverydate")
                         .HasColumnType("datetime2");
@@ -1512,11 +1751,14 @@ namespace WebApplication1.Migrations
                     b.Property<int>("manufacturingbayid")
                         .HasColumnType("int");
 
-                    b.Property<double>("ordervalue")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ordervalue")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("ordervaluebasecurrency")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ordervaluebasecurrency")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ordervaluewithvat")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("paymentterms")
                         .IsRequired()
@@ -1558,6 +1800,9 @@ namespace WebApplication1.Migrations
                     b.Property<decimal>("totalreceivedinbasecurrency")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("vatpercent")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("warrantyterms")
                         .HasColumnType("nvarchar(max)");
 
@@ -1586,6 +1831,38 @@ namespace WebApplication1.Migrations
                     b.HasIndex("qualitylevelid");
 
                     b.ToTable("Job");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.jobamend", b =>
+                {
+                    b.Property<int>("amid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("amid"), 1L, 1);
+
+                    b.Property<DateTime>("amenddate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("amenduserid")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("amendvalueinbasecurrency")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("jobid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("amid");
+
+                    b.HasIndex("amenduserid");
+
+                    b.HasIndex("jobid");
+
+                    b.ToTable("jobamend");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.JobStage", b =>
@@ -1850,6 +2127,9 @@ namespace WebApplication1.Migrations
                     b.Property<bool>("approveddrawings")
                         .HasColumnType("bit");
 
+                    b.Property<int>("budgetheaderid")
+                        .HasColumnType("int");
+
                     b.Property<bool>("chineseorgin")
                         .HasColumnType("bit");
 
@@ -1880,6 +2160,9 @@ namespace WebApplication1.Migrations
 
                     b.Property<bool>("mtcpriortodispatch")
                         .HasColumnType("bit");
+
+                    b.Property<string>("otherpaymentremarks")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("paymenterm1description")
                         .HasColumnType("nvarchar(max)");
@@ -1943,6 +2226,8 @@ namespace WebApplication1.Migrations
                     b.HasIndex("PaymenttermsDaysid");
 
                     b.HasIndex("PoAuthorizedbyid");
+
+                    b.HasIndex("budgetheaderid");
 
                     b.HasIndex("createdbyid");
 
@@ -2115,6 +2400,32 @@ namespace WebApplication1.Migrations
                     b.HasIndex("pruomid");
 
                     b.ToTable("PRDetails");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Preferreduomperproducts", b =>
+                {
+                    b.Property<int>("pid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("pid"), 1L, 1);
+
+                    b.Property<int>("itemcode")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("multiplyfactor")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("prefuomid")
+                        .HasColumnType("int");
+
+                    b.HasKey("pid");
+
+                    b.HasIndex("itemcode");
+
+                    b.HasIndex("prefuomid");
+
+                    b.ToTable("Preferreduomperproducts");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Product", b =>
@@ -2576,6 +2887,15 @@ namespace WebApplication1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("suppliercontectid"), 1L, 1);
 
+                    b.Property<string>("email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("mobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phoneno")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("suppliercontactname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2711,6 +3031,9 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("customercontactid")
+                        .HasColumnType("int");
+
                     b.Property<int>("customerid")
                         .HasColumnType("int");
 
@@ -2727,6 +3050,8 @@ namespace WebApplication1.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("invoiceno");
+
+                    b.HasIndex("customercontactid");
 
                     b.HasIndex("customerid");
 
@@ -2869,6 +3194,44 @@ namespace WebApplication1.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.deliverydetails", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.DeliveryNote", "DeliveryNote")
+                        .WithMany()
+                        .HasForeignKey("deliveryid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("DeliveryNote");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.DeliveryNote", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.customercontact", "customercontact")
+                        .WithMany()
+                        .HasForeignKey("buyercontactid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("buyerid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("jobid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Job");
+
+                    b.Navigation("customercontact");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Employeemaster", b =>
@@ -3146,9 +3509,9 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Models.Domain.Invoicedetails", b =>
                 {
                     b.HasOne("WebApplication1.Models.Invoice", "Invoice")
-                        .WithMany()
+                        .WithMany("Invoicedetails")
                         .HasForeignKey("invoiceno")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Invoice");
@@ -3499,6 +3862,24 @@ namespace WebApplication1.Migrations
                     b.Navigation("isldapp");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Domain.jobamend", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "Amendedby")
+                        .WithMany()
+                        .HasForeignKey("amenduserid")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("WebApplication1.Models.Domain.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("jobid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Amendedby");
+
+                    b.Navigation("Job");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Domain.manhour", b =>
                 {
                     b.HasOne("WebApplication1.Models.Domain.Employeemaster", "employeemaster")
@@ -3594,6 +3975,12 @@ namespace WebApplication1.Migrations
                         .HasForeignKey("PoAuthorizedbyid")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("WebApplication1.Models.Domain.BudgettHeader", "BudgettHeader")
+                        .WithMany()
+                        .HasForeignKey("budgetheaderid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "createdby")
                         .WithMany()
                         .HasForeignKey("createdbyid")
@@ -3651,6 +4038,8 @@ namespace WebApplication1.Migrations
                         .HasForeignKey("supplierid")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("BudgettHeader");
 
                     b.Navigation("Currency");
 
@@ -3745,6 +4134,25 @@ namespace WebApplication1.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("UOM");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Domain.Preferreduomperproducts", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Domain.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("itemcode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.UOM", "Prefuom")
+                        .WithMany()
+                        .HasForeignKey("prefuomid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Prefuom");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Product", b =>
@@ -3990,6 +4398,12 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Models.Invoice", b =>
                 {
+                    b.HasOne("WebApplication1.Models.Domain.customercontact", "customercontact")
+                        .WithMany()
+                        .HasForeignKey("customercontactid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("WebApplication1.Models.Domain.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("customerid")
@@ -4013,6 +4427,8 @@ namespace WebApplication1.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Job");
+
+                    b.Navigation("customercontact");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.PRDetails", b =>
@@ -4023,6 +4439,11 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Models.Domain.Purchasedetails", b =>
                 {
                     b.Navigation("PRPOs");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Invoice", b =>
+                {
+                    b.Navigation("Invoicedetails");
                 });
 #pragma warning restore 612, 618
         }
