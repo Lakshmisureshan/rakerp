@@ -7,11 +7,11 @@ namespace WebApplication1.Models.DTO
 
 
         public int itemid { get; set; }
-        public double bomqty { get; set; }
+        public decimal  bomqty { get; set; }
 
 
         public int bomuomid { get; set; }
-        public double price { get; set; }
+        public decimal price { get; set; }
 
         public int prodstageid { get; set; }
         public DateTime requireddate { get; set; }

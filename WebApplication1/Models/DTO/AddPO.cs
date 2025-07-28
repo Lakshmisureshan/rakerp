@@ -8,7 +8,7 @@ namespace WebApplication1.Models.DTO
              public int jobid { get; set; }
       
                 public int pocurrencyid { get; set; }
-        public double poexchangerate { get; set; }
+        public decimal poexchangerate { get; set; }
   
         public string createdbyid { get; set; }
    
@@ -41,6 +41,9 @@ namespace WebApplication1.Models.DTO
         public string Remarks { get; set; }
 
         public string otherpaymentremarks { get; set; }
+
+
+        public int budgetheaderid { get; set; }
 
     }
 }

@@ -9,10 +9,10 @@ namespace WebApplication1.Models.Domain
         public int bomid { get; set; }
         public Product Product { get; set; }
         public int itemid { get; set; }
-        public double  bomqty { get; set; }
+        public decimal  bomqty { get; set; }
         public UOM UOM { get; set; }
         public int bomuomid { get; set; }
-        public double   price { get; set; }
+        public decimal   price { get; set; }
         public ProductionStages Productionstages { get; set; }
         public int prodstageid { get; set; }
         public DateTime RequiredDate { get; set; }
@@ -24,7 +24,7 @@ namespace WebApplication1.Models.Domain
         public int jobid { get; set; }
         public int bomrevno { get; set; } = 0;
         public int bomstatus { get; set; } = 0;
-        public double prcreatedqty { get; set; } = 0;
+        public decimal prcreatedqty { get; set; } = 0;
         public ApplicationUser? Bomcreatedby { get; set; }
         public string? bomcreatedbyid { get; set; }
 

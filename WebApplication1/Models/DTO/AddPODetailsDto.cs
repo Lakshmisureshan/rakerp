@@ -7,9 +7,9 @@ namespace WebApplication1.Models.DTO
         public int orderid { get; set; }
     
         public int poitemid { get; set; }
-        public double poquantity { get; set; }
+        public decimal poquantity { get; set; }
         
-         public double pounitprice { get; set; }
+         public decimal pounitprice { get; set; }
         public string make { get; set; }
 
         public int prtblid { get; set; }

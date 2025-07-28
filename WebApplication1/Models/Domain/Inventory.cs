@@ -23,7 +23,11 @@ namespace WebApplication1.Models.Domain
 
         public string type { get; set; } = "GRN";
 
-        public string? location { get; set; } 
+        public string? location { get; set; }
+
+
+        public string? billofentryno { get; set; }
+        public DateTime? billofentrydate { get; set; }
 
     }
 }

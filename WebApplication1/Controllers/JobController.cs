@@ -142,52 +142,156 @@ namespace WebApplication1.Controllers
 
 
 
+        //[HttpPost("AddJob")]
+        //public async Task<IActionResult> AddJob(AddJobDto request)
+        //{
+        //    try
+        //    {
+        //        // Check if a job with the same Jobid already exists
+        //        var existingJob = await dbcontext.Job
+        //                                         .FirstOrDefaultAsync(j => j.Jobid == request.Jobid);
+
+        //        if (existingJob != null)
+        //        {
+        //            // Update the existing job
+        //            existingJob.isldapplicable = request.isldapplicable;
+        //            existingJob.customerid = request.customerid;
+        //            existingJob.deliveryterms = request.deliveryterms;
+        //            //existingJob.currencyid = request.currencyid;
+        //            //existingJob.exchangerate = request.exchangerate;
+        //            existingJob.jobdate = request.jobdate;
+        //            existingJob.jobtypeid = request.jobtypeid;
+        //            existingJob.ldpercent = request.ldpercent;
+        //            existingJob.lpono = request.lpono;
+        //            existingJob.manufacturingbayid = request.manufacturingbayid;
+        //            existingJob.lpodate = request.lpodate;
+        //            //existingJob.ordervalue = request.ordervalue;
+        //            //existingJob.ordervaluebasecurrency = request.ordervaluebasecurrency;
+        //            existingJob.podeliverydate = request.podeliverydate;
+        //            existingJob.totalnumber = request.totalnumber;
+        //            existingJob.projectengineerid = request.projectengineerid;
+        //            existingJob.projectmanagerid = request.projectmanagerid;
+        //            existingJob.projectname = request.projectname;
+        //            existingJob.paymentterms = request.paymentterms;
+        //            existingJob.qualitylevelid = request.qualitylevelid == 0 ? null : request.qualitylevelid;
+        //            existingJob.projectcategoryid = request.projectcategoryid == 0 ? null : request.projectcategoryid;
+        //            existingJob.warrantyterms = request.warrantyterms;
+        //            existingJob.enduserid = request.enduserid;
+        //            existingJob.jobdescription = request.jobdescription;
+        //            existingJob.mainjobid = request.mainjobid;
+        //            //existingJob.vatpercent = request.vatpercent;
+        //            //existingJob.ordervaluewithvat = request.ordervaluewithvat;
+        //            dbcontext.Job.Update(existingJob);
+        //        }
+        //        else
+        //        {
+        //            // If the job does not exist, create a new one
+        //            var job = new Job
+        //            {
+        //                jobstageid=1,
+
+        //                isldapplicable = request.isldapplicable,
+        //                customerid = request.customerid,
+        //                deliveryterms = request.deliveryterms,
+        //                currencyid = request.currencyid,
+        //                exchangerate = request.exchangerate,
+        //                jobdate = request.jobdate,
+        //                jobtypeid = request.jobtypeid,
+        //                ldpercent = request.ldpercent,
+        //                Jobid = request.Jobid,
+        //                lpono = request.lpono,
+        //                manufacturingbayid = request.manufacturingbayid,
+        //                lpodate = request.lpodate,
+        //                ordervalue = request.ordervalue,
+        //                ordervaluebasecurrency = request.ordervaluebasecurrency,
+        //                podeliverydate = request.podeliverydate,
+        //                totalnumber = request.totalnumber,
+        //                projectengineerid = request.projectengineerid,
+        //                projectmanagerid = request.projectmanagerid,
+        //                projectname = request.projectname,
+        //                paymentterms = request.paymentterms,
+        //                qualitylevelid = request.qualitylevelid == 0 ? null : request.qualitylevelid,
+        //                projectcategoryid = request.projectcategoryid == 0 ? null : request.projectcategoryid,
+        //                warrantyterms = request.warrantyterms,
+        //                enduserid = request.enduserid,
+        //                jobdescription = request.jobdescription,
+        //                mainjobid = request.mainjobid,
+        //                vatpercent = request.vatpercent,
+        //            ordervaluewithvat = request.ordervaluewithvat
+
+        //        };
+
+        //            await dbcontext.Job.AddAsync(job);
+        //        }
+
+        //        // Save changes
+        //        await dbcontext.SaveChangesAsync();
+
+        //        // Prepare the response DTO
+        //        return Ok(new { Message = "Job details saved successfully." });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log the exception (consider using ILogger for better logging)
+        //        return StatusCode(500, new { Message = "An error occurred while processing your request.", Details = ex.Message });
+        //    }
+        //}
+
+
         [HttpPost("AddJob")]
         public async Task<IActionResult> AddJob(AddJobDto request)
         {
             try
             {
+                bool isNewJob = false; // Flag to determine if it's a new job or an update
+                Job jobToProcess; // This will hold either the existing or new job entity
+
                 // Check if a job with the same Jobid already exists
                 var existingJob = await dbcontext.Job
-                                                 .FirstOrDefaultAsync(j => j.Jobid == request.Jobid);
+                                                .FirstOrDefaultAsync(j => j.Jobid == request.Jobid);
 
                 if (existingJob != null)
                 {
                     // Update the existing job
-                    existingJob.isldapplicable = request.isldapplicable;
-                    existingJob.customerid = request.customerid;
-                    existingJob.deliveryterms = request.deliveryterms;
-                    existingJob.currencyid = request.currencyid;
-                    existingJob.exchangerate = request.exchangerate;
-                    existingJob.jobdate = request.jobdate;
-                    existingJob.jobtypeid = request.jobtypeid;
-                    existingJob.ldpercent = request.ldpercent;
-                    existingJob.lpono = request.lpono;
-                    existingJob.manufacturingbayid = request.manufacturingbayid;
-                    existingJob.lpodate = request.lpodate;
-                    existingJob.ordervalue = request.ordervalue;
-                    existingJob.ordervaluebasecurrency = request.ordervaluebasecurrency;
-                    existingJob.podeliverydate = request.podeliverydate;
-                    existingJob.totalnumber = request.totalnumber;
-                    existingJob.projectengineerid = request.projectengineerid;
-                    existingJob.projectmanagerid = request.projectmanagerid;
-                    existingJob.projectname = request.projectname;
-                    existingJob.paymentterms = request.paymentterms;
-                    existingJob.qualitylevelid = request.qualitylevelid == 0 ? null : request.qualitylevelid;
-                    existingJob.projectcategoryid = request.projectcategoryid == 0 ? null : request.projectcategoryid;
-                    existingJob.warrantyterms = request.warrantyterms;
-                    existingJob.enduserid = request.enduserid;
-                    existingJob.jobdescription = request.jobdescription;
-                    existingJob.mainjobid = request.mainjobid;
-                    dbcontext.Job.Update(existingJob);
+                    jobToProcess = existingJob; // Assign existing job to process
+                    jobToProcess.isldapplicable = request.isldapplicable;
+                    jobToProcess.customerid = request.customerid;
+                    jobToProcess.deliveryterms = request.deliveryterms;
+                    //existingJob.currencyid = request.currencyid; // Un-comment if needed
+                    //existingJob.exchangerate = request.exchangerate; // Un-comment if needed
+                    jobToProcess.jobdate = request.jobdate;
+                    jobToProcess.jobtypeid = request.jobtypeid;
+                    jobToProcess.ldpercent = request.ldpercent;
+                    jobToProcess.lpono = request.lpono;
+                    jobToProcess.manufacturingbayid = request.manufacturingbayid;
+                    jobToProcess.lpodate = request.lpodate;
+                    //existingJob.ordervalue = request.ordervalue; // Un-comment if needed
+                    //existingJob.ordervaluebasecurrency = request.ordervaluebasecurrency; // Un-comment if needed
+                    jobToProcess.podeliverydate = request.podeliverydate;
+                    jobToProcess.totalnumber = request.totalnumber;
+                    jobToProcess.projectengineerid = request.projectengineerid;
+                    jobToProcess.projectmanagerid = request.projectmanagerid;
+                    jobToProcess.projectname = request.projectname;
+                    jobToProcess.paymentterms = request.paymentterms;
+                    jobToProcess.qualitylevelid = request.qualitylevelid == 0 ? null : request.qualitylevelid;
+                    jobToProcess.projectcategoryid = request.projectcategoryid == 0 ? null : request.projectcategoryid;
+                    jobToProcess.warrantyterms = request.warrantyterms;
+                    jobToProcess.enduserid = request.enduserid;
+                    jobToProcess.jobdescription = request.jobdescription;
+                    jobToProcess.mainjobid = request.mainjobid;
+                    //existingJob.vatpercent = request.vatpercent; // Un-comment if needed
+                    //existingJob.ordervaluewithvat = request.ordervaluewithvat; // Un-comment if needed
+
+                    // Mark the entity as modified (Entity Framework will track changes)
+                    dbcontext.Job.Update(jobToProcess);
+                    isNewJob = false; // It's an update
                 }
                 else
                 {
                     // If the job does not exist, create a new one
-                    var job = new Job
+                    jobToProcess = new Job
                     {
-                        jobstageid=1,
-                       
+                        jobstageid = 1, // Default value for new job
                         isldapplicable = request.isldapplicable,
                         customerid = request.customerid,
                         deliveryterms = request.deliveryterms,
@@ -196,7 +300,7 @@ namespace WebApplication1.Controllers
                         jobdate = request.jobdate,
                         jobtypeid = request.jobtypeid,
                         ldpercent = request.ldpercent,
-                        Jobid = request.Jobid,
+                        Jobid = request.Jobid, // Assign the Jobid from the request
                         lpono = request.lpono,
                         manufacturingbayid = request.manufacturingbayid,
                         lpodate = request.lpodate,
@@ -214,27 +318,47 @@ namespace WebApplication1.Controllers
                         enduserid = request.enduserid,
                         jobdescription = request.jobdescription,
                         mainjobid = request.mainjobid,
-
+                        vatpercent = request.vatpercent,
+                        ordervaluewithvat = request.ordervaluewithvat
                     };
 
-                    await dbcontext.Job.AddAsync(job);
+                    await dbcontext.Job.AddAsync(jobToProcess);
+                    isNewJob = true; // It's a new job
                 }
 
-                // Save changes
+                // Save changes to the Job table first
+                // This is important because if it's a new job, the jobToProcess.Id (primary key)
+                // will be populated *after* SaveChangesAsync().
                 await dbcontext.SaveChangesAsync();
 
+                // --- Page Tracking Logic ---
+                var pageTrackEntry = new Trackpage
+                {
+                    // Assuming 'Job Entry' or 'Job Update' as the page name
+                    pagename = isNewJob ? "New JobRegistration" : "Job Update",
+                    docno = request.Jobid.ToString(), // Use the Jobid as the document number
+                    createddate = DateTime.UtcNow, // Use UTC for consistency
+                                                   // Get the current user's ID/username
+                    createdbyuser = request.userid.ToString() // Placeholder: Replace with actual user ID/name
+                                                 // If you have authentication:
+                                                 // createdbyuser = User.Identity.Name ?? "Anonymous"
+                                                 // or if injecting IHttpContextAccessor:
+                                                 // createdbyuser = _httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Anonymous"
+                };
+
+                await dbcontext.Trackpage.AddAsync(pageTrackEntry);
+                await dbcontext.SaveChangesAsync(); // Save the page track entry
+
                 // Prepare the response DTO
-                return Ok(new { Message = "Job details saved successfully." });
+                return Ok(new { Message = "Job details and page track saved successfully.", JobId = jobToProcess.Jobid });
             }
             catch (Exception ex)
             {
                 // Log the exception (consider using ILogger for better logging)
+                // e.g., _logger.LogError(ex, "Error in AddJob for Jobid: {JobId}", request.Jobid);
                 return StatusCode(500, new { Message = "An error occurred while processing your request.", Details = ex.Message });
             }
         }
-
-
-
 
         [HttpGet("GetAllJob")]
         public async Task<IActionResult> GetAllJob()
@@ -405,6 +529,29 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetProjectLPOFile/{jobNo}")]
+        public IActionResult GetProjectLPOFile(string jobNo)
+        {
+            var jobFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "ProjectDocs", jobNo);
+
+            if (!Directory.Exists(jobFolderPath))
+            {
+                return NotFound("Job folder not found.");
+            }
+
+            var files = Directory.GetFiles(jobFolderPath, "*.pdf"); // Fetch only PDF files
+
+            if (files.Length == 0)
+            {
+                return NotFound("No PDF file found in the job folder.");
+            }
+
+            var filePath = files[0]; // Get the first file
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            var fileName = Path.GetFileName(filePath);
+
+            return File(fileBytes, "application/pdf", fileName);
+        }
 
 
 

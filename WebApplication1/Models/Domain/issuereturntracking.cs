@@ -21,5 +21,7 @@ namespace WebApplication1.Models.Domain
         public int issuecurrencyid { get; set; }
         public UOM UOM { get; set; }
         public int uomid { get; set; }
+
+        public string ? location { get; set; }
     }
 }

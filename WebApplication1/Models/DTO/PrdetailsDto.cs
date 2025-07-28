@@ -17,6 +17,6 @@ namespace WebApplication1.Models.DTO
         public int bomid { get; set; }
 
 
-        public float prqty { get; set; }
+        public decimal prqty { get; set; }
     }
 }

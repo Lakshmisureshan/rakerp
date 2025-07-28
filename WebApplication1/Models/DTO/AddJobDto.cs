@@ -24,7 +24,7 @@ namespace WebApplication1.Models.DTO
         public int totalnumber { get; set; }
 
     
-        public int manufacturingbayid { get; set; }
+        public int  manufacturingbayid { get; set; }
 
 
 
@@ -63,6 +63,11 @@ namespace WebApplication1.Models.DTO
         public string warrantyterms { get; set; }
         public string deliveryterms { get; set; }
         public string jobdescription { get; set; }
+        public decimal vatpercent { get; set; } = 0;
+        public decimal ordervaluewithvat { get; set; } = 0;
+
+
+        public string  userid { get; set; }
 
     }
 }

@@ -116,6 +116,17 @@ namespace WebApplication1.Data
 
         public DbSet<Preferreduomperproducts> Preferreduomperproducts { get; set; }
         public DbSet<jobamend> jobamend { get; set; }
+
+        public DbSet<Trackpage> Trackpage { get; set; }
+
+        public DbSet<InventoryHistory> InventoryHistory { get; set; }
+        public DbSet<POissuereturndetails> POissuereturndetails { get; set; }
+        
+       public DbSet<POIssueReturnDetailIssueTracking> POIssueReturnDetailIssueTracking { get; set; }
+
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -528,6 +539,77 @@ modelBuilder.Entity<Inventory>()
 .HasForeignKey(pd => pd.uomid)
 .OnDelete(DeleteBehavior.NoAction);
 base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<InventoryHistory>()
+               .HasOne(pd => pd.PO)
+               .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+               .HasForeignKey(pd => pd.pono)
+               .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<InventoryHistory>()
+      .HasOne(pd => pd.Job)
+      .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+      .HasForeignKey(pd => pd.jobid)
+      .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<InventoryHistory>()
+           .HasOne(pd => pd.Job)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.jobid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<InventoryHistory>()
+           .HasOne(pd => pd.Product)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.productid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<InventoryHistory>()
+            .HasOne(pd => pd.UOM)
+            .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+            .HasForeignKey(pd => pd.uomid)
+            .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<InventoryHistory>()
+           .HasOne(pd => pd.Currency)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.invcurrencyid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1835,7 +1917,12 @@ base.OnModelCreating(modelBuilder);
                   .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
-
+            modelBuilder.Entity<Miscost>()
+                         .HasOne(pd => pd.ApplicationUser)
+                         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                         .HasForeignKey(pd => pd.createdbyuser)
+                         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Job>()
       .Property(j => j.qualitylevelid)
@@ -1868,18 +1955,43 @@ base.OnModelCreating(modelBuilder);
            .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
-
-
-
-
-
-
             modelBuilder.Entity<PO>()
   .HasOne(pd => pd.Currency)
   .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
   .HasForeignKey(pd => pd.pocurrencyid)
   .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<POissuereturndetails>()
+       .HasOne(pd => pd.Issuereturn)
+       .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+       .HasForeignKey(pd => pd.issuereturnref)
+       .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<POissuereturndetails>()
+       .HasOne(pd => pd.Product)
+       .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+       .HasForeignKey(pd => pd.productcode)
+       .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<POIssueReturnDetailIssueTracking>()
+           .HasOne(pd => pd.POIssueReturnDetail)
+           .WithMany(d => d.Links)// Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.issuereturndetailid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<POIssueReturnDetailIssueTracking>()
+               .HasOne(pd => pd.IssueTracking)
+           .WithMany(d => d.Links)// Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.issuetrackid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
 
 
             base.OnModelCreating(modelBuilder);

@@ -18,7 +18,7 @@
 
         public string? suppliername { get; set; }
 
-        public double TotalAmount { get; set; }
+        public decimal  TotalAmount { get; set; }
 
         public int pocurrencyid { get; set; }
         public string  postatusname { get; set; }
@@ -28,6 +28,8 @@
         public string currencyname { get; set; }
 
         public int supplierid { get; set; }
+
+        public decimal TotalAmountinbasecurrency { get; set; }
 
     }
 }

@@ -15,7 +15,7 @@ namespace WebApplication1.Models.Domain
         public DateTime? updateddate { get; set;}
         public Currency  Currency { get; set; }
         public int pocurrencyid { get; set; }
-        public double  poexchangerate  { get; set; }
+        public decimal  poexchangerate  { get; set; }
         public ApplicationUser createdby { get; set; }
         public string   createdbyid  { get; set; }
         public ApplicationUser? modifiedby { get; set; }

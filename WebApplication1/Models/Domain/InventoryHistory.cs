@@ -20,5 +20,11 @@ namespace WebApplication1.Models.Domain
         public int invcurrencyid { get; set; }
         public decimal invprice { get; set; }
         public decimal reservedqty { get; set; }
+        public string?  location { get; set; }
+
+
+
+
+
     }
 }

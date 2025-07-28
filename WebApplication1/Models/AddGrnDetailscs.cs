@@ -17,5 +17,7 @@ namespace WebApplication1.Models
         public decimal grnqty { get; set; }
         public int uomid { get; set; }
         public decimal pounitprice { get; set; }
+
+        public string? location { get; set; }
     }
 }

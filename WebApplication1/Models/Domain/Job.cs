@@ -25,7 +25,7 @@ namespace WebApplication1.Models.Domain
 
         public ManufacturingBay? ManufacturingBay { get; set; }
 
-        public int  manufacturingbayid { get; set; }
+        public int ?  manufacturingbayid { get; set; }
 
 
         public QualityLevel  QualityLevel { get; set; }
@@ -47,7 +47,7 @@ namespace WebApplication1.Models.Domain
         public int isldapplicable { get; set; }
 
 
-        public string  ldpercent { get; set; }
+        public string ?  ldpercent { get; set; }
 
 
         public Currency Currency { get; set; }
@@ -68,7 +68,7 @@ namespace WebApplication1.Models.Domain
 
         public int? mainjobid { get; set; } = 0;
 
-        public DateTime expecteddeliverydate { get; set; }
+        public DateTime ? expecteddeliverydate { get; set; }
         public string jobdescription { get; set; }
 
 
