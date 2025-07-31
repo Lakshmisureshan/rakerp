@@ -24,8 +24,8 @@ namespace WebApplication1.Controllers
         public ILogger<AuthController> Logger { get; }
         private readonly RoleManager<IdentityRole> _roleManager;
 
-       
-        public AuthController(RoleManager<IdentityRole> roleManager,ApplicationDBContext dbcontext,UserManager<ApplicationUser> userManager1,  IConfiguration configuration1,ITokenRepository  tokenrepository, ILogger<AuthController> logger)
+
+        public AuthController(RoleManager<IdentityRole> roleManager, ApplicationDBContext dbcontext, UserManager<ApplicationUser> userManager1, IConfiguration configuration1, ITokenRepository tokenrepository, ILogger<AuthController> logger)
         {
             this.dbcontext = dbcontext;
             this.userManager1 = userManager1;
@@ -138,10 +138,10 @@ namespace WebApplication1.Controllers
             return NotFound("User not found");
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]  LoginRequestDto  request)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
-          var identityUser = await userManager1.FindByEmailAsync(request.Email);
-         
+            var identityUser = await userManager1.FindByEmailAsync(request.Email);
+
             if (identityUser is not null)
             {
 
@@ -150,17 +150,17 @@ namespace WebApplication1.Controllers
 
                 if (checkpasswordresult)
                 {
-               
+
 
 
 
                     var roles = await userManager1.GetRolesAsync(identityUser);
-                  var jwttoken=  tokenrepository.CreateJwttoken(identityUser, roles.ToList());
+                    var jwttoken = tokenrepository.CreateJwttoken(identityUser, roles.ToList());
                     var response = new LoginResponseDto
                     {
                         Email = request.Email,
                         Roles = roles.ToList(),
-                        Token= jwttoken
+                        Token = jwttoken
 
 
 
@@ -170,7 +170,7 @@ namespace WebApplication1.Controllers
                 }
 
             }
-            ModelState.AddModelError("","Email or Password is incorrect");
+            ModelState.AddModelError("", "Email or Password is incorrect");
 
             return ValidationProblem(ModelState);
 
@@ -212,7 +212,7 @@ namespace WebApplication1.Controllers
             // Update the PR status
             prheader.prstatusid = 3;
             prheader.verifiedbyid = request.userid;
-            prheader.prverificationdate = DateTime.Now; 
+            prheader.prverificationdate = DateTime.Now;
             await dbcontext.SaveChangesAsync();
 
             return Ok(new { message = "verified" });
@@ -222,7 +222,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetUserRoles")]
 
         public async Task<ActionResult<List<string>>> GetUserRoles(string userId)
-        
+
         {
             var user = await userManager1.FindByIdAsync(userId);
             if (user == null)
@@ -239,7 +239,7 @@ namespace WebApplication1.Controllers
         public class VerifyPORequest
         {
             public string UserId { get; set; }
-            public string passcode { get; set; }    
+            public string passcode { get; set; }
             public List<int> ForderId { get; set; }
         }
 
@@ -371,7 +371,7 @@ namespace WebApplication1.Controllers
                 foreach (var po in pos)
                 {
                     po.PoAuthorizedbyid = request.UserId;
-                    po.postatusid =3;
+                    po.postatusid = 3;
                     po.poauthorizedDate = DateTime.Now;
                 }
 
@@ -916,15 +916,23 @@ namespace WebApplication1.Controllers
                             uomid = entry.inventoryuomid,
                             invcurrencyid = 1,
                             invprice = entry.pounitprice * purchaseheader.poexchangerate,
-                            location =entry.location,
+                            location = entry.location,
                             billofentrydate = grnheader.billofentrydate,
-                            billofentryno =grnheader.billofentryno,
+                            billofentryno = grnheader.billofentryno,
 
                         };
 
                         dbcontext.Inventory.Add(inventory);
                         await dbcontext.SaveChangesAsync();
+                        var inventoryWithId1 = await dbcontext.Inventory
+                   .Where(inv => inv.productid == entry.itemcode && inv.pono == grnheader.pono)
+                   .OrderByDescending(inv => inv.Entrydate)
+                   .FirstOrDefaultAsync();
 
+                        if (inventoryWithId1 == null)
+                        {
+                            return StatusCode(500, "Failed to retrieve the generated inventory ID.");
+                        }
 
                         var inventoryhis = new InventoryHistory
                         {
@@ -936,8 +944,9 @@ namespace WebApplication1.Controllers
                             Entrydate = DateTime.UtcNow.Date,
                             uomid = entry.inventoryuomid,
                             invcurrencyid = 1,
-                            invprice = entry.pounitprice* purchaseheader.poexchangerate,
-                            location = entry.location
+                            invprice = entry.pounitprice * purchaseheader.poexchangerate,
+                            location = entry.location,
+                            invid = inventoryWithId1.invid
                         };
 
                         dbcontext.InventoryHistory.Add(inventoryhis);
@@ -966,8 +975,8 @@ namespace WebApplication1.Controllers
                             grnuomid = entry.inventoryuomid,
                             grncurrencyid = 1,
                             grnunitprice = entry.pounitprice * purchaseheader.poexchangerate,
-                            location =entry.location ,
-                            billofentrydate=grnheader.billofentrydate,
+                            location = entry.location,
+                            billofentrydate = grnheader.billofentrydate,
                             billofentryno = grnheader.billofentryno,
 
                         };
@@ -1011,7 +1020,7 @@ namespace WebApplication1.Controllers
 
 
 
-  
+
 
 
 
@@ -1020,7 +1029,7 @@ namespace WebApplication1.Controllers
         {
             public int reno { get; set; }
             public string UserId { get; set; }
- 
+
             public List<receivedentrysummary> redetails { get; set; }
 
         }
@@ -1044,13 +1053,18 @@ namespace WebApplication1.Controllers
 
         public class RegisterIssuereturnclass
         {
-           public int issuereturnref { get; set; }
-           public List<issuereturnsummary> details { get; set; }
+            public int issuereturnref { get; set; }
+            public List<issuereturnsummary> details { get; set; }
 
         }
 
 
+        public class RegisterIssuereturnclassrv1
+        {
+            public int issuereturnref { get; set; }
 
+
+        }
 
 
 
@@ -1093,13 +1107,13 @@ namespace WebApplication1.Controllers
         public class grnsummary
         {
             public int grntblid { get; set; }
-            public decimal  grnqty { get; set; }
+            public decimal grnqty { get; set; }
             public int pouomid { get; set; }
             public int inventoryuomid { get; set; }
-            public decimal  multiplyingfactor { get; set; }
+            public decimal multiplyingfactor { get; set; }
             public int itemcode { get; set; }
             public decimal pounitprice { get; set; }
-            public string?  location { get; set; }
+            public string? location { get; set; }
 
         }
 
@@ -1196,7 +1210,11 @@ namespace WebApplication1.Controllers
                             OriginalIssueId = result.Issue.issuetrackid,
                             OriginalIssueUomId = result.Issue.issueuomid,
                             OriginalIssueCurrencyId = result.Issue.issuecurrencyid,
-                            OriginalIssueJobId = result.Issue.jobid // Get original issue jobid if needed for inventory
+                            OriginalIssueJobId = result.Issue.jobid,
+                            originalbillofentrydate = result.Issue.billofentrydate,
+                            originalbillofentryno = result.Issue.billofentryno
+
+                            // Get original issue jobid if needed for inventory
                         })
                         .ToListAsync();
 
@@ -1231,7 +1249,13 @@ namespace WebApplication1.Controllers
                             reservedqty = 0.00m,
                             type = "PORETURN",
                             batchid = maxBatchId, // Assign the incremented batch ID
-                            location = item.location
+                            location = item.location,
+                            billofentryno = item.originalbillofentryno,
+                            billofentrydate = item.originalbillofentrydate,
+
+
+
+
                         };
 
                         await dbcontext.Inventory.AddAsync(inventoryEntry);
@@ -1253,7 +1277,11 @@ namespace WebApplication1.Controllers
                             issuereturnunitprice = item.IssueReturnUnitPrice,
                             issuecurrencyid = item.OriginalIssueCurrencyId, // Use currency from original issue
                             uomid = item.OriginalIssueUomId,
-                            location = item.location
+                            location = item.location,
+                            billofentryno = item.originalbillofentryno,
+                            billofentrydate = item.originalbillofentrydate,
+
+
                         };
                         await dbcontext.issuereturntracking.AddAsync(issuereturnTrackingEntry);
                     }
@@ -1287,10 +1315,10 @@ namespace WebApplication1.Controllers
         [HttpPost("Registerissuereturn")]
         public async Task<IActionResult> Registerissuereturn([FromBody] RegisterIssuereturnclass request)
         {
-                   var issuereturnheader = await dbcontext.Issuereturn
-               // Include the Supplier related entity
-                .Where(po => po.issuereturnref == request.issuereturnref)
-                .FirstOrDefaultAsync();
+            var issuereturnheader = await dbcontext.Issuereturn
+         // Include the Supplier related entity
+         .Where(po => po.issuereturnref == request.issuereturnref)
+         .FirstOrDefaultAsync();
 
             if (issuereturnheader == null)
             {
@@ -1302,7 +1330,7 @@ namespace WebApplication1.Controllers
                 {
                     foreach (var entry in request.details)
                     {
-                       // Update the isregistered field
+                        // Update the isregistered field
                         issuereturnheader.isregistered = 1;
                         var inventory = new Inventory
                         {
@@ -1317,18 +1345,18 @@ namespace WebApplication1.Controllers
                             invcurrencyid = entry.ircurrencyid,
                             invprice = entry.irunitprice,
 
-                            type="RETURN"
+                            type = "RETURN"
                             // Assuming pouomid is part of the purchase details
                         };
 
                         // Add the Inventory object to the context
                         dbcontext.Inventory.Add(inventory);
                         await dbcontext.SaveChangesAsync();
-                      
-                       var inventoryWithId = await dbcontext.Inventory
-                                                              .Where(inv => inv.productid == entry.productid && inv.pono == 2)
-                                                              .OrderByDescending(inv => inv.Entrydate)
-                                                              .FirstOrDefaultAsync();
+
+                        var inventoryWithId = await dbcontext.Inventory
+                                                               .Where(inv => inv.productid == entry.productid && inv.pono == 2)
+                                                               .OrderByDescending(inv => inv.Entrydate)
+                                                               .FirstOrDefaultAsync();
 
                         if (inventoryWithId == null)
                         {
@@ -1340,7 +1368,7 @@ namespace WebApplication1.Controllers
                             productid = entry.productid,
                             jobid = entry.fromjobid, // Assuming jobid is part of the entry details
                             issuereturnno = issuereturnheader.issuereturnref,
-                            issuereturnqty = entry.quantityreturned ,
+                            issuereturnqty = entry.quantityreturned,
                             issuereturndate = DateTime.UtcNow.Date,
                             invid = inventoryWithId.invid,
                             uomid = entry.iruomid,
@@ -1351,7 +1379,7 @@ namespace WebApplication1.Controllers
 
                         dbcontext.issuereturntracking.Add(issuetrack);
 
-                  }
+                    }
 
 
 
@@ -1377,7 +1405,170 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpPost("Registerissuereturnrv1")]
+        public async Task<IActionResult> Registerissuereturnrv1([FromBody] RegisterIssuereturnclassrv1 request)
+        {
+            // 1. Find the Issue Return Header
+            var issuereturnheader = await dbcontext.Issuereturn
+                .Where(po => po.issuereturnref == request.issuereturnref)
+                .FirstOrDefaultAsync();
 
+            if (issuereturnheader == null)
+            {
+                return NotFound("Issue Return header not found.");
+            }
+
+
+
+            // 2. Retrieve ALL associated Issue Return Details from the database.
+            // These details define *what* is being returned based on the pre-existing return order.
+            var issuereturndetailsFromDb = await dbcontext.Issuereturndetails
+                .Where(detail => detail.issuereturnref == issuereturnheader.issuereturnref)
+                // IMPORTANT: If Issuereturndetails links to Issuereturn via IssuereturnId (int PK), use this instead:
+                // .Where(detail => detail.IssuereturnId == issuereturnheader.Id)
+                .ToListAsync();
+
+            if (!issuereturndetailsFromDb.Any())
+            {
+                return NotFound("No details found in the database for the specified Issue Return. Cannot process an empty return.");
+            }
+
+            using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+            {
+
+
+
+                try
+                {
+
+                    if (issuereturnheader.isregistered == 1)
+                    {
+                        await transaction.RollbackAsync();
+                        return BadRequest("Issue Return is already registered.");
+                    }
+                    // 3. Update the header's status
+                    issuereturnheader.isregistered = 1;
+                    dbcontext.Issuereturn.Update(issuereturnheader);
+
+                    // 4. Loop through the *database's own details* for this return.
+                    // 'detailEntry' (from Issuereturndetails) now contains all necessary data.
+                    foreach (var detailEntry in issuereturndetailsFromDb)
+                    {
+                        // --- TRACE THE ORIGINAL BILL OF ENTRY VIA issueNoteRef ---
+                        string targetBillOfEntryNo = null;
+                        DateTime? targetBillOfEntryDate = null;
+
+                        // Step A: Find the corresponding record in IssuedetailsfromStock using issuedetailtblid
+                        var issuedetailAndReservation = await (from ids in dbcontext.IssuedetailsfromStock // Your DbSet for IssuedetailsfromStock
+                                                               join ir in dbcontext.Inventoryreservation // Your DbSet for InventoryReservation
+                                                               on ids.rid equals ir.RId                  // Joining on the common 'rid' column
+                                                               where ids.issuedetailid == detailEntry.issuedetailtblid
+                                                               select new
+                                                               {
+                                                                   Issuedetail = ids,
+                                                                   Reservation = ir // You can select the entire reservation object or specific properties
+                                                               })
+                                       .FirstOrDefaultAsync();
+
+                        if (issuedetailAndReservation == null)
+                        {
+                            await transaction.RollbackAsync();
+                            return BadRequest($"Original issuedetail (ID: {detailEntry.issuedetailtblid}) not found in 'IssuedetailsfromStock' for returned product {detailEntry.productid}. Data inconsistency detected.");
+                        }
+
+                        // Step B: Now, using the issuenoteref and productid from IssuedetailsfromStock,
+                        // find the corresponding Bill of Entry from issuetracking.
+                        // Given 'issuetracking' has issuenoteref and not issuedetailid,
+                        // and assuming "issued first should be returned" principle:
+                        // We find the OLDEST Bill of Entry associated with this specific product and issue note.
+                        var originalIssueTrackingForBoE = await dbcontext.Issuetracking
+                            .Where(it => it.issuenoteno == issuedetailAndReservation.Issuedetail.issuenoteref && // Link by issue note reference
+                                         it.productid == issuedetailAndReservation.Issuedetail.itemid)                                // Ensure it was an issue transaction
+                            .OrderBy(it => it.billofentrydate)                                // Order by date to get the oldest BoE
+                            .FirstOrDefaultAsync();
+
+                        if (originalIssueTrackingForBoE == null)
+                        {
+                            await transaction.RollbackAsync();
+                            return BadRequest($"Original issue tracking record for issue note '{issuedetailAndReservation.Issuedetail.issuenoteref}' and product '{issuedetailAndReservation.Issuedetail.itemid}' not found. Cannot determine Bill of Entry.");
+                        }
+
+                        targetBillOfEntryNo = originalIssueTrackingForBoE.billofentryno;
+                        targetBillOfEntryDate = originalIssueTrackingForBoE.billofentrydate;
+
+                        // --- UPDATE INVENTORY (Stock On Hand) ---
+                        // Find the existing lot in inventory using the *traced* Bill of Entry No.
+
+                        // Create a new inventory record for this specific Bill of Entry.
+                        // This happens if the original lot was fully depleted and now some is returned.
+                        var newInventoryRecord = new Inventory
+                        {
+                            productid = detailEntry.productid,
+                            batchid = 1, // Re-evaluate if this should be dynamic or derived
+                            jobid = issuedetailAndReservation.Reservation.fromjobid, // Assuming 'fromjobid' is on Issuereturndetails
+                            pono = 2,    // Re-evaluate if this should be dynamic
+                            quantity = detailEntry.quantityreturned, // Use quantityreturned from Issuereturndetails
+                            Entrydate = DateTime.UtcNow.Date, // This is the date of the return itself
+                            uomid = detailEntry.iruomid, // Assuming 'iruomid' is on Issuereturndetails
+                            invcurrencyid = detailEntry.ircurrencyid, // Assuming 'ircurrencyid' is on Issuereturndetails
+                            invprice = detailEntry.irunitprice, // Assuming 'irunitprice' is on Issuereturndetails
+                            type = "RETURN",
+                            billofentryno = targetBillOfEntryNo,
+                            billofentrydate = targetBillOfEntryDate
+                        };
+                        dbcontext.Inventory.Add(newInventoryRecord);
+
+
+                        // 5. Save changes to ensure Inventory is updated and its 'invid' is available
+                        await dbcontext.SaveChangesAsync();
+
+                        // 6. Get the ID of the updated/added inventory record.
+                        var inventoryRecordForTracking = await dbcontext.Inventory
+                            .Where(inv => inv.productid == detailEntry.productid && inv.billofentryno == targetBillOfEntryNo)
+                            .OrderByDescending(inv => inv.Entrydate) // In case multiple records match, get the most recent one (e.g., if a new one was just added)
+                            .FirstOrDefaultAsync();
+
+                        if (inventoryRecordForTracking == null)
+                        {
+                            await transaction.RollbackAsync();
+                            return StatusCode(500, $"Failed to retrieve the associated inventory ID for Product ID {detailEntry.productid} with BoE {targetBillOfEntryNo} after return processing.");
+                        }
+
+                        // 7. Create Issue Return Tracking record
+                        var issuetrack = new issuereturntracking
+                        {
+                            productid = detailEntry.productid,
+                            jobid = issuedetailAndReservation.Reservation.fromjobid, // Assuming 'fromjobid' is on Issuereturndetails
+                            issuereturnno = issuereturnheader.issuereturnref,
+                            issuereturnqty = detailEntry.quantityreturned, // Use quantityreturned from Issuereturndetails
+                            issuereturndate = DateTime.UtcNow.Date,
+                            invid = inventoryRecordForTracking.invid, // Link to the inventory record that was updated/created
+                            uomid = detailEntry.iruomid, // Assuming 'iruomid' is on Issuereturndetails
+                            issuecurrencyid = detailEntry.ircurrencyid, // Assuming 'ircurrencyid' is on Issuereturndetails
+                            issuereturnunitprice = detailEntry.irunitprice, // Assuming 'irunitprice' is on Issuereturndetails
+                            billofentryno = targetBillOfEntryNo, // Store the traced BoE
+                            billofentrydate = targetBillOfEntryDate // Store the traced BoE Date
+                        };
+
+                        dbcontext.issuereturntracking.Add(issuetrack);
+                    } // End of foreach (var detailEntry in issuereturndetailsFromDb)
+
+                    // 8. Save all new issuereturntracking records
+                    await dbcontext.SaveChangesAsync();
+
+                    // 9. Commit the transaction
+                    await transaction.CommitAsync();
+
+                    return Ok(new { Message = "Issue return registered and inventory updated successfully.", Success = true });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    // Log the full exception details (ex.Message, ex.InnerException, ex.StackTrace) for proper debugging
+                    return StatusCode(500, $"An error occurred while processing your request: {ex.Message}. {(ex.InnerException != null ? "Inner Exception: " + ex.InnerException.Message : "")}");
+                }
+            }
+        }
 
 
 
@@ -1507,7 +1698,7 @@ namespace WebApplication1.Controllers
                     // Insert new record into BOM table
                     var newBom = new Bom
                     {
-                        bomrevno=estimation.revision,
+                        bomrevno = estimation.revision,
 
                         itemid = estimation.itemid,
                         bomqty = estimation.quantity,
@@ -1575,7 +1766,7 @@ namespace WebApplication1.Controllers
                 }
 
                 pr.prstatusid = 2;
-               // Optional: track modified date
+                // Optional: track modified date
 
                 await dbcontext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -1603,7 +1794,7 @@ namespace WebApplication1.Controllers
             if (user == null)
                 return NotFound("User not found");
 
-        
+
 
             // Assign new roles
             var result = await userManager1.AddToRolesAsync(user, model.Roles);
@@ -1680,18 +1871,32 @@ namespace WebApplication1.Controllers
         {
             if (request == null || string.IsNullOrEmpty(request.UserId))
             {
-                return Ok(new { Message = "Invalid request data", Success = false });
+                return Ok(new { Message = "Invalid request data: UserId is required.", Success = false });
             }
 
             var user = await userManager1.FindByIdAsync(request.UserId) ??
                        await userManager1.FindByEmailAsync(request.UserId);
             if (user == null)
             {
-                return Ok(new { Message = "User not found", Success = false });
+                return Ok(new { Message = "User not found.", Success = false });
             }
 
             var messages = new List<string>();
-            bool anyUpdated = false;
+            bool allEntriesProcessedSuccessfully = true; // Track if all lines were processed without critical errors
+
+            // --- FETCH RECEIVED HEADER ONCE OUTSIDE THE LOOP ---
+            var receivedHeader = await dbcontext.ReceivedEntry
+                .FirstOrDefaultAsync(rh => rh.REID == request.reno); // Use request.reno for the header
+
+            if (receivedHeader == null)
+            {
+                return NotFound($"Received Entry header not found for REID: {request.reno}.");
+            }
+
+            if (receivedHeader.isregistered == 1)
+            {
+                return Ok(new { Message = $"Received Entry {request.reno} is already registered.", Success = false }); // Return early if already registered
+            }
 
             using (var transaction = await dbcontext.Database.BeginTransactionAsync())
             {
@@ -1700,64 +1905,75 @@ namespace WebApplication1.Controllers
                     foreach (var entry in request.redetails)
                     {
                         var purchaseDetails = await dbcontext.Purchasedetails
-                                                             .FirstOrDefaultAsync(pd => pd.potblid == entry.potblid);
+                            .FirstOrDefaultAsync(pd => pd.potblid == entry.potblid);
 
                         if (purchaseDetails == null)
                         {
-                            messages.Add($"Purchase details not found for potblid {entry.potblid}.");
-                            continue;
+                            messages.Add($"Purchase details not found for potblid {entry.potblid}. This line item will be skipped.");
+                            allEntriesProcessedSuccessfully = false; // Mark that not all lines were perfect
+                            continue; // Skip to the next entry
                         }
 
-                        var receivedHeader = await dbcontext.ReceivedEntry
-                                                            .FirstOrDefaultAsync(rh => rh.REID == request.reno);
-
-                        if (receivedHeader == null)
-                        {
-                            messages.Add($"Received header not found for rtblid {entry.rtblid}.");
-                            continue;
-                        }
-
-                        if (receivedHeader.isregistered == 1)
-                        {
-                            messages.Add($"Received entry {entry.rtblid} is already registered.");
-                            continue;
-                        }
+                        // Validate quantity received
                         var totalAfterReceive = purchaseDetails.receivedentryqty + entry.receivedqty;
-                        var maxAllowed = purchaseDetails.poquantity + purchaseDetails.insprejectedqty;
+                        var maxAllowed = purchaseDetails.poquantity + purchaseDetails.insprejectedqty; // Assuming insprejectedqty is an allowance
 
                         if (totalAfterReceive > maxAllowed)
                         {
-                            messages.Add($"Cannot receive {entry.receivedqty} for potblid {entry.potblid} as it exceeds PO quantity + rejected allowance ({maxAllowed}).");
-                            continue;
+                            messages.Add($"Cannot receive {entry.receivedqty} for Product ID {purchaseDetails.poitemid} (PO Detail ID: {entry.potblid}) as it exceeds PO quantity + rejected allowance ({maxAllowed}). This line item will be skipped.");
+                            allEntriesProcessedSuccessfully = false; // Mark that not all lines were perfect
+                            continue; // Skip to the next entry
                         }
 
-                        // ✅ All checks passed: update
+                        // ✅ All checks passed for this line item: update purchase details
                         purchaseDetails.receivedentryqty = totalAfterReceive;
-                        receivedHeader.isregistered = 1;
-                        anyUpdated = true;
+                        // Mark the entity as modified so EF Core knows to update it
+                        dbcontext.Purchasedetails.Update(purchaseDetails);
+
+                        // Optionally, you might want to create a GRN tracking entry or similar here
+                        // For example:
+                        // var grnTracking = new GrnTracking
+                        // {
+                        //     PurchaseDetailId = purchaseDetails.potblid,
+                        //     ReceivedQty = entry.receivedqty,
+                        //     ReceivedDate = DateTime.UtcNow.Date,
+                        //     // ... other fields like REID, UserId, etc.
+                        // };
+                        // dbcontext.GrnTracking.Add(grnTracking);
                     }
 
-                    if (anyUpdated)
+                    // --- AFTER PROCESSING ALL DETAIL LINES ---
+                    // Mark the main ReceivedEntry header as registered
+                    receivedHeader.isregistered = 1;
+                    dbcontext.ReceivedEntry.Update(receivedHeader);
+
+                    // Save all changes (PurchaseDetails updates, ReceivedEntry header update, and any new tracking entries)
+                    await dbcontext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    // Determine final success message
+                    if (allEntriesProcessedSuccessfully)
                     {
-                        await dbcontext.SaveChangesAsync();
-                        await transaction.CommitAsync();
-                        messages.Add("Purchase details and received headers updated successfully.");
+                        return Ok(new { Message = "Received Entry and all line items registered and updated successfully.", Success = true });
                     }
                     else
                     {
-                        await transaction.RollbackAsync();
-                        messages.Add("No entries were updated due to validation issues.");
+                        // If some lines had issues but the header was registered, provide details.
+                        messages.Insert(0, $"Received Entry {request.reno} registered, but some line items had validation issues.");
+                        return Ok(new { Success = true, Messages = messages }); // Still Success=true if header registered, but with warnings
                     }
-
-                    return Ok(new { Success = true, Messages = messages });
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    return StatusCode(500, new { Success = false, Message = $"An error occurred: {ex.Message}" });
+                    // Log the full exception for debugging purposes
+                    // Console.WriteLine(ex.ToString());
+                    return StatusCode(500, new { Success = false, Message = $"An error occurred while processing your request: {ex.Message}. {(ex.InnerException != null ? "Inner Exception: " + ex.InnerException.Message : "")}" });
                 }
             }
         }
+       
+   
 
 
 

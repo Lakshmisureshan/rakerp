@@ -45,5 +45,7 @@ namespace WebApplication1.Models.DTO
 
         public int budgetheaderid { get; set; }
 
+        public Decimal  discount { get; set; }
+
     }
 }

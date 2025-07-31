@@ -31,6 +31,8 @@ using Path = System.IO.Path;
 using System.Net.Mime;
 using Microsoft.Extensions.Logging;
 using System.Security.Cryptography;
+using static iTextSharp.text.pdf.AcroFields;
+using System.Runtime.CompilerServices;
 
 namespace WebApplication1.Controllers
 {
@@ -156,12 +158,14 @@ namespace WebApplication1.Controllers
             DateTime currentDate = DateTime.Now;
             try
             {
+                bool isNewJob = false;
                 // Check if the PO already exists
                 var existingPO = await dbcontext.PO.FirstOrDefaultAsync(po => po.Orderid == request.Orderid);
 
                 if (existingPO != null)
                 {
                     // If the PO exists, update it
+                    isNewJob = false; // It's a new job
                     existingPO.approveddrawings = request.approveddrawings;
                     existingPO.chineseorgin = request.chineseorgin;
                     existingPO.coorequired = request.coorequired;
@@ -196,11 +200,14 @@ namespace WebApplication1.Controllers
                     existingPO.otherpaymentremarks = request.otherpaymentremarks;
                     existingPO.budgetheaderid = request.budgetheaderid;
 
+                    existingPO.discount = request.discount;
+
                     // Save changes to the existing PO
                     await dbcontext.SaveChangesAsync();
                 }
                 else
                 {
+                    isNewJob = true;
                     // If the PO doesn't exist, create a new PO
                     var PO = new PO
                     {
@@ -243,7 +250,67 @@ namespace WebApplication1.Controllers
                     // Add the new PO to the database
                     await dbcontext.PO.AddAsync(PO);
                     await dbcontext.SaveChangesAsync();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 }
+
+
+
+                var pageTrackEntry = new Trackpage
+                {
+                    // Assuming 'Job Entry' or 'Job Update' as the page name
+                    pagename = isNewJob ? "New PO" : "Update PO",
+                    docno = request.Orderid.ToString(), // Use the Jobid as the document number
+                    createddate = DateTime.UtcNow, // Use UTC for consistency
+                                                   // Get the current user's ID/username
+                    createdbyuser = request.createdbyid.ToString() // Placeholder: Replace with actual user ID/name
+                                                              // If you have authentication:
+                                                              // createdbyuser = User.Identity.Name ?? "Anonymous"
+                                                              // or if injecting IHttpContextAccessor:
+                                                              // createdbyuser = _httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Anonymous"
+                };
+
+                await dbcontext.Trackpage.AddAsync(pageTrackEntry);
+                await dbcontext.SaveChangesAsync();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 var response = new PODto
                 {
@@ -331,6 +398,8 @@ namespace WebApplication1.Controllers
       .Include(po => po.Supplier)
       .Include(po => po.PoAuthorizedby)
        .Include(po => po.Poverifiedby)
+        .Include(po => po.SupplierContact)
+         .Include(po => po.Currency)
       .Include(po => po.postatus)// Include the Supplier related entity
       .Where(po => po.Orderid == pono)
       .FirstOrDefaultAsync();
@@ -1926,6 +1995,8 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> GetREheaderdetailsbyreno([FromQuery] int reno)
         {
             var reheaderdetails = await dbcontext.ReceivedEntry
+                .Include(re => re.PO) // Eagerly load the PurchaseOrderHeader
+        .ThenInclude(po => po.Supplier)
                 .Where(p => p.REID == reno) // Assuming PONO is a property in your Purchasedetails model
                 .ToListAsync();
             return Ok(reheaderdetails);
@@ -2751,7 +2822,7 @@ namespace WebApplication1.Controllers
             {
                 try
                 {
-                    var batches = new List<Batch>();
+                    var batches = new List<Batchrev1>();
                     var remainingQuantity = request.RequestedQuantity;
 
                     var inventoryItems = dbcontext.Inventory
@@ -2761,7 +2832,7 @@ namespace WebApplication1.Controllers
 
                     foreach (var item in inventoryItems)
                     {
-                        batches.Add(new Batch(item.batchid, item.quantity, item.invid, item.invcurrencyid, item.uomid, item.invprice));
+                        batches.Add(new Batchrev1(item.batchid, item.quantity, item.invid, item.invcurrencyid, item.uomid, item.invprice,  item.billofentryno?? "", item.billofentrydate));
                     }
 
                     foreach (var batch in batches)
@@ -2769,10 +2840,9 @@ namespace WebApplication1.Controllers
                         if (remainingQuantity <= 0) break;
 
                         var quantityToDeduct = Math.Min(remainingQuantity, batch.Quantity);
-                        DeductFromBatch(request.ItemId, batch.BatchID, quantityToDeduct, request.Jobid, request.issueref, batch.Invid, batch.Currencyid, batch.Uomid, batch.Price);
+                        DeductFromBatch(request.ItemId, batch.BatchID, quantityToDeduct, request.Jobid, request.issueref, batch.Invid, batch.Currencyid, batch.Uomid, batch.Price, batch.billofentryno ?? ""    , batch.billofentrydate);
                         remainingQuantity -= quantityToDeduct;
                     }
-
                     var issuenoteheader = dbcontext.IssueNoteheader
                         .FirstOrDefault(i => i.issueref == request.issueref);
 
@@ -2795,7 +2865,7 @@ namespace WebApplication1.Controllers
             }
         }
 
-        private void DeductFromBatch(int itemId, int batchId, decimal quantity, int jobid, int issueref, int invid, int Currencyid, int Uomid, decimal Price)
+        private void DeductFromBatch(int itemId, int batchId, decimal quantity, int jobid, int issueref, int invid, int Currencyid, int Uomid, decimal Price, string billofentryno, DateTime? billofentrydate )
         {
             var inventoryItem = dbcontext.Inventory
                 .FirstOrDefault(i => i.productid == itemId && i.batchid == batchId && i.jobid == jobid);
@@ -2814,7 +2884,9 @@ namespace WebApplication1.Controllers
                     invid = invid,
                     issuecurrencyid = Currencyid,
                     issueunitprice = Price,
-                    issueuomid = Uomid
+                    issueuomid = Uomid,
+                    billofentryno =billofentryno,
+                    billofentrydate =billofentrydate
 
 
                     // Assign the retrieved invid here
@@ -3414,6 +3486,10 @@ namespace WebApplication1.Controllers
             public string? billofentryno { get; set; }
             public DateTime?  billofentrydate { get; set; }
 
+            public int productcode { get; set; }
+
+            public DateTime date { get; set; }
+
         }
 
 
@@ -3530,6 +3606,9 @@ namespace WebApplication1.Controllers
                                            grn.grnuomid,
                                            grn.grncurrencyid,
                                            product.itemname,
+                                           product.productcode,
+                                           grn.grndate,
+                                          
                                            currency.currencyname,
                                            uom.uomname,
                                            currency.exchangerate,
@@ -3555,11 +3634,13 @@ namespace WebApplication1.Controllers
                                            Uom = g.Key.uomname,
                                            Currency = g.Key.currencyname,
                                            Itemname = g.Key.itemname,
+
+                                           productcode=g.Key.productcode,
                                            Rate = g.Key.exchangerate,
                                            jobid = g.Key.jobid,
                                            jobtypeid = g.Key.jobtypeid,
                                            location =g.Key.location,
-
+                                           grndate=g.Key.grndate,
                                            billofentryno= g.Key.billofentryno,
                                            billofentrydate= g.Key.billofentrydate,
                                            jobtypename = g.Key.JobtypeName,
@@ -3571,7 +3652,9 @@ namespace WebApplication1.Controllers
                                            categoryid = g.Key.categoryid,
 
                                            subcategoryname = g.Key.subcategoryname,
-                                           subcategoryid = g.Key.subcategoryid
+                                           subcategoryid = g.Key.subcategoryid,
+                                           date = g.Key.grndate,
+                                           produtcode = g.Key.productcode
 
 
 
@@ -3598,6 +3681,7 @@ namespace WebApplication1.Controllers
                                          issue.issuecurrencyid,
                                          issue.location,
                                          product.itemname,
+                                         product.productcode,
                                          currency.currencyname,
                                          uom.uomname,
                                          currency.exchangerate,
@@ -3609,7 +3693,10 @@ namespace WebApplication1.Controllers
                                          ct.categoryname,
                                          ct.categoryid,
                                          st.subcategoryid,
-                                         st.subcategoryname
+                                         st.subcategoryname,
+                                         issue.billofentrydate,
+                                         issue.billofentryno,
+                                         issue.issuedate,
 
 
                                      } into g
@@ -3631,7 +3718,13 @@ namespace WebApplication1.Controllers
                                          categoryid = g.Key.categoryid,
                                          categoryname = g.Key.categoryname,
                                          subcategoryid = g.Key.subcategoryid,
-                                         subcategoryname = g.Key.subcategoryname
+                                         subcategoryname = g.Key.subcategoryname,
+                                         billofentryno = g.Key.billofentryno,
+                                         billofentrydate = g.Key.billofentrydate,
+
+                                         date=g.Key.issuedate,
+                                         produtcode=g.Key.productcode
+
 
                                      }).ToListAsync();
 
@@ -3655,6 +3748,8 @@ namespace WebApplication1.Controllers
                                            returnTrack.issuecurrencyid,
 
                                            returnTrack.location,
+                                           returnTrack.billofentryno,
+                                           returnTrack.billofentrydate,
                                            product.itemname,
                                            currency.currencyname,
                                            uom.uomname,
@@ -3667,7 +3762,9 @@ namespace WebApplication1.Controllers
                                            ct.categoryname,
                                            ct.categoryid,
                                            st.subcategoryid,
-                                           st.subcategoryname
+                                           st.subcategoryname,
+                                           returnTrack.issuereturndate,
+                                           product.productcode
                                        } into g
                                        select new
                                        {
@@ -3688,7 +3785,11 @@ namespace WebApplication1.Controllers
                                            categoryname = g.Key.categoryname,
                                            subcategoryid = g.Key.subcategoryid,
                                            subcategoryname = g.Key.subcategoryname,
-                                           location =g.Key.location
+                                           location =g.Key.location,
+                                           billofentryno = g.Key.billofentryno,
+                                           billofentrydate = g.Key.billofentrydate,
+                                           date = g.Key.issuereturndate,
+                                           produtcode = g.Key.productcode
 
 
                                        }).ToListAsync();
@@ -3716,7 +3817,11 @@ namespace WebApplication1.Controllers
                     issue.categoryid,
                     issue.subcategoryname,
                     issue.subcategoryid,
-                    issue.location
+                    issue.location,
+                    issue.billofentrydate,
+                    issue.billofentryno,
+                    issue.produtcode,
+                    issue.date
 
 
                 }).ToList();
@@ -3758,8 +3863,9 @@ namespace WebApplication1.Controllers
                     subcategoryid = x.Received.subcategoryid,
                     location=x.Received.location, 
                     billofentrydate=x.Received.billofentrydate,
-                    billofentryno =x.Received.billofentryno
-                    
+                    billofentryno =x.Received.billofentryno,
+                    productcode = x.Received.productcode,
+                    date =x.Received.date
 
 
                 })
@@ -3785,8 +3891,11 @@ namespace WebApplication1.Controllers
                         categoryname = i.categoryname,
                         subcategoryid = i.subcategoryid,
                         subcategoryname = i.subcategoryname,
-                        location=i.location
-
+                        location=i.location,
+                        billofentryno = i.billofentryno,
+                        billofentrydate = i.billofentrydate,
+                        productcode =i.produtcode,
+                        date =i.date
 
                     }))
                 .Union(totalReturned
@@ -3811,10 +3920,13 @@ namespace WebApplication1.Controllers
                         subcategoryid = r.subcategoryid,
                         subcategoryname = r.subcategoryname,
 
-                        location    =r.location
+                        location    =r.location,
 
+                        billofentryno = r.billofentryno,
 
-
+                        billofentrydate = r.billofentrydate,
+                        date =r.date,
+                        productcode=r.produtcode
 
 
 
@@ -4816,7 +4928,7 @@ namespace WebApplication1.Controllers
 
                         foreach (var item in inventoryItems)
                         {
-                            batches.Add(new Batchstock(item.batchid, item.quantity, item.invid, item.invcurrencyid, item.uomid, item.invprice, item.jobid));
+                            batches.Add(new Batchstock(item.batchid, item.quantity, item.invid, item.invcurrencyid, item.uomid, item.invprice, item.jobid, item.billofentryno, item.billofentrydate));
                         }
 
                         foreach (var batch in batches)
@@ -4824,7 +4936,7 @@ namespace WebApplication1.Controllers
                             if (remainingQuantity <= 0) break;
 
                             var quantityToDeduct = Math.Min(remainingQuantity, batch.Quantity);
-                            DeductFromBatchrv1(request.ItemId, batch.BatchID, quantityToDeduct, batch.Jobid, request.issueref, batch.Invid, batch.Currencyid, batch.Uomid, batch.Price);
+                            DeductFromBatchrv1(request.ItemId, batch.BatchID, quantityToDeduct, batch.Jobid, request.issueref, batch.Invid, batch.Currencyid, batch.Uomid, batch.Price, batch.billofentryno, batch.billofentrydate);
                             remainingQuantity -= quantityToDeduct;
                         }
 
@@ -4854,7 +4966,7 @@ namespace WebApplication1.Controllers
 
 
 
-        private void DeductFromBatchrv1(int itemId, int batchId, decimal quantity, int jobid, int issueref, int invid, int Currencyid, int Uomid, decimal Price)
+        private void DeductFromBatchrv1(int itemId, int batchId, decimal quantity, int jobid, int issueref, int invid, int Currencyid, int Uomid, decimal Price, string?billofentryno, DateTime? billofentrydate)
         {
             var inventoryItem = dbcontext.Inventory
                 .FirstOrDefault(i => i.productid == itemId && i.batchid == batchId && i.jobid == jobid);
@@ -4873,7 +4985,9 @@ namespace WebApplication1.Controllers
                     invid = invid,
                     issuecurrencyid = Currencyid,
                     issueunitprice = Price,
-                    issueuomid = Uomid
+                    issueuomid = Uomid,
+                    billofentryno =billofentryno,
+                    billofentrydate =billofentrydate
 
 
                     // Assign the retrieved invid here
@@ -5059,7 +5173,7 @@ namespace WebApplication1.Controllers
 
                             foreach (var invItem in inventoryItems)
                             {
-                                batches.Add(new Batchstock(invItem.batchid, invItem.quantity, invItem.invid, invItem.invcurrencyid, invItem.uomid, invItem.invprice, invItem.jobid));
+                                batches.Add(new Batchstock(invItem.batchid, invItem.quantity, invItem.invid, invItem.invcurrencyid, invItem.uomid, invItem.invprice, invItem.jobid, invItem.billofentryno, invItem.billofentrydate));
                             }
 
                             foreach (var batch in batches)
@@ -5067,7 +5181,7 @@ namespace WebApplication1.Controllers
                                 if (remainingQuantity <= 0) break;
 
                                 var quantityToDeduct = Math.Min(remainingQuantity, batch.Quantity);
-                                DeductFromBatchrv2(item.ItemId, batch.BatchID, quantityToDeduct, batch.Jobid, request.IssueRef, batch.Invid, batch.Currencyid, batch.Uomid, batch.Price);
+                                DeductFromBatchrv2(item.ItemId, batch.BatchID, quantityToDeduct, batch.Jobid, request.IssueRef, batch.Invid, batch.Currencyid, batch.Uomid, batch.Price, batch.billofentryno, batch.billofentrydate);
                                 remainingQuantity -= quantityToDeduct;
                             }
 
@@ -5095,7 +5209,7 @@ namespace WebApplication1.Controllers
             }
         }
 
-        private void DeductFromBatchrv2(int itemId, int batchId, decimal quantity, int jobid, int issueref, int invid, int Currencyid, int Uomid, decimal Price)
+        private void DeductFromBatchrv2(int itemId, int batchId, decimal quantity, int jobid, int issueref, int invid, int Currencyid, int Uomid, decimal Price, string? billofentryno, DateTime? billofentrydate)
         {
             var inventoryItem = dbcontext.Inventory
                 .FirstOrDefault(i => i.productid == itemId && i.batchid == batchId && i.jobid == jobid);
@@ -5114,7 +5228,9 @@ namespace WebApplication1.Controllers
                     invid = invid,
                     issuecurrencyid = Currencyid,
                     issueunitprice = Price,
-                    issueuomid = Uomid
+                    issueuomid = Uomid,
+                    billofentryno =billofentryno,
+                    billofentrydate =billofentrydate
                 };
 
                 dbcontext.Issuetracking.Add(issuetrack);
@@ -14170,6 +14286,293 @@ namespace WebApplication1.Controllers
 
             return Ok(prPendingList);
         }
+
+        public class stockledger
+        {
+
+            public DateTime  transactiondate { get; set; }
+            public string  transactiontype  { get; set; }
+            public int jobid { get; set; }
+            public int? referenceno { get; set; }
+            public decimal QuantityIn { get; set; }
+            public decimal QuantityOut { get; set; }
+            public decimal UnitCost { get; set; }
+            public decimal  TotalValueIn { get; set; }
+            public decimal TotalValueOut { get; set; }
+
+            public string?  BillOfEntryNo { get; set; }
+
+            public DateTime? BillOfEntryDate { get; set; }
+
+            public decimal RunningBalance { get; set; }
+
+            public int productcode { get; set; }
+
+
+        }
+        public class ItemNameDto
+        {
+            public string ItemName { get; set; }
+        }
+
+        [HttpGet("GetItemnamefromItemcode/{productcode}")] // Matches your Angular URL: /api/Inventory/GetItemnamefromItemcode/123
+        public async Task<ActionResult<List<ItemNameDto>>> GetItemnamefromItemcode(int productcode)
+        {
+            if (productcode <= 0)
+            {
+                return BadRequest("Invalid product code.");
+            }
+
+            try
+            {
+                // Use Entity Framework Core to query the Item/Product table
+                // This will execute a SELECT statement like:
+                // SELECT ItemName FROM Items WHERE ProductId = @productcode
+                var itemName = await dbcontext.Product
+                                             .Where(i => i.productcode == productcode)
+                                             .Select(i => new ItemNameDto { ItemName = i.itemname })
+                                             .FirstOrDefaultAsync(); // Get the first matching item, or null if not found
+
+                if (itemName == null)
+                {
+                    return NotFound($"Item name not found for product code: {productcode}");
+                }
+
+                // Since your Angular service expects an array (Observable<any[]>),
+                // we wrap the single DTO in a List. If your Angular service expects
+                // a single object, you can return `Ok(itemName)`.
+                return Ok(new List<ItemNameDto> { itemName });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details
+                Console.WriteLine($"Error fetching item name from item code: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetStockLedgerByProductID/{productcode}")]
+        public async Task<ActionResult<List<stockledger>>> GetStockLedgerByProductID(int productcode)
+        {
+            var stockLedgerEntries = new List<stockledger>(); // Renamed 'poHeaders' to be more descriptive
+
+            try // Added try-catch for database operations
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("GetStockLedgerByProductID", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ProductID", productcode);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                stockLedgerEntries.Add(new stockledger
+                                {
+                                    // Safe retrieval for each column
+
+                                    // Non-nullable DateTime
+                                    transactiondate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
+
+                                    // String (handle DBNull for strings, convert to null or empty string)
+                                    transactiontype = reader.IsDBNull(reader.GetOrdinal("TransactionType")) ? null : reader.GetString(reader.GetOrdinal("TransactionType")),
+                                    referenceno = reader.IsDBNull(reader.GetOrdinal("ReferenceNo")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("ReferenceNo")),
+
+                                    // Non-nullable int (or use GetOrdinal and check IsDBNull if it can be nullable)
+                                    jobid = reader.GetInt32(reader.GetOrdinal("jobid")), // Use LocationID as aliased in SP
+                                    productcode = reader.GetInt32(reader.GetOrdinal("ProductID")),
+
+                                    // Nullable DateTime: Use GetOrdinal and IsDBNull check
+                                    BillOfEntryDate = reader.IsDBNull(reader.GetOrdinal("BillOfEntryDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("BillOfEntryDate")),
+
+                                    // String (handle DBNull)
+                                    BillOfEntryNo = reader.IsDBNull(reader.GetOrdinal("BillOfEntryNo")) ? null : reader.GetString(reader.GetOrdinal("BillOfEntryNo")),
+
+                                    // Non-nullable decimals
+                                    QuantityIn = reader.GetDecimal(reader.GetOrdinal("QuantityIn")),
+                                    QuantityOut = reader.GetDecimal(reader.GetOrdinal("QuantityOut")),
+                                    UnitCost = reader.GetDecimal(reader.GetOrdinal("UnitCost")),
+                                    TotalValueIn = reader.GetDecimal(reader.GetOrdinal("TotalValueIn")),
+                                    TotalValueOut = reader.GetDecimal(reader.GetOrdinal("TotalValueOut")),
+                                    RunningBalance = reader.GetDecimal(reader.GetOrdinal("RunningBalance"))
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (stockLedgerEntries.Count == 0)
+                {
+                    return NotFound($"No stock ledger entries found for product ID: {productcode}");
+                }
+
+                return Ok(stockLedgerEntries);
+            }
+            catch (SqlException ex)
+            {
+                // Log specific SQL exceptions (e.g., connection issues, SP errors)
+                Console.WriteLine($"SQL Error: {ex.Message} (Error Code: {ex.Number})");
+                return StatusCode(500, $"Database error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Catch any other general exceptions
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+
+        [HttpGet("GetPOByIdWithDetails/{orderId}")] // Reverted to original route name for simplicity
+        public async Task<ActionResult<PO>> GetPOByIdWithDetails(int orderId)
+        {
+            try
+            {
+                // Using .Include() is the standard and most efficient way to eager load related data in Entity Framework Core.
+                // It handles the underlying JOIN operation and object materialization automatically.
+                var purchaseOrder = await dbcontext.PO
+                                                   .Include(po => po.PurchaseDetails) // Eager load the PurchaseDetails
+                                                   .FirstOrDefaultAsync(po => po.Orderid == orderId); // Filter by OrderId
+
+                if (purchaseOrder == null)
+                {
+                    return NotFound($"Purchase Order with OrderId {orderId} not found.");
+                }
+
+                return Ok(purchaseOrder);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+
+        [HttpGet("GetPOByIdWithDetailsrv1/{orderId}")]
+        public async Task<ActionResult<PO>> GetPOByIdWithDetailsrv1(int orderId)
+        {
+            try
+            {
+                // Using a LINQ Join and GroupBy to reconstruct the PO object with its details.
+                // This approach explicitly joins POs with Purchasedetails.
+                // It's generally less efficient and more complex than .Include() for simple eager loading
+                // because it requires manually projecting all PO properties and then collecting
+                // the grouped details into the navigation property.
+                var purchaseOrder = await (from po in dbcontext.PO
+                                           join pd in dbcontext.Purchasedetails on po.Orderid equals pd.orderid into poDetails
+                                           where po.Orderid == orderId
+                                           select new PO
+                                           {
+                                               Orderid = po.Orderid,
+                                               Podate = po.Podate,
+                                               jobid = po.jobid,
+                                               createddate = po.createddate,
+                                               updateddate = po.updateddate,
+                                               pocurrencyid = po.pocurrencyid,
+                                               poexchangerate = po.poexchangerate,
+                                               createdbyid = po.createdbyid,
+                                               modifiedbyid = po.modifiedbyid,
+                                               poverifiedbyid = po.poverifiedbyid,
+                                               PoAuthorizedbyid = po.PoAuthorizedbyid,
+                                               poauthorizedDate = po.poauthorizedDate,
+                                               poverifiedDate = po.poverifiedDate,
+                                               supplierid = po.supplierid,
+                                               supplieraddress = po.supplieraddress,
+                                               suppliercontactid = po.suppliercontactid,
+                                               Qtnref = po.Qtnref,
+                                               Qtndate = po.Qtndate,
+                                               suppliertrnno = po.suppliertrnno,
+                                               podeliverytermsid = po.podeliverytermsid,
+                                               deliverydate = po.deliverydate,
+                                               popaymenttermsid = po.popaymenttermsid,
+                                               PaymenttermsDaysid = po.PaymenttermsDaysid,
+                                               POPaymentterms2id = po.POPaymentterms2id,
+                                               Mtcrequired = po.Mtcrequired,
+                                               coorequired = po.coorequired,
+                                               predispatchinspection = po.predispatchinspection,
+                                               warranty = po.warranty,
+                                               chineseorgin = po.chineseorgin,
+                                               mtcpriortodispatch = po.mtcpriortodispatch,
+                                               extendedwarraty3years = po.extendedwarraty3years,
+                                               qtnattached = po.qtnattached,
+                                               qtnshippingdocs = po.qtnshippingdocs,
+                                               approveddrawings = po.approveddrawings,
+                                               Others = po.Others,
+                                               Remarks = po.Remarks,
+                                               postatusid = po.postatusid,
+                                               discount = po.discount,
+                                               paymenterm1description = po.paymenterm1description,
+                                               otherpaymentremarks = po.otherpaymentremarks,
+                                               budgetheaderid = po.budgetheaderid,
+                                               PurchaseDetails = poDetails.ToList() // Populate the navigation property
+                                           }).FirstOrDefaultAsync();
+
+                if (purchaseOrder == null)
+                {
+                    return NotFound($"Purchase Order with OrderId {orderId} not found.");
+                }
+
+                return Ok(purchaseOrder);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

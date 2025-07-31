@@ -16,8 +16,10 @@
         public int Uomid { get; set; }
         public decimal Price { get; set; }
         public int  Jobid { get; set; }
+        public string? billofentryno { get; set; }
+        public DateTime? billofentrydate { get; set; }
 
-        public Batchstock(int batchID, decimal quantity, int invid, int currencyid, int uomid, decimal price, int jobid )
+        public Batchstock(int batchID, decimal quantity, int invid, int currencyid, int uomid, decimal price, int jobid , string billofentryno, DateTime? billofentrydate)
         {
             BatchID = batchID;
             Quantity = quantity;
@@ -29,6 +31,9 @@
             Uomid = uomid;
             Price = price;
             Jobid = jobid;
+
+           this. billofentryno = billofentryno;
+           this. billofentrydate = billofentrydate;
         }
 
 

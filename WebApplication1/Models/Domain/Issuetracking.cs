@@ -23,6 +23,9 @@ namespace WebApplication1.Models.Domain
         public int issueuomid { get; set; }
         public string ?  location { get; set; }
         public decimal totalreturnedqty { get; set; } = 0;
+
+        public string? billofentryno { get; set; }
+        public DateTime? billofentrydate { get; set; }
         public ICollection<POIssueReturnDetailIssueTracking> Links { get; set; }
 
 

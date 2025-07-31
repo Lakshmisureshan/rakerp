@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250728103949_dfhbjd")]
+    partial class dfhbjd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,13 +57,6 @@ namespace WebApplication1.Migrations
                             ConcurrencyStamp = "e76b0657-67f3-4e84-9320-1ed68a80a8f5",
                             Name = "Reader",
                             NormalizedName = "READER"
-                        },
-                        new
-                        {
-                            Id = "7d1bad9a-057c-4c32-ad91-ef4d10b158aa",
-                            ConcurrencyStamp = "7d1bad9a-057c-4c32-ad91-ef4d10b158aa",
-                            Name = "RECEIVEDENTRYREGISTRATIONROLE",
-                            NormalizedName = "RECEIVEDENTRYREGISTRATIONROLE"
                         },
                         new
                         {
@@ -288,11 +283,6 @@ namespace WebApplication1.Migrations
                         {
                             UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             RoleId = "ac03c6a-062b-4818-bd2a-ea5f16cc4a1c"
-                        },
-                        new
-                        {
-                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
-                            RoleId = "7d1bad9a-057c-4c32-ad91-ef4d10b158aa"
                         });
                 });
 
@@ -389,15 +379,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "87694e23-4016-42ca-b4c1-67235e1a90ea",
+                            ConcurrencyStamp = "ad07df33-1b76-4a9e-bf79-c4a4d39ec602",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEM1AAQMbk+INDVDG1qIwKkcmXqJqW4zgZY+OOJRepUtH4WPgB0U0S3QgGIEDksD5pA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOH9EBg7v0FdRSgUVzLYwbCrxrsVJFVP3awVzHhK2yq5YfgWp2tHdui9tLu23okU1w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0c16713b-bcf3-458e-ad74-4ad14bb121c9",
+                            SecurityStamp = "6c73c264-b6ae-4820-be47-fdbe4da2e2f6",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1654,12 +1644,6 @@ namespace WebApplication1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("issuereturntrackid"), 1L, 1);
 
-                    b.Property<DateTime?>("billofentrydate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("billofentryno")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("invid")
                         .HasColumnType("int");
 
@@ -2744,9 +2728,6 @@ namespace WebApplication1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("potblid"), 1L, 1);
 
-                    b.Property<int?>("POOrderid")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("grncreatedqty")
                         .HasColumnType("decimal(18,2)");
 
@@ -2782,8 +2763,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("potblid");
-
-                    b.HasIndex("POOrderid");
 
                     b.HasIndex("orderid");
 
@@ -4477,10 +4456,6 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Purchasedetails", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Domain.PO", null)
-                        .WithMany("PurchaseDetails")
-                        .HasForeignKey("POOrderid");
-
                     b.HasOne("WebApplication1.Models.Domain.PO", "PO")
                         .WithMany()
                         .HasForeignKey("orderid")
@@ -4704,11 +4679,6 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Models.Domain.Issuetracking", b =>
                 {
                     b.Navigation("Links");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.PO", b =>
-                {
-                    b.Navigation("PurchaseDetails");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.POissuereturndetails", b =>

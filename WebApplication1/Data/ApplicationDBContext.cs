@@ -146,6 +146,8 @@ namespace WebApplication1.Data
             var miscostcreationrole = "b65fb755-5a86-46a7-b28d-8e935c05b967";
             var PRUexpenserole = "553d0b9b-15cf-4879-8ac9-e42e13e35e22";
             var fixedbudgetrole = "ac03c6a-062b-4818-bd2a-ea5f16cc4a1c";
+
+            var receivedentryregistrationrole = "7d1bad9a-057c-4c32-ad91-ef4d10b158aa";
             var roles = new List<IdentityRole>
 {
  new IdentityRole ()
@@ -156,12 +158,18 @@ NormalizedName ="Reader".ToUpper(),
 ConcurrencyStamp =readRoleID
 },
 
+  new IdentityRole ()
+{
+Id =receivedentryregistrationrole,
+Name ="RECEIVEDENTRYREGISTRATIONROLE",
+NormalizedName ="RECEIVEDENTRYREGISTRATIONROLE".ToUpper(),
+ConcurrencyStamp =receivedentryregistrationrole
+},
 
 
 
 
 
- 
  new IdentityRole ()
 {
 Id =fixedbudgetrole,
@@ -359,6 +367,12 @@ ConcurrencyStamp =PRUexpenserole
                 {
                     UserId = adminUserid,
                     RoleId  = fixedbudgetrole
+
+                },
+                                        new()
+                {
+                    UserId = adminUserid,
+                    RoleId  = receivedentryregistrationrole
 
                 }
 

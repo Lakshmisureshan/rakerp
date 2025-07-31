@@ -21,8 +21,7 @@ namespace WebApplication1.Models.Domain
         public decimal invprice { get; set; }
         public decimal reservedqty { get; set; }
         public string?  location { get; set; }
-
-
+        public int invid { get; set; }
 
 
 

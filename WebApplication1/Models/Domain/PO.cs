@@ -70,5 +70,7 @@ namespace WebApplication1.Models.Domain
 
         public int  budgetheaderid { get; set; }
 
+        public ICollection<Purchasedetails> PurchaseDetails { get; set; } = new List<Purchasedetails>();
+
     }
 }
