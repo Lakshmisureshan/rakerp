@@ -33,6 +33,7 @@ using Microsoft.Extensions.Logging;
 using System.Security.Cryptography;
 using static iTextSharp.text.pdf.AcroFields;
 using System.Runtime.CompilerServices;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace WebApplication1.Controllers
 {
@@ -396,10 +397,19 @@ namespace WebApplication1.Controllers
             {
                 var POheaderdetails = await dbcontext.PO
       .Include(po => po.Supplier)
+
+      
       .Include(po => po.PoAuthorizedby)
        .Include(po => po.Poverifiedby)
         .Include(po => po.SupplierContact)
          .Include(po => po.Currency)
+          .Include(po => po.PODeliveryTerms)
+         
+
+           .Include(po => po.POPaymentterms)
+
+           .Include(po => po.POPaymentterms2)
+           .Include(po => po.PaymenttermsDays)
       .Include(po => po.postatus)// Include the Supplier related entity
       .Where(po => po.Orderid == pono)
       .FirstOrDefaultAsync();
@@ -2560,8 +2570,8 @@ namespace WebApplication1.Controllers
             {
 
                 var issuereturndetails = await dbcontext.Issuereturn
-
-              .ToListAsync();
+        .Where(x => x.issuereturntype == "Stock")
+        .ToListAsync();
                 if (issuereturndetails == null)
                 {
                     return NotFound();
@@ -2576,7 +2586,27 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("listpoissuereturn")]
+        public async Task<IActionResult> listpoissuereturn()
 
+        {
+            try
+            {
+
+                var issuereturndetails = await dbcontext.Issuereturn
+        .Where(x => x.issuereturntype == "PO")
+        .ToListAsync();
+                if (issuereturndetails == null)
+                {
+                    return NotFound();
+                }
+                return Ok(issuereturndetails);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+            }
+        }
 
 
 
@@ -3171,6 +3201,8 @@ namespace WebApplication1.Controllers
         }
         public class PrPendingList
         {
+
+            public decimal ivenbalance { get; set; }
             public int PRID { get; set; }
             public decimal totalinventory { get; set; }
             public string itemname { get; set; }
@@ -3213,7 +3245,7 @@ namespace WebApplication1.Controllers
                                 productcode = reader["productcode"].ToString(),
 
                                 totalinventory = reader.GetDecimal(reader.GetOrdinal("totalinventory")),
-
+                                ivenbalance = reader.GetDecimal(reader.GetOrdinal("ivenbalance")),
 
                                 prqty = reader.GetDecimal(reader.GetOrdinal("prqty")),
                                 pocreatedqty = reader.GetDecimal(reader.GetOrdinal("pocreatedqty")),
@@ -3583,8 +3615,102 @@ namespace WebApplication1.Controllers
         //    return inventory;
         //}
 
+        //[HttpGet("GetInventoryAsOfDate")]
+        //public async Task<List<InventoryResult>> GetInventoryAsOfDate(DateTime targetDate)
+        //{
+        //    // Step 1: Get the total received, issued, and returned quantities,
+        //    // grouped only by the inventory ID (invid) to ensure all transactions for an item are summed.
+        //    // We convert these into dictionaries for efficient lookups later.
 
+        //    // Total Received Quantities
+        //    var receivedData = await (from grn in dbcontext.grntracking
+        //                              where grn.grndate <= targetDate
+        //                              group grn by grn.invid into g
+        //                              select new
+        //                              {
+        //                                  Invid = g.Key,
+        //                                  TotalGrnQty = g.Sum(grn => grn.grnqty)
+        //                              }).ToDictionaryAsync(x => x.Invid, x => x.TotalGrnQty);
 
+        //    // Total Issued Quantities
+        //    var issuedData = await (from issue in dbcontext.Issuetracking
+        //                            where issue.issuedate <= targetDate
+        //                            group issue by issue.invid into g
+        //                            select new
+        //                            {
+        //                                Invid = g.Key,
+        //                                TotalIssueQty = g.Sum(issue => issue.issueqty)
+        //                            }).ToDictionaryAsync(x => x.Invid, x => x.TotalIssueQty);
+
+        //    // Total Returned Quantities
+        //    var returnedData = await (from returnTrack in dbcontext.issuereturntracking
+        //                              where returnTrack.issuereturndate <= targetDate
+        //                              group returnTrack by returnTrack.invid into g
+        //                              select new
+        //                              {
+        //                                  Invid = g.Key,
+        //                                  TotalReturnQty = g.Sum(returnTrack => returnTrack.issuereturnqty)
+        //                              }).ToDictionaryAsync(x => x.Invid, x => x.TotalReturnQty);
+
+        //    // Step 2: Get all unique inventory items (invids) from all three transaction types
+        //    // by adding the keys to a HashSet. This is an efficient and robust way to get a unique list.
+        //    var allInvids = new HashSet<int>(receivedData.Keys);
+        //    allInvids.UnionWith(issuedData.Keys);
+        //    allInvids.UnionWith(returnedData.Keys);
+
+        //    // Step 3: Get a representative GRN record for each unique invid to fetch descriptive properties.
+        //    // We'll filter the grntracking table by our list of unique invids.
+        //    var representativeGrnRecords = await (from grn in dbcontext.grntracking
+        //                                          where allInvids.Contains(grn.invid)
+        //                                          group grn by grn.invid into g
+        //                                          select g.OrderByDescending(x => x.grndate).FirstOrDefault())
+        //                                         .ToListAsync();
+
+        //    // Step 4: Use a single LINQ query to calculate the final inventory and join with the descriptive records.
+        //    var finalInventory = await (from invid in allInvids
+        //                                    // Join with the representative GRN records we fetched
+        //                                join grn in representativeGrnRecords on invid equals grn.invid
+        //                                // Join with other descriptive tables
+        //                                join product in dbcontext.Product on grn.productid equals product.productcode
+        //                                join currency in dbcontext.Currency on grn.grncurrencyid equals currency.currencyid
+        //                                join uom in dbcontext.UOM on grn.grnuomid equals uom.uomid
+        //                                join jj in dbcontext.Job on grn.jobid equals jj.Jobid
+        //                                join jt in dbcontext.JobType on jj.jobtypeid equals jt.jobtypeid
+        //                                join bh in dbcontext.BudgettHeader on product.itembudgetheaderid equals bh.budgetheaderid
+        //                                join ct in dbcontext.Category on product.categoryid equals ct.categoryid
+        //                                join st in dbcontext.SubCategory on product.subcategoryid equals st.subcategoryid
+        //                                select new InventoryResult
+        //                                {
+        //                                    invid = invid,
+        //                                    inventory = (receivedData.ContainsKey(invid) ? receivedData[invid] : 0) -
+        //                                                (issuedData.ContainsKey(invid) ? issuedData[invid] : 0) +
+        //                                                (returnedData.ContainsKey(invid) ? returnedData[invid] : 0),
+        //                                    price = grn.grnunitprice,
+        //                                    uom = uom.uomname,
+        //                                    currency = currency.currencyname,
+        //                                    itemname = product.itemname,
+        //                                    rate = currency.exchangerate,
+        //                                    jobid = grn.jobid,
+        //                                    jobtypename = jt.JobtypeName,
+        //                                    jobtypeid = jt.jobtypeid,
+        //                                    budgetheaderid = bh.budgetheaderid,
+        //                                    budgetheadername = bh.budgetheadername,
+        //                                    categoryname = ct.categoryname,
+        //                                    categoryid = ct.categoryid,
+        //                                    subcategoryname = st.subcategoryname,
+        //                                    subcategoryid = st.subcategoryid,
+        //                                    location = grn.location,
+        //                                    billofentrydate = grn.billofentrydate,
+        //                                    billofentryno = grn.billofentryno,
+        //                                    productcode = product.productcode,
+        //                                    date = grn.grndate
+        //                                })
+        //                                .Where(x => x.inventory != 0)
+        //                                .OrderBy(result => result.invid)
+        //                                .ToListAsync();
+
+        //    return finalInventory;
+        //}
         [HttpGet("GetInventoryAsOfDate")]
         public async Task<List<InventoryResult>> GetInventoryAsOfDate(DateTime targetDate)
         {
@@ -5409,6 +5535,7 @@ namespace WebApplication1.Controllers
                     existingEntry.jobid = dto.jobid;
                     existingEntry.returndate = dto.returndate;
                     existingEntry.Remarks = dto.Remarks;
+                    existingEntry.issuereturntype = "Stock";
 
                     dbcontext.Issuereturn.Update(existingEntry);
                 }
@@ -5422,6 +5549,8 @@ namespace WebApplication1.Controllers
                         jobid = dto.jobid,
                         returndate = dto.returndate,
                         Remarks = dto.Remarks,
+
+                        issuereturntype ="Stock"
                     };
 
                     await dbcontext.Issuereturn.AddAsync(existingEntry);
@@ -11622,7 +11751,19 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("getallponos")]
+        public async Task<ActionResult<IEnumerable<int>>> getallponos()
+        {
+            // Use Entity Framework Core to query the database.
+            // .Select(po => po.orderid) is used to select only the orderid property,
+            // which is more efficient than fetching the entire POHeader object.
+            var poNumbers = await dbcontext.PO
+                                          .Select(po => po.Orderid)
+                                          .ToListAsync();
 
+            // Return the list of PO numbers
+            return Ok(poNumbers);
+        }
 
 
 
@@ -13676,6 +13817,52 @@ namespace WebApplication1.Controllers
 
 
 
+        [HttpGet("GetPendingPurchasedetailsbyponoeditgrn")]
+        public async Task<ActionResult<List<Pendinggrn>>> GetPendingPurchasedetailsbyponoeditgrn( int grnno , int orderid)
+        {
+            var budgetSummaries = new List<Pendinggrn>();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand("GetPendingPurchasedetailsbyponosineditgrn", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@pono", orderid);
+                    cmd.Parameters.AddWithValue("@grnno", grnno);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            budgetSummaries.Add(new Pendinggrn
+                            {
+                                productcode = reader.GetInt32(reader.GetOrdinal("productcode")),
+                                poquantity = reader.GetDecimal(reader.GetOrdinal("poquantity")),
+                                productuomid = reader.GetInt32(reader.GetOrdinal("productuomid")),
+                                pouomid = reader.GetInt32(reader.GetOrdinal("pouomid")),
+                                itemname = reader.GetString(reader.GetOrdinal("itemname")),
+                                purchaseuomname = reader["purchaseuomname"].ToString(),
+                                productuomname = reader["productuomname"].ToString(),
+                                grncreatedqty = reader.GetDecimal(reader.GetOrdinal("grncreatedqty")),
+                                inspacceptedqty = reader.GetDecimal(reader.GetOrdinal("inspacceptedqty")),
+                                orderid = reader.GetInt32(reader.GetOrdinal("orderid")),
+                                multiplyfactor = reader.GetDecimal(reader.GetOrdinal("multiplyfactor")),
+                                pounitprice = reader.GetDecimal(reader.GetOrdinal("pounitprice")),
+
+
+
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (budgetSummaries.Count == 0)
+            {
+                return NotFound("No data found for the provided jobId.");
+            }
+
+            return Ok(budgetSummaries);
+        }
 
 
 
@@ -14055,7 +14242,7 @@ namespace WebApplication1.Controllers
                         existingEntry.jobid = dto.jobid;
                         existingEntry.returndate = dto.returndate;
                         existingEntry.Remarks = dto.Remarks;
-
+                        existingEntry.issuereturntype = "PO";
                         dbcontext.Issuereturn.Update(existingEntry);
                     }
                     else
@@ -14068,7 +14255,9 @@ namespace WebApplication1.Controllers
                             jobid = dto.jobid,
                             returndate = dto.returndate,
                             Remarks = dto.Remarks,
-                        };
+                           issuereturntype = "PO",
+
+                    };
 
                         await dbcontext.Issuereturn.AddAsync(existingEntry);
                     }
@@ -14556,6 +14745,90 @@ namespace WebApplication1.Controllers
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public class JobSummaryDto
+        {
+            public int jobid { get; set; } // Renamed to JobId for clarity in DTO
+            public string jobname { get; set; } = string.Empty;
+        }
+
+
+        [HttpGet("GetFilteredJobs")]
+        public async Task<ActionResult<IEnumerable<JobSummaryDto>>> GetFilteredJobs(
+             [FromQuery] int? customerId,
+             [FromQuery] int? jobstageid,
+             [FromQuery] int? jobtypeid,
+             [FromQuery] string? jobname) // Added jobname parameter
+        {
+            // Start with all jobs from the database context
+            IQueryable<Job> query = dbcontext.Job; // Use IQueryable for deferred execution
+
+            // Apply filters conditionally
+            if (customerId.HasValue)
+            {
+                query = query.Where(j => j.customerid == customerId.Value);
+            }
+
+            if (jobstageid.HasValue)
+            {
+                query = query.Where(j => j.jobstageid == jobstageid.Value);
+            }
+
+            if (jobtypeid.HasValue)
+            {
+                query = query.Where(j => j.jobtypeid == jobtypeid.Value);
+            }
+
+            // Apply jobname filter if provided.
+            // This searches for the 'jobname' query parameter within the combined job details.
+            if (!string.IsNullOrWhiteSpace(jobname))
+            {
+                string searchLower = jobname.ToLower(); // Convert search term to lowercase once for efficiency
+                query = query.Where(j =>
+                    j.Jobid.ToString().ToLower().Contains(searchLower) || // Search in JobId (converted to string)
+                    j.projectname.ToLower().Contains(searchLower) ||   // Search in ProjectName
+                    j.lpono.ToLower().Contains(searchLower) ||         // Search in LpoNo
+                    j.jobdescription.ToLower().Contains(searchLower)    // Search in JobDescription
+                );
+            }
+
+            // Apply the projection to select only the required fields and concatenate jobname
+            var jobSummaries = await query
+                .Select(j => new JobSummaryDto // Project into the DTO
+                {
+                    jobid = j.Jobid,
+                  
+                    // Concatenate the jobname string as required
+                    jobname = j.Jobid + " " + j.projectname + " " + j.lpono + " " + j.jobdescription
+                })
+                .ToListAsync(); // Execute the query and materialize to a list
+
+            // Return the filtered and projected list as an OK (200) response
+            return Ok(jobSummaries);
+        }
 
 
 

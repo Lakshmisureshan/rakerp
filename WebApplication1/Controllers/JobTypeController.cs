@@ -44,6 +44,29 @@ namespace WebApplication1.Controllers
             return Ok(jobTypes);
         }
 
+
+
+        [HttpGet("getjobstage")]
+        public async Task<IActionResult> getjobstage()
+        {
+            var jobstage = await dbcontext.JobStage.ToListAsync();
+            return Ok(jobstage);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet("GetNextJobNoAsync")]
         public async Task<int> GetNextJobNoAsync(int jobTypeId)
         {

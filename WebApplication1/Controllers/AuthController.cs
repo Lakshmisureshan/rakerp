@@ -920,6 +920,8 @@ namespace WebApplication1.Controllers
                             billofentrydate = grnheader.billofentrydate,
                             billofentryno = grnheader.billofentryno,
 
+                            actualgrndate = DateTime.UtcNow.Date,
+
                         };
 
                         dbcontext.Inventory.Add(inventory);
@@ -978,6 +980,8 @@ namespace WebApplication1.Controllers
                             location = entry.location,
                             billofentrydate = grnheader.billofentrydate,
                             billofentryno = grnheader.billofentryno,
+
+                            actualgrndate = DateTime.UtcNow.Date,
 
                         };
 
@@ -1184,39 +1188,65 @@ namespace WebApplication1.Controllers
                     // dbcontext.Issuereturn.Update(issuereturnheader); // No need for explicit Update call if entity is tracked and modified
 
                     // 4. Fetch the combined data using Joins for inventory processing
-                    var combinedData = await dbcontext.Issuereturn
-                        .Join(dbcontext.POissuereturndetails,
-                              header => header.issuereturnref,
-                              detail => detail.issuereturnref,
-                              (header, detail) => new { Header = header, Detail = detail })
-                        .Join(dbcontext.POIssueReturnDetailIssueTracking,
-                              combined => combined.Detail.issuereturndetailid,
-                              link => link.issuereturndetailid,
-                              (combined, link) => new { combined.Header, combined.Detail, Link = link })
-                        .Join(dbcontext.Issuetracking,
-                              combined => combined.Link.issuetrackid,
-                              issue => issue.issuetrackid,
-                              (combined, issue) => new { combined.Header, combined.Detail, combined.Link, Issue = issue })
-                        .Where(result => result.Header.issuereturnref == request.issuereturnno)
-                        .Select(result => new
-                        {
-                            HeaderJobId = result.Header.jobid,
-                            headerissueretunrefid = result.Header.issuereturnref,
-                            POIssueReturnDetailId = result.Detail.issuereturndetailid,
-                            ProductCode = result.Detail.productcode,
-                            ReturnQty = result.Issue.totalreturnedqty, // Assuming this is the actual quantity being returned
-                            IssueReturnUnitPrice = result.Detail.issuereturnunitprice,
-                            location = result.Detail.location, // Location from the POIssueReturnDetail
-                            OriginalIssueId = result.Issue.issuetrackid,
-                            OriginalIssueUomId = result.Issue.issueuomid,
-                            OriginalIssueCurrencyId = result.Issue.issuecurrencyid,
-                            OriginalIssueJobId = result.Issue.jobid,
-                            originalbillofentrydate = result.Issue.billofentrydate,
-                            originalbillofentryno = result.Issue.billofentryno
+                    //var combinedData = await dbcontext.Issuereturn
+                    //    .Join(dbcontext.POissuereturndetails,
+                    //          header => header.issuereturnref,
+                    //          detail => detail.issuereturnref,
+                    //          (header, detail) => new { Header = header, Detail = detail })
+                    //    .Join(dbcontext.POIssueReturnDetailIssueTracking,
+                    //          combined => combined.Detail.issuereturndetailid,
+                    //          link => link.issuereturndetailid,
+                    //          (combined, link) => new { combined.Header, combined.Detail, Link = link })
+                    //    .Join(dbcontext.Issuetracking,
+                    //          combined => combined.Link.issuetrackid,
+                    //          issue => issue.issuetrackid,
+                    //          (combined, issue) => new { combined.Header, combined.Detail, combined.Link, Issue = issue })
+                    //    .Where(result => result.Header.issuereturnref == request.issuereturnno)
+                    //    .Select(result => new
+                    //    {
+                    //        HeaderJobId = result.Header.jobid,
+                    //        headerissueretunrefid = result.Header.issuereturnref,
+                    //        POIssueReturnDetailId = result.Detail.issuereturndetailid,
+                    //        ProductCode = result.Detail.productcode,
+                    //        ReturnQty = result.Issue.totalreturnedqty, // Assuming this is the actual quantity being returned
+                    //        IssueReturnUnitPrice = result.Detail.issuereturnunitprice,
+                    //        location = result.Detail.location, // Location from the POIssueReturnDetail
+                    //        OriginalIssueId = result.Issue.issuetrackid,
+                    //        OriginalIssueUomId = result.Issue.issueuomid,
+                    //        OriginalIssueCurrencyId = result.Issue.issuecurrencyid,
+                    //        OriginalIssueJobId = result.Issue.jobid,
+                    //        originalbillofentrydate = result.Issue.billofentrydate,
+                    //        originalbillofentryno = result.Issue.billofentryno,
+                    //       originalinvid = result.Issue.invid
+                    //        // Get original issue jobid if needed for inventory
+                    //    })
+                    //    .ToListAsync();
 
-                            // Get original issue jobid if needed for inventory
-                        })
-                        .ToListAsync();
+                    var combinedData = await (
+    from detail in dbcontext.POissuereturndetails
+    join link in dbcontext.POIssueReturnDetailIssueTracking
+        on detail.issuereturndetailid equals link.issuereturndetailid
+    join issue in dbcontext.Issuetracking
+        on link.issuetrackid equals issue.issuetrackid
+    where detail.issuereturnref == request.issuereturnno
+    select new
+    {
+        POIssueReturnDetailId = detail.issuereturndetailid,
+        ProductCode = detail.productcode,
+        ReturnQty = detail.returnqty, // This should come from POissuereturndetails, not issuetracking
+        IssueReturnUnitPrice = detail.issuereturnunitprice,
+        location = detail.location,
+
+        OriginalIssueId = issue.issuetrackid,
+        OriginalIssueUomId = issue.issueuomid,
+        OriginalIssueCurrencyId = issue.issuecurrencyid,
+        OriginalIssueJobId = issue.jobid,
+        OriginalInvoiceId = issue.invid,
+        OriginalBillOfEntryNo = issue.billofentryno,
+        OriginalBillOfEntryDate = issue.billofentrydate
+    }
+).ToListAsync();
+
 
                     // 5. Process each detail line and insert into Inventory and issuereturntracking
 
@@ -1250,12 +1280,12 @@ namespace WebApplication1.Controllers
                             type = "PORETURN",
                             batchid = maxBatchId, // Assign the incremented batch ID
                             location = item.location,
-                            billofentryno = item.originalbillofentryno,
-                            billofentrydate = item.originalbillofentrydate,
+                            billofentryno = item.OriginalBillOfEntryNo,
+                            billofentrydate = item.OriginalBillOfEntryDate,
+                            
 
 
-
-
+                            
                         };
 
                         await dbcontext.Inventory.AddAsync(inventoryEntry);
@@ -1270,7 +1300,7 @@ namespace WebApplication1.Controllers
                         {
                             invid = inventoryEntry.invid, // Use the newly generated invid from the Inventory table
                             jobid = 500001, // Use jobid from the PO Issue Return Header
-                            issuereturnno = item.headerissueretunrefid,
+                            issuereturnno = request.issuereturnno,
                             issuereturndate = DateTime.UtcNow.Date,
                             issuereturnqty = item.ReturnQty,
                             productid = item.ProductCode,
@@ -1278,8 +1308,8 @@ namespace WebApplication1.Controllers
                             issuecurrencyid = item.OriginalIssueCurrencyId, // Use currency from original issue
                             uomid = item.OriginalIssueUomId,
                             location = item.location,
-                            billofentryno = item.originalbillofentryno,
-                            billofentrydate = item.originalbillofentrydate,
+                            billofentryno = item.OriginalBillOfEntryNo,
+                            billofentrydate = item.OriginalBillOfEntryDate,
 
 
                         };
@@ -1506,7 +1536,7 @@ namespace WebApplication1.Controllers
                             productid = detailEntry.productid,
                             batchid = 1, // Re-evaluate if this should be dynamic or derived
                             jobid = issuedetailAndReservation.Reservation.fromjobid, // Assuming 'fromjobid' is on Issuereturndetails
-                            pono = 2,    // Re-evaluate if this should be dynamic
+                            pono = 1,    // Re-evaluate if this should be dynamic
                             quantity = detailEntry.quantityreturned, // Use quantityreturned from Issuereturndetails
                             Entrydate = DateTime.UtcNow.Date, // This is the date of the return itself
                             uomid = detailEntry.iruomid, // Assuming 'iruomid' is on Issuereturndetails

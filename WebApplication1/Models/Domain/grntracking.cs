@@ -31,7 +31,7 @@ namespace WebApplication1.Models.Domain
 
         public string? billofentryno { get; set; }
         public DateTime? billofentrydate { get; set; }
-
+        public DateTime? actualgrndate { get; set; }
 
     }
 }

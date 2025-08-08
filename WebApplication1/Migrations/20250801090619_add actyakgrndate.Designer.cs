@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250801090619_add actyakgrndate")]
+    partial class addactyakgrndate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -389,15 +391,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dbc36dbe-c2f1-45d9-9e28-647a83589b26",
+                            ConcurrencyStamp = "ae179dac-bc0e-4f4b-ae82-ec1223270d58",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOgS/MHqTQ2mh1v/iQKj0+ske1PrKDmRf7UYDVWXhvADzhHd3v/9Ir0DJqBmCI2PGA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGkTXplan29erfft2gmk9WjumWS+z077ryj4bMcDxYabkPsDwDp7rCNS+HY9KcO3jg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ad43b5b1-c4d5-4945-854b-a4d98c36391d",
+                            SecurityStamp = "73e99d34-10a5-4cc2-8a8e-63f2b7387de2",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -1594,9 +1596,6 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("isregistered")
                         .HasColumnType("int");
-
-                    b.Property<string>("issuereturntype")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("jobid")
                         .HasColumnType("int");
