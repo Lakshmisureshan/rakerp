@@ -1972,8 +1972,6 @@ namespace WebApplication1.Controllers
         [HttpGet("GetpodetailsbyPONO2")]
         public async Task<IActionResult> GetpodetailsbyPONO2([FromQuery] int pono)
         {
-
-
             var purchasedetails = await dbcontext.Purchasedetails
           .Where(p => p.orderid == pono
                       && (p.poquantity - p.receivedentryqty + p.insprejectedqty) > 0
@@ -8854,6 +8852,96 @@ namespace WebApplication1.Controllers
 
             return Ok(result);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("Getpoissuereturndetailsbyjobid")]
+        public async Task<IActionResult> Getpoissuereturndetailsbyjobid(int jobid)
+        {
+            if (jobid <= 0)
+            {
+                return BadRequest("Invalid jobid");
+            }
+
+            var result = await (from d in dbcontext.POissuereturndetails
+                                join h in dbcontext.Issuereturn on d.issuereturnref equals h.issuereturnref
+                                join im in dbcontext.Product on d.productcode equals im.productcode
+                                join bh in dbcontext.BudgettHeader on im.itembudgetheaderid equals bh.budgetheaderid
+                                
+                                where h.jobid == jobid
+
+                                && h.isregistered == 1
+                                group new { d } by new { h.jobid, im.itembudgetheaderid, bh.budgetheadername } into g
+                                select new
+                                {
+                                    JobId = g.Key.jobid,
+                                    BudgetHeaderId = g.Key.itembudgetheaderid,
+                                    BudgetHeaderName = g.Key.budgetheadername,
+                                    TotalCost = g.Sum(x => (decimal)x.d.returnqty * x.d.issuereturnunitprice )
+                                })
+                     .OrderBy(x => x.JobId)
+                     .ThenBy(x => x.BudgetHeaderId)
+                     .ToListAsync();
+            if (!result.Any())
+            {
+                return NotFound("Invoice registration details not found");
+            }
+
+            return Ok(result);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -231,15 +231,29 @@ namespace WebApplication1.Controllers
             var products = await dbcontext.Product
             
                 .Include(p => p.Category)
-                  .Include(p => p.BudgettHeader)
+                .Include(p => p.BudgettHeader)
                 .Include(p => p.SubCategory)
                 .Include(p => p.UOM)
 
                     .Where(p => p.BudgettHeader.budgetheaderid == 13)
                 .ToListAsync();
-
             return Ok(products);
         }
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
 
 
 

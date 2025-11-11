@@ -56,6 +56,7 @@ builder.Services.AddCors(options =>
             // Allowed Origins
             builder.WithOrigins("http://localhost:4200", // <-- ADD THIS
                                 "http://localhost:8000",
+                                  "http://localhost:53925",
                                 "http://frontend")
                    .AllowAnyHeader() // Allows all headers
                    .AllowAnyMethod() // Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)

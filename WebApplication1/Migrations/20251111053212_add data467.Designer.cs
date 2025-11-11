@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251111053212_add data467")]
+    partial class adddata467
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -403,15 +405,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fec841f0-783d-4a03-9dd4-ef3a89b2cc40",
+                            ConcurrencyStamp = "2df008a5-9700-40ef-845f-da6ebc72f22f",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHesbb7p5l0TKgBy9+YbhWKR1rafI3na+NXuhq9fAN5AksVmzYkbrz3R6vSGlPcNrQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJCRyLiGtgDKuLksAysxM6qs9V86WRCucpjkrTlcw9aD8Cwrrj8E5QL5CwDHRmCBzw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cb87fba7-9010-4ca1-990b-800cab948a98",
+                            SecurityStamp = "71beadc9-8c95-46b0-8209-51f47eba2a0d",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251108201028_uu99")]
+    partial class uu99
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,20 +141,6 @@ namespace WebApplication1.Migrations
                             ConcurrencyStamp = "553d0b9b-15cf-4879-8ac9-e42e13e35e22",
                             Name = "PRUEXPENSEROLE",
                             NormalizedName = "PRUEXPENSEROLE"
-                        },
-                        new
-                        {
-                            Id = "f9c7e3b1-4d0a-4a2e-8b5c-d6f8a3c9e0d2",
-                            ConcurrencyStamp = "f9c7e3b1-4d0a-4a2e-8b5c-d6f8a3c9e0d2",
-                            Name = "ENQUIRYCOMPLETED",
-                            NormalizedName = "ENQUIRYCOMPLETED"
-                        },
-                        new
-                        {
-                            Id = "7a2f5d1e-8b3c-4e6a-9d0b-2c4f7a1e3b5d",
-                            ConcurrencyStamp = "7a2f5d1e-8b3c-4e6a-9d0b-2c4f7a1e3b5d",
-                            Name = "ENQUIRYVERIFIED",
-                            NormalizedName = "ENQUIRYVERIFIED"
                         });
                 });
 
@@ -403,15 +391,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fec841f0-783d-4a03-9dd4-ef3a89b2cc40",
+                            ConcurrencyStamp = "2b214768-d75b-413b-833b-6515af628cbd",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHesbb7p5l0TKgBy9+YbhWKR1rafI3na+NXuhq9fAN5AksVmzYkbrz3R6vSGlPcNrQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELke7w3slGwX7AmdHxsCZMOQnWhA8CNTqLzeHN2cFlVrtMw8459DcEw+lkOV5fLFpw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cb87fba7-9010-4ca1-990b-800cab948a98",
+                            SecurityStamp = "3a2a41c2-2d1d-48bc-9802-21515623a8b5",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -971,31 +959,19 @@ namespace WebApplication1.Migrations
                     b.Property<int>("Enquiryref")
                         .HasColumnType("int");
 
-                    b.Property<int>("EnquiryStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("completedbybyuserid")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("completiondate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("customercontactid")
                         .HasColumnType("int");
 
                     b.Property<int>("customerid")
                         .HasColumnType("int");
 
+                    b.Property<int>("enqstatusid")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("enquirydate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("enquirytypeid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("iscompleted")
-                        .HasColumnType("int");
-
-                    b.Property<int>("isverified")
                         .HasColumnType("int");
 
                     b.Property<string>("projectengineerid")
@@ -1009,29 +985,19 @@ namespace WebApplication1.Migrations
                     b.Property<string>("remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("verifiedbydate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("verifiedbyuserid")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Enquiryref");
-
-                    b.HasIndex("EnquiryStatusId");
-
-                    b.HasIndex("completedbybyuserid");
 
                     b.HasIndex("customercontactid");
 
                     b.HasIndex("customerid");
+
+                    b.HasIndex("enqstatusid");
 
                     b.HasIndex("enquirytypeid");
 
                     b.HasIndex("projectengineerid");
 
                     b.HasIndex("projectmanagerid");
-
-                    b.HasIndex("verifiedbyuserid");
 
                     b.ToTable("Enquiry");
                 });
@@ -3540,17 +3506,6 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Models.Domain.Enquiry", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Domain.Enquirystatus", "Enquirystatus")
-                        .WithMany()
-                        .HasForeignKey("EnquiryStatusId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "Completedby")
-                        .WithMany()
-                        .HasForeignKey("completedbybyuserid")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("WebApplication1.Models.Domain.customercontact", "customercontact")
                         .WithMany()
                         .HasForeignKey("customercontactid")
@@ -3560,6 +3515,12 @@ namespace WebApplication1.Migrations
                     b.HasOne("WebApplication1.Models.Domain.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("customerid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Domain.Enquirystatus", "Enquirystatus")
+                        .WithMany()
+                        .HasForeignKey("enqstatusid")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -3581,13 +3542,6 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Domain.ApplicationUser", "Verifiedby")
-                        .WithMany()
-                        .HasForeignKey("verifiedbyuserid")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Completedby");
-
                     b.Navigation("Customer");
 
                     b.Navigation("Enquirystatus");
@@ -3597,8 +3551,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("ProjectEngineer");
 
                     b.Navigation("ProjectManager");
-
-                    b.Navigation("Verifiedby");
 
                     b.Navigation("customercontact");
                 });

@@ -33,23 +33,11 @@ namespace WebApplication1.Models.Domain
         public int ? qualitylevelid { get; set; }
 
         public DateTime ? podeliverydate { get; set; }
-
-
         public ProjectCategory ProjectCategory { get; set; }
-
         public int ? projectcategoryid { get; set; }
-
-
-
-
         public IsLDApplicable isldapp { get; set; }
-
         public int isldapplicable { get; set; }
-
-
         public string ?  ldpercent { get; set; }
-
-
         public Currency Currency { get; set; }
         public int currencyid { get; set; }
         public decimal  exchangerate { get; set; }
@@ -61,13 +49,9 @@ namespace WebApplication1.Models.Domain
         public string ? deliveryterms { get; set; }
         public int bomjobrevno { get; set; } = 0;
         public int bomjobstatusid { get; set; } = 0;
-
         public Customer Enduser { get; set; }
         public int enduserid { get; set; }
-
-
         public int? mainjobid { get; set; } = 0;
-
         public DateTime ? expecteddeliverydate { get; set; }
         public string jobdescription { get; set; }
 

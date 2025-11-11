@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
+using OpenAI;
+using OpenAI.Chat;
+using Microsoft.Extensions.Options;
 namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
@@ -11,7 +14,8 @@ namespace WebApplication1.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly ApplicationDBContext dbcontext;
-        public CustomerController(ApplicationDBContext dbcontext)
+     
+        public CustomerController(ApplicationDBContext dbcontext, IOptions<OpenAiSettings> settings)
         {
             this.dbcontext = dbcontext;
         }

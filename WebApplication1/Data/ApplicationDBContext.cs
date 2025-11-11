@@ -124,8 +124,8 @@ namespace WebApplication1.Data
         
        public DbSet<POIssueReturnDetailIssueTracking> POIssueReturnDetailIssueTracking { get; set; }
 
-
-
+        public DbSet<Enquiry> Enquiry { get; set; }
+        public DbSet<Enquirystatus> Enquirystatus { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -146,6 +146,11 @@ namespace WebApplication1.Data
             var miscostcreationrole = "b65fb755-5a86-46a7-b28d-8e935c05b967";
             var PRUexpenserole = "553d0b9b-15cf-4879-8ac9-e42e13e35e22";
             var fixedbudgetrole = "ac03c6a-062b-4818-bd2a-ea5f16cc4a1c";
+
+            var completedbyrole = "f9c7e3b1-4d0a-4a2e-8b5c-d6f8a3c9e0d2";
+
+            var enquiryverifiedbyrole = "7a2f5d1e-8b3c-4e6a-9d0b-2c4f7a1e3b5d";
+
 
             var receivedentryregistrationrole = "7d1bad9a-057c-4c32-ad91-ef4d10b158aa";
             var roles = new List<IdentityRole>
@@ -267,6 +272,23 @@ Name ="PRUEXPENSEROLE",
 NormalizedName ="PRUEXPENSEROLE".ToUpper(),
 ConcurrencyStamp =PRUexpenserole
 },
+
+ new IdentityRole ()
+{
+Id =completedbyrole,
+Name ="ENQUIRYCOMPLETED",
+NormalizedName ="ENQUIRYCOMPLETED".ToUpper(),
+ConcurrencyStamp =completedbyrole
+},
+
+ new IdentityRole ()
+{
+Id =enquiryverifiedbyrole,
+Name ="ENQUIRYVERIFIED",
+NormalizedName ="ENQUIRYVERIFIED".ToUpper(),
+ConcurrencyStamp =enquiryverifiedbyrole
+},
+
 
 
 
@@ -1938,6 +1960,19 @@ base.OnModelCreating(modelBuilder);
                          .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
             modelBuilder.Entity<Job>()
       .Property(j => j.qualitylevelid)
  
@@ -2005,6 +2040,87 @@ base.OnModelCreating(modelBuilder);
            .HasForeignKey(pd => pd.issuetrackid)
            .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<Enquiry>()
+        .HasOne(pd => pd.Customer)
+        .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+        .HasForeignKey(pd => pd.customerid)
+        .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<Enquiry>()
+                  .HasOne(pd => pd.customercontact)
+                  .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                  .HasForeignKey(pd => pd.customercontactid)
+                  .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<Enquiry>()
+                 .HasOne(pd => pd.ProjectEngineer)
+                 .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+                 .HasForeignKey(pd => pd.projectengineerid)
+                 .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<Enquiry>()
+               .HasOne(pd => pd.ProjectManager)
+               .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+               .HasForeignKey(pd => pd.projectmanagerid)
+               .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Enquiry>()
+         .HasOne(pd => pd.Enquirytype)
+         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+         .HasForeignKey(pd => pd.enquirytypeid)
+         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<Enquiry>()
+         .HasOne(pd => pd.Enquirystatus)
+         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+         .HasForeignKey(pd => pd.EnquiryStatusId)
+         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+
+
+            modelBuilder.Entity<Enquiry>()
+         .HasOne(pd => pd.Verifiedby)
+         .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+         .HasForeignKey(pd => pd.verifiedbyuserid)
+         .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<Enquiry>()
+       .HasOne(pd => pd.Completedby)
+       .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+       .HasForeignKey(pd => pd.completedbybyuserid)
+       .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+
+
 
 
 

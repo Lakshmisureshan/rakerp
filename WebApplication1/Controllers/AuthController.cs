@@ -2034,5 +2034,218 @@ namespace WebApplication1.Controllers
             public string NewPassword { get; set; }
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+        public class ValidatePasscodeRequest
+        {
+            public string UserId { get; set; }
+            public string Passcode { get; set; } // Renamed from Password for clarity, but it's the user's password
+        }
+
+
+
+
+
+        [HttpPost("ValidatePasscode")]
+        public async Task<IActionResult> ValidatePasscode([FromBody] ValidatePasscodeRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.UserId) || string.IsNullOrEmpty(request.Passcode))
+            {
+                return BadRequest(new { success = false, message = "Invalid request data." });
+            }
+
+            // 1. Find the user by ID
+            var user = await userManager1.FindByIdAsync(request.UserId);
+
+            if (user == null)
+            {
+                // Do NOT reveal if the user exists for security reasons; return a generic failure.
+                return Unauthorized(new { success = false, message = "Validation failed." });
+            }
+
+            // 2. Check the provided passcode against the stored hashed password
+            // CheckPasswordAsync handles the hashing comparison securely.
+            var isValid = await userManager1.CheckPasswordAsync(user, request.Passcode);
+
+            if (isValid)
+            {
+                // 3. Passcode is correct
+                return Ok(new { success = true, message = "Passcode verified." });
+            }
+            else
+            {
+                // 4. Passcode is incorrect
+                return Unauthorized(new { success = false, message = "Validation failed." });
+            }
+        }
+
+
+
+
+
+
+
+        public class completeenquiry
+        {
+            public string userid { get; set; }
+            public string passcode { get; set; }
+            public List<int> fenquiryref { get; set; }
+        }
+
+
+
+
+
+
+
+
+
+        [HttpPost("completeenquiry1")]
+        public async Task<IActionResult> completeenquiry1([FromBody] completeenquiry request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.userid) || request.fenquiryref == null || request.fenquiryref.Count == 0)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            var user = await userManager1.FindByIdAsync(request.userid) ??
+                    await userManager1.FindByEmailAsync(request.userid);
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Check the passcode
+            if (user.passcode != request.passcode)
+            {
+                return Unauthorized("Invalid password or passcode.");
+            }
+
+
+
+            bool isauthorised;
+            // Perform the PO verification logic here
+            try
+            {
+                var enquiries = await dbcontext.Enquiry.Where(po => request.fenquiryref.Contains(po.Enquiryref)).ToListAsync();
+
+                foreach (var po in enquiries)
+                {
+                    po.iscompleted = 1;
+                    po.completedbybyuserid = request.userid;
+                    po.completiondate = DateTime.Now;
+                }
+
+                await dbcontext.SaveChangesAsync();
+                isauthorised = true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and handle errors
+                // logger.LogError(ex, "Error verifying POs");
+                isauthorised = false;
+            }
+
+            if (isauthorised)
+            {
+                return Ok(new { message = "authorized" });
+            }
+            else
+            {
+                return StatusCode(500, "An error occurred while authorizing POs.");
+            }
+        }
+
+
+
+
+
+
+        public class verifyenquiry
+        {
+            public string userid { get; set; }
+            public string passcode { get; set; }
+            public List<int> fenquiryref { get; set; }
+        }
+
+
+
+
+
+
+
+
+
+        [HttpPost("verifyenquiry1")]
+        public async Task<IActionResult> verifyenquiry1([FromBody] verifyenquiry request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.userid) || request.fenquiryref == null || request.fenquiryref.Count == 0)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            var user = await userManager1.FindByIdAsync(request.userid) ??
+                    await userManager1.FindByEmailAsync(request.userid);
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Check the passcode
+            if (user.passcode != request.passcode)
+            {
+                return Unauthorized("Invalid password or passcode.");
+            }
+
+
+
+            bool isauthorised;
+            // Perform the PO verification logic here
+            try
+            {
+                var enquiries = await dbcontext.Enquiry.Where(po => request.fenquiryref.Contains(po.Enquiryref)).ToListAsync();
+
+                foreach (var po in enquiries)
+                {
+                    po.isverified = 1;
+                    po.verifiedbyuserid = request.userid;
+                    po.verifiedbydate = DateTime.Now;
+                }
+
+                await dbcontext.SaveChangesAsync();
+                isauthorised = true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and handle errors
+                // logger.LogError(ex, "Error verifying POs");
+                isauthorised = false;
+            }
+
+            if (isauthorised)
+            {
+                return Ok(new { message = "authorized" });
+            }
+            else
+            {
+                return StatusCode(500, "An error occurred while authorizing POs.");
+            }
+        }
+
+
+
+
+
+
     }
 }
