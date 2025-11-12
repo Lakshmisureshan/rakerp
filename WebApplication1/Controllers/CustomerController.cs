@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 namespace WebApplication1.Controllers 
 {
     [Route("api/[controller]")] 
-    [ApiController]
+    [ApiController] 
     public class CustomerController : ControllerBase
     {
         private readonly ApplicationDBContext dbcontext;
