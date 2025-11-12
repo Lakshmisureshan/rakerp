@@ -261,8 +261,6 @@ namespace WebApplication1.Controllers
 
 
 
-
-
         [HttpGet("GetEnquirydetailsbyprojectmanager")]
         public async Task<IActionResult> GetEnquirydetailsbyprojectmanager(string userid)
         {
