@@ -7,7 +7,7 @@ using WebApplication1.Models.DTO;
 using OpenAI;
 using OpenAI.Chat;
 using Microsoft.Extensions.Options;
-namespace WebApplication1.Controllers 
+namespace WebApplication1.Controllers  
 {
     [Route("api/[controller]")]  
     [ApiController] 
