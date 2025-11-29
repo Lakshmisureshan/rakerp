@@ -302,7 +302,9 @@ namespace WebApplication1.Controllers
 
             return Ok(customer);
         }
-   
+
+
+
 
 
 
@@ -311,14 +313,35 @@ namespace WebApplication1.Controllers
         [HttpPost("AddCustomerContact")]
         public async Task<IActionResult> AddCustomerContact(Addorupdatecustomercontactdto request)
         {
+            // Basic validation to ensure we have a customer ID to work with
+            var customerId = request.contactdetails.FirstOrDefault()?.customerid;
+            if (!customerId.HasValue || customerId.Value <= 0)
+            {
+                return BadRequest(new { Message = "Customer ID is required and must be valid." });
+            }
+
             using (var transaction = await dbcontext.Database.BeginTransactionAsync()) // Start a transaction
             {
                 try
                 {
-                   foreach (var item in request.contactdetails)
-                    {
+                    // 1. 💥 DELETE EXISTING CONTACTS 💥
+                    // Find all existing contacts for the given customerid
+                    var existingContacts = await dbcontext.customercontact
+                        .Where(c => c.customerid == customerId.Value)
+                        .ToListAsync();
 
-                        // Insert new detail if rtblid doesn't exist
+                    if (existingContacts.Any())
+                    {
+                        // Remove them from the context
+                        dbcontext.customercontact.RemoveRange(existingContacts);
+                    }
+
+                    // 2. 🚀 INSERT ALL NEW CONTACTS 🚀
+                    foreach (var item in request.contactdetails)
+                    {
+                        // Note: The frontend must ensure contactId is not sent for this "replace all" strategy,
+                        // or if sent, it must be ignored, as we are creating all new records.
+
                         var newcustomercontact = new customercontact
                         {
                             customerid = item.customerid,
@@ -326,18 +349,17 @@ namespace WebApplication1.Controllers
                             designation = item.designation,
                             phone = item.phone,
                             mobile = item.mobile,
-                            email = item.email
-
-
-
+                            email = item.email,
+                            // Note: If you have an 'extension' field in your model, include it here.
                         };
 
                         await dbcontext.customercontact.AddAsync(newcustomercontact);
                     }
-                    await dbcontext.SaveChangesAsync(); // Save received entry details
-                    await transaction.CommitAsync(); // Commit transaction if everything succeeds
-                    return StatusCode(201, new { Message = "New Customer Contact Added Successfully" });
 
+                    await dbcontext.SaveChangesAsync(); // Execute DELETE and INSERT operations
+                    await transaction.CommitAsync(); // Commit transaction if everything succeeds
+
+                    return StatusCode(200, new { Message = $"Customer contacts updated successfully for Customer ID: {customerId}" });
                 }
                 catch (Exception ex)
                 {
@@ -345,12 +367,8 @@ namespace WebApplication1.Controllers
 
                     return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
                 }
-
-
             }
         }
-
-
 
 
 
@@ -429,9 +447,16 @@ namespace WebApplication1.Controllers
 
 
 
-
-
-
-
+        [HttpGet("GetEmployeedetailsbyemployeeid")]
+        public async Task<IActionResult> GetEmployeedetailsbyemployeeid(int empid)
+        {
+            var employeedetails = await dbcontext.Employeemaster.Where(x => x.empid == empid).ToListAsync();
+            if (employeedetails == null)
+            {
+                return BadRequest();
+            }
+            return Ok(employeedetails);
         }
+
+    }
 }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using WebApplication1.Models;
 using WebApplication1.Models.Domain;
+using WebApplication1.Models.DTO;
 namespace WebApplication1.Data
 {
     public class ApplicationDBContext : IdentityDbContext<ApplicationUser>
@@ -126,6 +127,9 @@ namespace WebApplication1.Data
 
         public DbSet<Enquiry> Enquiry { get; set; }
         public DbSet<Enquirystatus> Enquirystatus { get; set; }
+
+        public DbSet<Enquirydetails> Enquirydetails { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1545,6 +1549,11 @@ base.OnModelCreating(modelBuilder);
 
 
 
+
+
+
+
+
             modelBuilder.Entity<CompanyInfo>().HasData(
               new CompanyInfo
               {
@@ -2120,7 +2129,71 @@ base.OnModelCreating(modelBuilder);
 
 
 
+            modelBuilder.Entity<Enquirydetails>()
+     .HasOne(pd => pd.linedetailentryuser)
+     .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+     .HasForeignKey(pd => pd.entryuserid)
+     .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
+
+
+            modelBuilder.Entity<Enquirydetails>()
+ .HasOne(pd => pd.Enquiry)
+ .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+ .HasForeignKey(pd => pd.Enquiryref)
+ .OnDelete(DeleteBehavior.NoAction);
+ base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Enquiry>()
+       .HasMany(e => e.EnquiryDetails)
+       .WithOne(d => d.Enquiry)
+       .HasForeignKey(d => d.Enquiryref) // tell EF this is the FK
+       .OnDelete(DeleteBehavior.Cascade);
+
+            base.OnModelCreating(modelBuilder);
+
+
+
+
+            modelBuilder.Entity<Joborderentry>()
+  .HasOne(pd => pd.Enquiry)
+  .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+  .HasForeignKey(pd => pd.Enquiryref)
+  .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Joborderentry>()
+             .HasOne(pd => pd.Customer)
+             .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+             .HasForeignKey(pd => pd.customerid)
+             .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Joborderentry>()
+            .HasOne(pd => pd.Enduser)
+            .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+            .HasForeignKey(pd => pd.enduserid)
+            .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Joborderentry>()
+            .HasOne(pd => pd.ordervaluecurrency)
+            .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+            .HasForeignKey(pd => pd.ordervaluecurrencyid)
+            .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Joborderentry>()
+           .HasOne(pd => pd.enduservaluecurrency)
+           .WithMany() // Assuming a one-to-many relationship fro       m PRDetails to ItemMaster
+           .HasForeignKey(pd => pd.enduservaluecurrencyid)
+           .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
 
 

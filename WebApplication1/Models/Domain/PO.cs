@@ -72,5 +72,15 @@ namespace WebApplication1.Models.Domain
 
         public ICollection<Purchasedetails> PurchaseDetails { get; set; } = new List<Purchasedetails>();
 
+
+
+        public int revno { get; set; } = 0;
+
+
+        public decimal vatpercent { get; set; } = 0;
+
+
+        public decimal taxamount { get; set; } = 0;
+
     }
 }

@@ -44,8 +44,9 @@ namespace WebApplication1.Models.DTO
 
 
         public int budgetheaderid { get; set; }
-
         public Decimal  discount { get; set; }
+        public decimal  taxamount { get; set; }
+        public decimal  vatpercent { get; set; }
 
     }
 }

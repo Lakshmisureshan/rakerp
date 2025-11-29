@@ -9,7 +9,7 @@ namespace WebApplication1.Models.Domain
         public int supplierid { get; set; }
         public string  suppliercontactname { get; set; }
         public string ? phoneno { get; set; }
-        public string? email { get; set; }
+        public string email { get; set; }
         public string? mobile { get; set; }
        
 

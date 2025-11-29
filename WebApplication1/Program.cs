@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using QuestPDF.Infrastructure;
+using WebApplication1;
 using WebApplication1.Data;
 using WebApplication1.Models.Domain;
 using WebApplication1.Repositories.Implementation;
@@ -33,7 +35,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddDataProtection();
 builder.Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>().AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>("trading").AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
-
+builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -74,6 +76,10 @@ builder.Services.Configure<IdentityOptions>(options => {
     options.Password.RequiredLength = 4;
 
 });
+
+QuestPDF.Settings.License = LicenseType.Community;
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

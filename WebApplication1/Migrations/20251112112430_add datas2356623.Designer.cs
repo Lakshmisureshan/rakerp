@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251112112430_add datas2356623")]
+    partial class adddatas2356623
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -403,15 +405,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "620ccbfe-2d78-4522-be03-5b19dbdee7cd",
+                            ConcurrencyStamp = "1fc0ea5c-c982-454d-888f-46ff92a4a00d",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGnl4YkXFA6lGSNkoaqMaQiuggYHgJi6m3l1j5bfmtlNW8lWtDwlhqlgo//NlpEweQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEM41bNN1vyBHHl6OTKwEdCUHquDH6OMUIxP8qG9Y/HVAO0n+61rJ3DkOiIuai7ZBxg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4ca5dd8d-a729-4837-8eea-a21018917d67",
+                            SecurityStamp = "73e7dc82-ecd5-4116-80a3-e58a1864ce37",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"
@@ -2108,69 +2110,6 @@ namespace WebApplication1.Migrations
                     b.ToTable("jobamend");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Domain.Joborderentry", b =>
-                {
-                    b.Property<int>("jobentryidno")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("jobentryidno"), 1L, 1);
-
-                    b.Property<int>("Enquiryref")
-                        .HasColumnType("int");
-
-                    b.Property<int>("customerid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("enduserid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("enduservaluecurrencyid")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("enduservlaue")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("jobdescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("ordervalue")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ordervaluecurrencyid")
-                        .HasColumnType("int");
-
-                    b.Property<string>("paymentterms")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("projectname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("warrantyterms")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("jobentryidno");
-
-                    b.HasIndex("Enquiryref");
-
-                    b.HasIndex("customerid");
-
-                    b.HasIndex("enduserid");
-
-                    b.HasIndex("enduservaluecurrencyid");
-
-                    b.HasIndex("ordervaluecurrencyid");
-
-                    b.ToTable("Joborderentry");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Domain.JobStage", b =>
                 {
                     b.Property<int>("jobstageid")
@@ -2518,9 +2457,6 @@ namespace WebApplication1.Migrations
                     b.Property<bool>("qtnshippingdocs")
                         .HasColumnType("bit");
 
-                    b.Property<int>("revno")
-                        .HasColumnType("int");
-
                     b.Property<string>("supplieraddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2534,14 +2470,8 @@ namespace WebApplication1.Migrations
                     b.Property<string>("suppliertrnno")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("taxamount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime?>("updateddate")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("vatpercent")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("warranty")
                         .HasColumnType("bit");
@@ -3275,7 +3205,6 @@ namespace WebApplication1.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("suppliercontectid"), 1L, 1);
 
                     b.Property<string>("email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("mobile")
@@ -4392,49 +4321,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Amendedby");
 
                     b.Navigation("Job");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Domain.Joborderentry", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Domain.Enquiry", "Enquiry")
-                        .WithMany()
-                        .HasForeignKey("Enquiryref")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("customerid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Customer", "Enduser")
-                        .WithMany()
-                        .HasForeignKey("enduserid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Currency", "enduservaluecurrency")
-                        .WithMany()
-                        .HasForeignKey("enduservaluecurrencyid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Domain.Currency", "ordervaluecurrency")
-                        .WithMany()
-                        .HasForeignKey("ordervaluecurrencyid")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Enduser");
-
-                    b.Navigation("Enquiry");
-
-                    b.Navigation("enduservaluecurrency");
-
-                    b.Navigation("ordervaluecurrency");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Domain.manhour", b =>

@@ -18,49 +18,19 @@ namespace WebApplication1.Models.Domain
         public string projectengineerid { get; set; }
         public JobType Enquirytype { get; set; }
         public int enquirytypeid { get; set; }
-
-
         public Enquirystatus Enquirystatus { get; set; }
         public int EnquiryStatusId { get; set; } = 1;
         public string ?  remarks  { get; set; }
 
-
+        public ICollection<Enquirydetails> EnquiryDetails { get; set; } = new List<Enquirydetails>();
         public int iscompleted { get; set; } = 0;
         public DateTime?  completiondate { get; set; }
-
-
         public int isverified { get; set; } = 0;
-
-
-
         public DateTime? verifiedbydate { get; set; }
-
-
-        public ApplicationUser? Verifiedby { get;}
-
-       public string ? verifiedbyuserid { get; set;}
-
-
-
+         public ApplicationUser? Verifiedby { get;}
+         public string ? verifiedbyuserid { get; set;}
         public ApplicationUser? Completedby { get; }
-
-
         public string? completedbybyuserid { get; set; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 }

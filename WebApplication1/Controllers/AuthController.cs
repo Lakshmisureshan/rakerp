@@ -1158,11 +1158,191 @@ namespace WebApplication1.Controllers
 
 
 
+        //        [HttpPost("RegisterPOIssuereturn")]
+        //        public async Task<IActionResult> RegisterPOIssuereturn([FromBody] RegisterPOIssuereturnclass request)
+        //        {
+        //            // Start a database transaction to ensure all operations are atomic
+        //            // If any step fails, the entire transaction will be rolled back.
+        //            using (var transaction = await dbcontext.Database.BeginTransactionAsync())
+        //            {
+        //                try
+        //                {
+        //                    // 1. Fetch the Issue Return Header entity for direct modification
+        //                    var issuereturnheader = await dbcontext.Issuereturn
+        //                        .FirstOrDefaultAsync(po => po.issuereturnref == request.issuereturnno);
+        //                    if (issuereturnheader == null)
+        //                    {
+        //                        await transaction.RollbackAsync();
+        //                        return NotFound("Issue Return header not found.");
+        //                    }
+
+        //                    // 2. Check if already registered
+        //                    if (issuereturnheader.isregistered == 1)
+        //                    {
+        //                        await transaction.RollbackAsync();
+        //                        return BadRequest("Issue Return is already registered.");
+        //                    }
+
+        //                    // 3. Update Issue Return Header: Set IsRegistered to true
+        //                    issuereturnheader.isregistered = 1;
+        //                    // dbcontext.Issuereturn.Update(issuereturnheader); // No need for explicit Update call if entity is tracked and modified
+
+        //                    // 4. Fetch the combined data using Joins for inventory processing
+        //                    //var combinedData = await dbcontext.Issuereturn
+        //                    //    .Join(dbcontext.POissuereturndetails,
+        //                    //          header => header.issuereturnref,
+        //                    //          detail => detail.issuereturnref,
+        //                    //          (header, detail) => new { Header = header, Detail = detail })
+        //                    //    .Join(dbcontext.POIssueReturnDetailIssueTracking,
+        //                    //          combined => combined.Detail.issuereturndetailid,
+        //                    //          link => link.issuereturndetailid,
+        //                    //          (combined, link) => new { combined.Header, combined.Detail, Link = link })
+        //                    //    .Join(dbcontext.Issuetracking,
+        //                    //          combined => combined.Link.issuetrackid,
+        //                    //          issue => issue.issuetrackid,
+        //                    //          (combined, issue) => new { combined.Header, combined.Detail, combined.Link, Issue = issue })
+        //                    //    .Where(result => result.Header.issuereturnref == request.issuereturnno)
+        //                    //    .Select(result => new
+        //                    //    {
+        //                    //        HeaderJobId = result.Header.jobid,
+        //                    //        headerissueretunrefid = result.Header.issuereturnref,
+        //                    //        POIssueReturnDetailId = result.Detail.issuereturndetailid,
+        //                    //        ProductCode = result.Detail.productcode,
+        //                    //        ReturnQty = result.Issue.totalreturnedqty, // Assuming this is the actual quantity being returned
+        //                    //        IssueReturnUnitPrice = result.Detail.issuereturnunitprice,
+        //                    //        location = result.Detail.location, // Location from the POIssueReturnDetail
+        //                    //        OriginalIssueId = result.Issue.issuetrackid,
+        //                    //        OriginalIssueUomId = result.Issue.issueuomid,
+        //                    //        OriginalIssueCurrencyId = result.Issue.issuecurrencyid,
+        //                    //        OriginalIssueJobId = result.Issue.jobid,
+        //                    //        originalbillofentrydate = result.Issue.billofentrydate,
+        //                    //        originalbillofentryno = result.Issue.billofentryno,
+        //                    //       originalinvid = result.Issue.invid
+        //                    //        // Get original issue jobid if needed for inventory
+        //                    //    })
+        //                    //    .ToListAsync();
+
+        //                    var combinedData = await (
+        //    from detail in dbcontext.POissuereturndetails
+        //    join link in dbcontext.POIssueReturnDetailIssueTracking
+        //        on detail.issuereturndetailid equals link.issuereturndetailid
+        //    join issue in dbcontext.Issuetracking
+        //        on link.issuetrackid equals issue.issuetrackid
+        //    where detail.issuereturnref == request.issuereturnno
+        //    select new
+        //    {
+        //        POIssueReturnDetailId = detail.issuereturndetailid,
+        //        ProductCode = detail.productcode,
+        //        ReturnQty = detail.returnqty, // This should come from POissuereturndetails, not issuetracking
+        //        IssueReturnUnitPrice = detail.issuereturnunitprice,
+        //        location = detail.location,
+
+        //        OriginalIssueId = issue.issuetrackid,
+        //        OriginalIssueUomId = issue.issueuomid,
+        //        OriginalIssueCurrencyId = issue.issuecurrencyid,
+        //        OriginalIssueJobId = issue.jobid,
+        //        OriginalInvoiceId = issue.invid,
+        //        OriginalBillOfEntryNo = issue.billofentryno,
+        //        OriginalBillOfEntryDate = issue.billofentrydate
+        //    }
+        //).ToListAsync();
+
+
+        //                    // 5. Process each detail line and insert into Inventory and issuereturntracking
+
+        //                    // Determine the next batch ID before the loop for consistency if it's a global sequence
+        //                    // Or, if batchid is specific to the Inventory table and auto-incrementing, EF handles it.
+        //                    // If 'batchid' is truly an auto-incrementing PK/Identity column, you don't need to manually find max and increment.
+        //                    // If 'batchid' is a logical sequence you manage, ensure it's unique and incremented correctly.
+        //                    // For this example, assuming 'batchid' is a logical sequence for new entries.
+        //                    var maxBatchId = await dbcontext.Inventory.MaxAsync(inv => (int?)inv.batchid) ?? 0;
+        //                    // Note: If batchid is an IDENTITY column, you should remove this manual maxBatchId logic.
+        //                    // EF will populate it after SaveChangesAsync.
+
+        //                    foreach (var item in combinedData)
+        //                    {
+        //                        // Increment batchId for each new entry if it's a logical sequence managed by you.
+        //                        // If it's an auto-incrementing DB identity, remove this line and rely on EF.
+        //                        maxBatchId++; // Use this if you're manually managing batch IDs for new entries
+
+        //                        // Create a new Inventory entry for the returned item
+        //                        var inventoryEntry = new Inventory
+        //                        {
+        //                            productid = item.ProductCode,
+        //                            quantity = item.ReturnQty,
+        //                            Entrydate = DateTime.UtcNow.Date,
+        //                            uomid = item.OriginalIssueUomId,
+        //                            invcurrencyid = item.OriginalIssueCurrencyId, // Use currency from original issue
+        //                            invprice = item.IssueReturnUnitPrice,
+        //                            jobid = 500001, // Use the jobid from the original issue, or a specific return job if different
+        //                            pono = 1, // Still hardcoded. Consider if this should come from request or combinedData.
+        //                            reservedqty = 0.00m,
+        //                            type = "PORETURN",
+        //                            batchid = maxBatchId, // Assign the incremented batch ID
+        //                            location = item.location,
+        //                            billofentryno = item.OriginalBillOfEntryNo,
+        //                            billofentrydate = item.OriginalBillOfEntryDate,
+
+
+
+
+        //                        };
+
+        //                        await dbcontext.Inventory.AddAsync(inventoryEntry);
+        //                        // IMPORTANT: SaveChangesAsync() here to persist the Inventory entry
+        //                        // and get its auto-generated invid (if invid is an identity column).
+        //                        await dbcontext.SaveChangesAsync(); // <--- THIS IS THE CRUCIAL CHANGE
+
+        //                        // Now, inventoryEntry.invid will be populated with the database-generated ID
+        //                        // You no longer need the separate query to find it.
+
+        //                        var issuereturnTrackingEntry = new issuereturntracking
+        //                        {
+        //                            invid = inventoryEntry.invid, // Use the newly generated invid from the Inventory table
+        //                            jobid = 500001, // Use jobid from the PO Issue Return Header
+        //                            issuereturnno = request.issuereturnno,
+        //                            issuereturndate = DateTime.UtcNow.Date,
+        //                            issuereturnqty = item.ReturnQty,
+        //                            productid = item.ProductCode,
+        //                            issuereturnunitprice = item.IssueReturnUnitPrice,
+        //                            issuecurrencyid = item.OriginalIssueCurrencyId, // Use currency from original issue
+        //                            uomid = item.OriginalIssueUomId,
+        //                            location = item.location,
+        //                            billofentryno = item.OriginalBillOfEntryNo,
+        //                            billofentrydate = item.OriginalBillOfEntryDate,
+
+
+        //                        };
+        //                        await dbcontext.issuereturntracking.AddAsync(issuereturnTrackingEntry);
+        //                    }
+
+        //                    // 6. Save all remaining changes (issuereturntracking entries)
+        //                    // The issuereturnheader update was implicitly tracked by EF.
+        //                    await dbcontext.SaveChangesAsync();
+
+        //                    // 7. Commit the transaction if all operations were successful
+        //                    await transaction.CommitAsync();
+
+        //                    return Ok(new { Message = $"Issue Return  registered and inventory updated successfully." });
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    // Rollback the transaction if any error occurs
+        //                    await transaction.RollbackAsync();
+        //                    Console.Error.WriteLine($"Error registering PO Issue Return {request.issuereturnno}: {ex.Message}");
+        //                    Console.Error.WriteLine($"Stack Trace: {ex.StackTrace}");
+
+        //                    return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
+        //                }
+        //            }
+        //        }
+
+
+
         [HttpPost("RegisterPOIssuereturn")]
         public async Task<IActionResult> RegisterPOIssuereturn([FromBody] RegisterPOIssuereturnclass request)
         {
             // Start a database transaction to ensure all operations are atomic
-            // If any step fails, the entire transaction will be rolled back.
             using (var transaction = await dbcontext.Database.BeginTransactionAsync())
             {
                 try
@@ -1170,6 +1350,7 @@ namespace WebApplication1.Controllers
                     // 1. Fetch the Issue Return Header entity for direct modification
                     var issuereturnheader = await dbcontext.Issuereturn
                         .FirstOrDefaultAsync(po => po.issuereturnref == request.issuereturnno);
+
                     if (issuereturnheader == null)
                     {
                         await transaction.RollbackAsync();
@@ -1185,145 +1366,99 @@ namespace WebApplication1.Controllers
 
                     // 3. Update Issue Return Header: Set IsRegistered to true
                     issuereturnheader.isregistered = 1;
-                    // dbcontext.Issuereturn.Update(issuereturnheader); // No need for explicit Update call if entity is tracked and modified
 
-                    // 4. Fetch the combined data using Joins for inventory processing
-                    //var combinedData = await dbcontext.Issuereturn
-                    //    .Join(dbcontext.POissuereturndetails,
-                    //          header => header.issuereturnref,
-                    //          detail => detail.issuereturnref,
-                    //          (header, detail) => new { Header = header, Detail = detail })
-                    //    .Join(dbcontext.POIssueReturnDetailIssueTracking,
-                    //          combined => combined.Detail.issuereturndetailid,
-                    //          link => link.issuereturndetailid,
-                    //          (combined, link) => new { combined.Header, combined.Detail, Link = link })
-                    //    .Join(dbcontext.Issuetracking,
-                    //          combined => combined.Link.issuetrackid,
-                    //          issue => issue.issuetrackid,
-                    //          (combined, issue) => new { combined.Header, combined.Detail, combined.Link, Issue = issue })
-                    //    .Where(result => result.Header.issuereturnref == request.issuereturnno)
-                    //    .Select(result => new
-                    //    {
-                    //        HeaderJobId = result.Header.jobid,
-                    //        headerissueretunrefid = result.Header.issuereturnref,
-                    //        POIssueReturnDetailId = result.Detail.issuereturndetailid,
-                    //        ProductCode = result.Detail.productcode,
-                    //        ReturnQty = result.Issue.totalreturnedqty, // Assuming this is the actual quantity being returned
-                    //        IssueReturnUnitPrice = result.Detail.issuereturnunitprice,
-                    //        location = result.Detail.location, // Location from the POIssueReturnDetail
-                    //        OriginalIssueId = result.Issue.issuetrackid,
-                    //        OriginalIssueUomId = result.Issue.issueuomid,
-                    //        OriginalIssueCurrencyId = result.Issue.issuecurrencyid,
-                    //        OriginalIssueJobId = result.Issue.jobid,
-                    //        originalbillofentrydate = result.Issue.billofentrydate,
-                    //        originalbillofentryno = result.Issue.billofentryno,
-                    //       originalinvid = result.Issue.invid
-                    //        // Get original issue jobid if needed for inventory
-                    //    })
-                    //    .ToListAsync();
+                    // 4. Fetch the distinct return detail lines (3 rows in your example)
+                    var returnDetails = await dbcontext.POissuereturndetails
+                        .Where(d => d.issuereturnref == request.issuereturnno)
+                        .ToListAsync();
 
-                    var combinedData = await (
-    from detail in dbcontext.POissuereturndetails
-    join link in dbcontext.POIssueReturnDetailIssueTracking
-        on detail.issuereturndetailid equals link.issuereturndetailid
-    join issue in dbcontext.Issuetracking
-        on link.issuetrackid equals issue.issuetrackid
-    where detail.issuereturnref == request.issuereturnno
-    select new
-    {
-        POIssueReturnDetailId = detail.issuereturndetailid,
-        ProductCode = detail.productcode,
-        ReturnQty = detail.returnqty, // This should come from POissuereturndetails, not issuetracking
-        IssueReturnUnitPrice = detail.issuereturnunitprice,
-        location = detail.location,
+                    // 5. Process each distinct detail line and insert into Inventory and issuereturntracking
 
-        OriginalIssueId = issue.issuetrackid,
-        OriginalIssueUomId = issue.issueuomid,
-        OriginalIssueCurrencyId = issue.issuecurrencyid,
-        OriginalIssueJobId = issue.jobid,
-        OriginalInvoiceId = issue.invid,
-        OriginalBillOfEntryNo = issue.billofentryno,
-        OriginalBillOfEntryDate = issue.billofentrydate
-    }
-).ToListAsync();
-
-
-                    // 5. Process each detail line and insert into Inventory and issuereturntracking
-
-                    // Determine the next batch ID before the loop for consistency if it's a global sequence
-                    // Or, if batchid is specific to the Inventory table and auto-incrementing, EF handles it.
-                    // If 'batchid' is truly an auto-incrementing PK/Identity column, you don't need to manually find max and increment.
-                    // If 'batchid' is a logical sequence you manage, ensure it's unique and incremented correctly.
-                    // For this example, assuming 'batchid' is a logical sequence for new entries.
+                    // Determine the next batch ID before the loop
                     var maxBatchId = await dbcontext.Inventory.MaxAsync(inv => (int?)inv.batchid) ?? 0;
-                    // Note: If batchid is an IDENTITY column, you should remove this manual maxBatchId logic.
-                    // EF will populate it after SaveChangesAsync.
 
-                    foreach (var item in combinedData)
+                    var returnJobId = issuereturnheader.jobid; // Use the job ID from the return header
+
+                    foreach (var detail in returnDetails)
                     {
-                        // Increment batchId for each new entry if it's a logical sequence managed by you.
-                        // If it's an auto-incrementing DB identity, remove this line and rely on EF.
-                        maxBatchId++; // Use this if you're manually managing batch IDs for new entries
+                        // --- Step 5a: Fetch necessary metadata from the linked IssueTracking records ---
+                        // We fetch the metadata (UOM, Currency, BillOfEntry) from the first linked issue record.
+                        var linkedIssueMetadata = await (
+                            from link in dbcontext.POIssueReturnDetailIssueTracking
+                            join issue in dbcontext.Issuetracking
+                                on link.issuetrackid equals issue.issuetrackid
+                            where link.issuereturndetailid == detail.issuereturndetailid
+                            select new
+                            {
+                                OriginalIssueUomId = issue.issueuomid,
+                                OriginalIssueCurrencyId = issue.issuecurrencyid,
+                                OriginalBillOfEntryNo = issue.billofentryno,
+                                OriginalBillOfEntryDate = issue.billofentrydate
+                            }
+                        )
+                        .FirstOrDefaultAsync(); // Get metadata from the first linked issue
 
-                        // Create a new Inventory entry for the returned item
+                        if (linkedIssueMetadata == null)
+                        {
+                            // This scenario indicates a data integrity issue where a return detail line isn't linked to an issue.
+                            // For robustness, you might log this or skip the item. For now, we skip.
+                            Console.Error.WriteLine($"Warning: Issue Return Detail ID {detail.issuereturndetailid} has no linked issue tracking data.");
+                            continue;
+                        }
+
+                        // Increment batchId for the new Inventory entry
+                        maxBatchId++;
+
+                        // --- Step 5b: Create Inventory entry ---
                         var inventoryEntry = new Inventory
                         {
-                            productid = item.ProductCode,
-                            quantity = item.ReturnQty,
+                            productid = detail.productcode,
+                            quantity = detail.returnqty, // CORRECT: Use the aggregated return quantity (24.00, 22.00, 12.00)
                             Entrydate = DateTime.UtcNow.Date,
-                            uomid = item.OriginalIssueUomId,
-                            invcurrencyid = item.OriginalIssueCurrencyId, // Use currency from original issue
-                            invprice = item.IssueReturnUnitPrice,
-                            jobid = 500001, // Use the jobid from the original issue, or a specific return job if different
-                            pono = 1, // Still hardcoded. Consider if this should come from request or combinedData.
+                            uomid = linkedIssueMetadata.OriginalIssueUomId,
+                            invcurrencyid = linkedIssueMetadata.OriginalIssueCurrencyId,
+                            invprice = detail.issuereturnunitprice,
+                            jobid = 500001,
+                            pono = 1, // Still hardcoded, review if this is correct
                             reservedqty = 0.00m,
                             type = "PORETURN",
-                            batchid = maxBatchId, // Assign the incremented batch ID
-                            location = item.location,
-                            billofentryno = item.OriginalBillOfEntryNo,
-                            billofentrydate = item.OriginalBillOfEntryDate,
-                            
-
-
-                            
+                            batchid = maxBatchId,
+                            location = detail.location,
+                            billofentryno = linkedIssueMetadata.OriginalBillOfEntryNo,
+                            billofentrydate = linkedIssueMetadata.OriginalBillOfEntryDate,
                         };
 
                         await dbcontext.Inventory.AddAsync(inventoryEntry);
-                        // IMPORTANT: SaveChangesAsync() here to persist the Inventory entry
-                        // and get its auto-generated invid (if invid is an identity column).
-                        await dbcontext.SaveChangesAsync(); // <--- THIS IS THE CRUCIAL CHANGE
 
-                        // Now, inventoryEntry.invid will be populated with the database-generated ID
-                        // You no longer need the separate query to find it.
+                        // CRUCIAL: SaveChangesAsync here to persist the Inventory entry and retrieve the auto-generated invid.
+                        await dbcontext.SaveChangesAsync();
 
+                        // --- Step 5c: Create Issue Return Tracking entry ---
                         var issuereturnTrackingEntry = new issuereturntracking
                         {
-                            invid = inventoryEntry.invid, // Use the newly generated invid from the Inventory table
-                            jobid = 500001, // Use jobid from the PO Issue Return Header
+                            invid = inventoryEntry.invid, // Use the newly generated invid
+                            jobid = 500001,
                             issuereturnno = request.issuereturnno,
                             issuereturndate = DateTime.UtcNow.Date,
-                            issuereturnqty = item.ReturnQty,
-                            productid = item.ProductCode,
-                            issuereturnunitprice = item.IssueReturnUnitPrice,
-                            issuecurrencyid = item.OriginalIssueCurrencyId, // Use currency from original issue
-                            uomid = item.OriginalIssueUomId,
-                            location = item.location,
-                            billofentryno = item.OriginalBillOfEntryNo,
-                            billofentrydate = item.OriginalBillOfEntryDate,
-
-
+                            issuereturnqty = detail.returnqty,
+                            productid = detail.productcode,
+                            issuereturnunitprice = detail.issuereturnunitprice,
+                            issuecurrencyid = linkedIssueMetadata.OriginalIssueCurrencyId,
+                            uomid = linkedIssueMetadata.OriginalIssueUomId,
+                            location = detail.location,
+                            billofentryno = linkedIssueMetadata.OriginalBillOfEntryNo,
+                            billofentrydate = linkedIssueMetadata.OriginalBillOfEntryDate,
                         };
                         await dbcontext.issuereturntracking.AddAsync(issuereturnTrackingEntry);
                     }
 
-                    // 6. Save all remaining changes (issuereturntracking entries)
-                    // The issuereturnheader update was implicitly tracked by EF.
+                    // 6. Save all remaining changes (issuereturntracking entries and the issuereturnheader status update)
                     await dbcontext.SaveChangesAsync();
 
                     // 7. Commit the transaction if all operations were successful
                     await transaction.CommitAsync();
 
-                    return Ok(new { Message = $"Issue Return  registered and inventory updated successfully." });
+                    return Ok(new { Message = $"Issue Return registered and inventory updated successfully." });
                 }
                 catch (Exception ex)
                 {
@@ -1336,10 +1471,6 @@ namespace WebApplication1.Controllers
                 }
             }
         }
-
-
-
-
 
 
         [HttpPost("Registerissuereturn")]

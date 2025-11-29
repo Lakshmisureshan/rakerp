@@ -302,7 +302,11 @@ namespace WebApplication1.Controllers
                         ldpercent = request.ldpercent,
                         Jobid = request.Jobid, // Assign the Jobid from the request
                         lpono = request.lpono,
-                        manufacturingbayid = request.manufacturingbayid,
+                 
+
+                        manufacturingbayid = request.manufacturingbayid == 0 ? null : request.manufacturingbayid,
+
+
                         lpodate = request.lpodate,
                         ordervalue = request.ordervalue,
                         ordervaluebasecurrency = request.ordervaluebasecurrency,
