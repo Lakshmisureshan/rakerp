@@ -35,6 +35,7 @@ using static iTextSharp.text.pdf.AcroFields;
 using System.Runtime.CompilerServices;
 using static System.Reflection.Metadata.BlobBuilder;
 using QuestPDF.Fluent;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 namespace WebApplication1.Controllers
 {
@@ -11498,7 +11499,7 @@ namespace WebApplication1.Controllers
                     decimal rate = rateEntry?.manhourrate ?? 0;
 
                     var existingRecord = await dbcontext.manhour
-                        .FirstOrDefaultAsync(m => m.jobid == jobid && m.empid == empid && m.jobdate == jobdate);
+                        .FirstOrDefaultAsync(m => m.jobid == jobid && m.empid == empid && m.jobdate == jobdate  &&  m.type == type && m.site == site);
 
                     if (existingRecord != null)
                     {
@@ -16693,13 +16694,37 @@ namespace WebApplication1.Controllers
             public int jobid  { get; set; }
 
             public string customername  { get; set; }
+            public string projectname { get; set; }
 
+            public DateTime  jobdate  { get; set; }
+
+            public string  currencyname { get; set; }
+
+            public decimal   ordervalue { get; set; }
+
+            public  decimal ordervaluebasecurrency { get; set; }
+            public decimal  totalbomcost { get; set; }
+
+            public decimal fixedamount { get; set; }
+
+            public decimal  fixedbudgetadditional { get; set; }
+
+            public decimal  overallfixedbudget { get; set; }
+
+            public decimal  totalpoamount { get; set; }
+
+            public decimal totalissuedamount { get; set; }
+
+            public decimal totalreturnedamount { get; set; }
+
+            public decimal miscostamount { get; set; }
+            public decimal totaljobcost { get; set; }
 
         }
 
 
         [HttpGet("Getlistjobsummary")]
-        public async Task<ActionResult<List<jobsummary>>> Getlistjobsummary(int jobid)
+        public async Task<ActionResult<List<jobsummary>>> Getlistjobsummary()
         {
             var budgetactual = new List<jobsummary>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -16720,7 +16745,25 @@ namespace WebApplication1.Controllers
                             budgetactual.Add(new jobsummary
                             {
                                 jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
-                                customername = reader.GetDecimal(reader.GetOrdinal("TotalJobCost"))
+                                customername = reader["customername"].ToString(),
+                                projectname = reader["projectname"].ToString(),
+                                currencyname = reader["currencyname"].ToString(),
+                                jobdate = reader.GetDateTime(reader.GetOrdinal("jobdate")),
+                             
+                                ordervalue = reader.GetDecimal(reader.GetOrdinal("ordervalue")),
+                                ordervaluebasecurrency = reader.GetDecimal(reader.GetOrdinal("ordervaluebasecurrency")),
+                                // totalbomcost = reader.GetDecimal(reader.GetOrdinal("totalbomcost")),// Read the value as an object, then convert it to a decimal.
+                                totalbomcost = Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("totalbomcost"))),
+                                fixedamount = reader.GetDecimal(reader.GetOrdinal("fixedamount")),
+                                fixedbudgetadditional = reader.GetDecimal(reader.GetOrdinal("fixedbudgetadditional")),
+                                overallfixedbudget = reader.GetDecimal(reader.GetOrdinal("overallfixedbudget")),
+                                totalpoamount = reader.GetDecimal(reader.GetOrdinal("totalpoamount")),
+                                totalissuedamount = reader.GetDecimal(reader.GetOrdinal("totalissuedamount")),
+                                miscostamount = Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("miscostamount"))),
+                                totalreturnedamount = Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("totalreturnedamount"))),
+
+                                totaljobcost = Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("totaljobcost"))),
+
                             });
                         }
                     }
@@ -16729,17 +16772,83 @@ namespace WebApplication1.Controllers
             if (budgetactual.Count == 0)
             {
                 // Changed "pending PR items" to a more general message relevant to this procedure
-                return NotFound($"No budget summary data found for Job ID: {jobid}.");
+                return NotFound($"No budget summary data found.");
             }
             return Ok(budgetactual);
         }
 
 
 
+     public class Itemwiseporeport
+        {
+
+            public int orderid { get; set; }
+
+            public string itemname { get; set; }
+            public string uomname { get; set; }
+
+            public DateTime podate { get; set; }
+            public decimal  pounitprice { get; set; }
+
+            public decimal poquantity { get; set; }
+
+            public string   suppliername { get; set; }
+
+            public string  currencyname { get; set; }
+
+            public int  jobid { get; set; }
+
+            public int productcode { get; set; }
+
+        }
 
 
+        [HttpGet("GetItemwiseporeport")]
+        public async Task<ActionResult<List<Itemwiseporeport>>> GetItemwiseporeport()
+        {
+            var itemwiseporeport = new List<Itemwiseporeport>();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand("SP_itemwiseporeport", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
 
+                    // --- CORRECTION: Pass the jobid parameter to the stored procedure ---
 
+                    // --------------------------------------------------------------------
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            itemwiseporeport.Add(new Itemwiseporeport
+                            {
+                                orderid = reader.GetInt32(reader.GetOrdinal("orderid")),
+                                itemname = reader["itemname"].ToString(),
+                            
+                                currencyname = reader["currencyname"].ToString(),
+                                podate = reader.GetDateTime(reader.GetOrdinal("podate")),
+                                pounitprice = reader.GetDecimal(reader.GetOrdinal("pounitprice")),
+                                poquantity = reader.GetDecimal(reader.GetOrdinal("poquantity")),
+                                uomname = reader["uomname"].ToString(),
+                                suppliername = reader["suppliername"].ToString(),
+                                jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+
+                               productcode= reader.GetInt32(reader.GetOrdinal("productcode"))
+
+                            });
+                        }
+                    }
+                }
+            }
+            if (itemwiseporeport.Count == 0)
+            {
+                // Changed "pending PR items" to a more general message relevant to this procedure
+                return NotFound($"No PO Details  found.");
+            }
+            return Ok(itemwiseporeport);
+        }
 
 
 
