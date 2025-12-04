@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251204132233_po unauthorize role")]
+    partial class pounauthorizerole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -451,15 +453,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "64f47090-7c66-44db-aacd-1dbaa5bf20b0",
+                            ConcurrencyStamp = "25039f36-4288-4288-9dd3-6e4c856fcc63",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAECac8JHx/zokIU3gAg5Ko5puMwQ5230FLFjSG9SbDopLI89HRQyjWqGjsh1Y6uM3hA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEK/vXRCE/aM2r5AlBSW4zZR8jwz8E3Yv9jyXTxDzS1UuIhaLlRyoDgmegImcq5tTiQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5c3c72cb-9fed-4930-94e9-0ef81dbc7fb1",
+                            SecurityStamp = "f3c3fa43-c8a0-4f40-937e-b5240b911bcd",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"

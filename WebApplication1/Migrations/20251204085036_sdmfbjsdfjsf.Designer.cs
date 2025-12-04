@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,10 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251204085036_sdmfbjsdfjsf")]
+    partial class sdmfbjsdfjsf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -160,27 +162,6 @@ namespace WebApplication1.Migrations
                             ConcurrencyStamp = "a2e8c4f1-3b6d-4e90-b1c7-5f2a9d8c0b3e",
                             Name = "JOB FREEZE ROLE",
                             NormalizedName = "JOB FREEZE ROLE"
-                        },
-                        new
-                        {
-                            Id = "c6a9f0e3-8d2a-4b7c-9e1f-7d4b5a2c1e8d",
-                            ConcurrencyStamp = "c6a9f0e3-8d2a-4b7c-9e1f-7d4b5a2c1e8d",
-                            Name = "JOB CREATION ROLE",
-                            NormalizedName = "JOB CREATION ROLE"
-                        },
-                        new
-                        {
-                            Id = "5b9c2d1e-4a6f-3c8b-2e4d-6a1f8c3b5d7e",
-                            ConcurrencyStamp = "5b9c2d1e-4a6f-3c8b-2e4d-6a1f8c3b5d7e",
-                            Name = "JOB UNFREEZE ROLE",
-                            NormalizedName = "JOB UNFREEZE ROLE"
-                        },
-                        new
-                        {
-                            Id = "8f3d1c9a-5e2b-4d0f-7a6c-9b4e2a1d0f3c",
-                            ConcurrencyStamp = "8f3d1c9a-5e2b-4d0f-7a6c-9b4e2a1d0f3c",
-                            Name = "PO UNAUTHORIZE ROLE",
-                            NormalizedName = "PO UNAUTHORIZE ROLE"
                         });
                 });
 
@@ -340,21 +321,6 @@ namespace WebApplication1.Migrations
                         {
                             UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             RoleId = "a2e8c4f1-3b6d-4e90-b1c7-5f2a9d8c0b3e"
-                        },
-                        new
-                        {
-                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
-                            RoleId = "c6a9f0e3-8d2a-4b7c-9e1f-7d4b5a2c1e8d"
-                        },
-                        new
-                        {
-                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
-                            RoleId = "5b9c2d1e-4a6f-3c8b-2e4d-6a1f8c3b5d7e"
-                        },
-                        new
-                        {
-                            UserId = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
-                            RoleId = "8f3d1c9a-5e2b-4d0f-7a6c-9b4e2a1d0f3c"
                         });
                 });
 
@@ -451,15 +417,15 @@ namespace WebApplication1.Migrations
                         {
                             Id = "356ff228-0e5f-436a-9ac5-2d760b997dd5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "64f47090-7c66-44db-aacd-1dbaa5bf20b0",
+                            ConcurrencyStamp = "0fbd763d-ec2c-42d0-9c4b-229f9444f7b1",
                             Email = "admin@trading.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TRADING.COM",
                             NormalizedUserName = "ADMIN@TRADING.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAECac8JHx/zokIU3gAg5Ko5puMwQ5230FLFjSG9SbDopLI89HRQyjWqGjsh1Y6uM3hA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFV2iMS+DLzW8SDCjVgI5jh6FYBWQTgd7axdyhKWciAI1caH444CxJ/lmhzH/i+bxw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5c3c72cb-9fed-4930-94e9-0ef81dbc7fb1",
+                            SecurityStamp = "9d1eb4a7-ba7c-4af4-b7e1-3b093a31a428",
                             TwoFactorEnabled = false,
                             UserName = "admin@trading.com",
                             passcode = "123456"

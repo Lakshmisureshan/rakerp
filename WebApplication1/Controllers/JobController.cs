@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.Models.Domain;
 using WebApplication1.Models.DTO;
+using static WebApplication1.Controllers.JobController;
 
 namespace WebApplication1.Controllers
 {
@@ -278,7 +279,7 @@ namespace WebApplication1.Controllers
                     jobToProcess.warrantyterms = request.warrantyterms;
                     jobToProcess.enduserid = request.enduserid;
                     jobToProcess.jobdescription = request.jobdescription;
-                    jobToProcess.mainjobid = request.mainjobid;
+                    //jobToProcess.mainjobid = request.mainjobid;
                     //existingJob.vatpercent = request.vatpercent; // Un-comment if needed
                     //existingJob.ordervaluewithvat = request.ordervaluewithvat; // Un-comment if needed
 
@@ -573,14 +574,167 @@ namespace WebApplication1.Controllers
         }
 
 
+        // Models/FreezeJobsRequest.cs
+        public class FreezeJobsRequest
+        {
+            public List<int> JobIds { get; set; }
+            public string UserId { get; set; } // Assuming UserId is a string GUID or similar
+        }
+
+        // 🛑 WARNING: This code snippet looks like service/repository logic, 
+        // but the [HttpPost] attribute suggests it's in a Controller. 
+        // Assuming this is a Controller Action Method:
 
 
 
+// Assuming this code resides in a JobsController class that inherits ControllerBase
+
+[HttpPost("FreezeJobsAsync")]
+    // ✅ Change return type to Task<IActionResult>
+    public async Task<IActionResult> FreezeJobsAsync([FromBody] FreezeJobsRequest request)
+    {
+        // --- 1. Validation and Bad Request Handling ---
+        if (request == null || request.JobIds == null || request.JobIds.Count == 0 || string.IsNullOrEmpty(request.UserId))
+        {
+            // ❌ Return HTTP 400 Bad Request for invalid input payload
+            return BadRequest(new { message = "Invalid request payload. Job IDs and User ID are required." });
+        }
+
+        try
+        {
+            // --- 2. Fetch Jobs to Update ---
+            var jobsToUpdate = await dbcontext.Job
+                                             .Where(j => request.JobIds.Contains(j.Jobid))
+                                             .ToListAsync();
+
+            if (jobsToUpdate == null || jobsToUpdate.Count == 0)
+            {
+                // ⚠️ Return HTTP 404 Not Found if IDs were sent but no matching jobs were found
+                return NotFound(new { message = "No jobs found for the provided IDs to freeze." });
+            }
+
+            // Prepare common tracking values
+            const string PageName = "Job Freeze";
+            DateTime currentUtcTime = DateTime.UtcNow;
+
+            // --- 3. Apply Updates and Create Tracking Entries ---
+            foreach (var job in jobsToUpdate)
+            {
+                job.jobstageid = 5; // Freeze job
+
+                var trackingEntry = new Trackpage
+                {
+                    pagename = PageName,
+                    docno = job.Jobid.ToString(),
+                    createddate = currentUtcTime,
+                    createdbyuser = request.UserId
+                };
+
+                dbcontext.Trackpage.Add(trackingEntry);
+            }
+
+            // --- 4. Save Changes to Database ---
+            int rowsAffected = await dbcontext.SaveChangesAsync();
+
+            if (rowsAffected > 0)
+            {
+                // ✅ Return HTTP 200 OK with confirmation message
+                return Ok(new
+                {
+                    success = true,
+                    message = $"{jobsToUpdate.Count} job(s) successfully frozen.",
+                    rowsAffected = rowsAffected // Useful for debugging
+                });
+            }
+            else
+            {
+                // ⚠️ If the database saved successfully but reported 0 rows changed (e.g., status was already 5)
+                return StatusCode(200, new { message = "Jobs were already frozen or no changes were necessary.", success = true });
+            }
+        }
+        catch (Exception ex)
+        {
+            // ❗ Log the exception for diagnostics (requires ILogger to be injected)
+            // _logger.LogError(ex, "Error occurred during job freeze operation.");
+
+            // ❌ Return HTTP 500 Internal Server Error
+            return StatusCode(500, new { message = "An internal error occurred while processing the request." });
+        }
+    }
 
 
+        [HttpPost("unFreezeJobsAsync")]
+        // ✅ Change return type to Task<IActionResult>
+        public async Task<IActionResult> unFreezeJobsAsync([FromBody] FreezeJobsRequest request)
+        {
+            // --- 1. Validation and Bad Request Handling ---
+            if (request == null || request.JobIds == null || request.JobIds.Count == 0 || string.IsNullOrEmpty(request.UserId))
+            {
+                // ❌ Return HTTP 400 Bad Request for invalid input payload
+                return BadRequest(new { message = "Invalid request payload. Job IDs and User ID are required." });
+            }
 
+            try
+            {
+                // --- 2. Fetch Jobs to Update ---
+                var jobsToUpdate = await dbcontext.Job
+                                                 .Where(j => request.JobIds.Contains(j.Jobid))
+                                                 .ToListAsync();
 
+                if (jobsToUpdate == null || jobsToUpdate.Count == 0)
+                {
+                    // ⚠️ Return HTTP 404 Not Found if IDs were sent but no matching jobs were found
+                    return NotFound(new { message = "No jobs found for the provided IDs to freeze." });
+                }
 
+                // Prepare common tracking values
+                const string PageName = "Job Unfreeze";
+                DateTime currentUtcTime = DateTime.UtcNow;
+
+                // --- 3. Apply Updates and Create Tracking Entries ---
+                foreach (var job in jobsToUpdate)
+                {
+                    job.jobstageid = 4; // Freeze job
+
+                    var trackingEntry = new Trackpage
+                    {
+                        pagename = PageName,
+                        docno = job.Jobid.ToString(),
+                        createddate = currentUtcTime,
+                        createdbyuser = request.UserId
+                    };
+
+                    dbcontext.Trackpage.Add(trackingEntry);
+                }
+
+                // --- 4. Save Changes to Database ---
+                int rowsAffected = await dbcontext.SaveChangesAsync();
+
+                if (rowsAffected > 0)
+                {
+                    // ✅ Return HTTP 200 OK with confirmation message
+                    return Ok(new
+                    {
+                        success = true,
+                        message = $"{jobsToUpdate.Count} job(s) successfully frozen.",
+                        rowsAffected = rowsAffected // Useful for debugging
+                    });
+                }
+                else
+                {
+                    // ⚠️ If the database saved successfully but reported 0 rows changed (e.g., status was already 5)
+                    return StatusCode(200, new { message = "Jobs were already unfrozen or no changes were necessary.", success = true });
+                }
+            }
+            catch (Exception ex)
+            {
+                // ❗ Log the exception for diagnostics (requires ILogger to be injected)
+                // _logger.LogError(ex, "Error occurred during job freeze operation.");
+
+                // ❌ Return HTTP 500 Internal Server Error
+                return StatusCode(500, new { message = "An internal error occurred while processing the request." });
+            }
+        }
 
     }
 
@@ -592,7 +746,7 @@ namespace WebApplication1.Controllers
 
 
 
-  
+
 
 
 

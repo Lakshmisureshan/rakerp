@@ -157,6 +157,15 @@ namespace WebApplication1.Data
 
 
             var receivedentryregistrationrole = "7d1bad9a-057c-4c32-ad91-ef4d10b158aa";
+
+            var jobfreezerole = "a2e8c4f1-3b6d-4e90-b1c7-5f2a9d8c0b3e";
+
+            var jobcreationrole = "c6a9f0e3-8d2a-4b7c-9e1f-7d4b5a2c1e8d";
+
+            var jobunfreezerole = "5b9c2d1e-4a6f-3c8b-2e4d-6a1f8c3b5d7e";
+
+
+            var pounauthorizerole = "8f3d1c9a-5e2b-4d0f-7a6c-9b4e2a1d0f3c";
             var roles = new List<IdentityRole>
 {
  new IdentityRole ()
@@ -293,8 +302,37 @@ NormalizedName ="ENQUIRYVERIFIED".ToUpper(),
 ConcurrencyStamp =enquiryverifiedbyrole
 },
 
+   new IdentityRole ()
+{
+Id =jobfreezerole,
+Name ="JOB FREEZE ROLE",
+NormalizedName ="JOB FREEZE ROLE".ToUpper(),
+ConcurrencyStamp =jobfreezerole
+},
 
 
+      new IdentityRole ()
+{
+Id =jobcreationrole,
+Name ="JOB CREATION ROLE",
+NormalizedName ="JOB CREATION ROLE".ToUpper(),
+ConcurrencyStamp =jobcreationrole
+},
+
+      new IdentityRole ()
+{
+Id =jobunfreezerole,
+Name ="JOB UNFREEZE ROLE",
+NormalizedName ="JOB UNFREEZE ROLE".ToUpper(),
+ConcurrencyStamp =jobunfreezerole
+},
+      new IdentityRole ()
+{
+Id =pounauthorizerole,
+Name ="PO UNAUTHORIZE ROLE",
+NormalizedName ="PO UNAUTHORIZE ROLE".ToUpper(),
+ConcurrencyStamp =pounauthorizerole
+},
 
 };
             modelBuilder.Entity<IdentityRole>().HasData(roles);
@@ -399,6 +437,34 @@ ConcurrencyStamp =enquiryverifiedbyrole
                 {
                     UserId = adminUserid,
                     RoleId  = receivedentryregistrationrole
+
+                },
+new()
+                {                       
+                    UserId = adminUserid,
+                    RoleId  = jobfreezerole
+
+                },
+
+new()
+
+{
+                    UserId = adminUserid,
+                    RoleId  = jobcreationrole
+
+                },
+new()
+
+{
+                    UserId = adminUserid,
+                    RoleId  = jobunfreezerole
+
+                },
+new()
+
+{
+                    UserId = adminUserid,
+                    RoleId  = pounauthorizerole
 
                 }
 

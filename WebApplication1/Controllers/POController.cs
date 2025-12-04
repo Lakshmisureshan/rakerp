@@ -36,6 +36,7 @@ using System.Runtime.CompilerServices;
 using static System.Reflection.Metadata.BlobBuilder;
 using QuestPDF.Fluent;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebApplication1.Controllers
 {
@@ -11141,30 +11142,125 @@ namespace WebApplication1.Controllers
 
 
 
+        public class UserIdDto
+        {
+            public string UserId { get; set; } // Use string if your IDs are GUIDs or strings
+                                               // If your User IDs are integers, change the type to 'int' or 'int?'
+        }
+
 
 
 
 
         [HttpPost("POunauthorzation/{poId}")]
-        public async Task<IActionResult> POunauthorzation(int poId)
+        public async Task<IActionResult> POunauthorzation(int poId, [FromBody] UserIdDto request)
         {
+            // 1. Input Validation
+            if (request == null || string.IsNullOrEmpty(request.UserId))
+            {
+                return BadRequest("User ID is required in the request body.");
+            }
+
+            // 2. Retrieve the PO record
             var po = await dbcontext.PO.FirstOrDefaultAsync(x => x.Orderid == poId);
 
             if (po == null)
-                return NotFound("PO not found.");
+                return NotFound($"PO with ID {poId} not found.");
 
-            po.postatusid = 1;
+            // --- PO UN-AUTHORIZATION / RESET LOGIC ---
+
+            // Retrieve the Job details to get the Jobid for tracking
+            // NOTE: This assumes your PO model links to a Job model, or the JobId is directly on the PO model.
+            // Assuming 'po' object has a 'Job' navigation property or 'Jobid' field.
+            var podetails = await dbcontext.PO.FirstOrDefaultAsync(j => j.Orderid == po.Orderid); // Modify this line based on your actual model relationship
+
+            if (podetails == null)
+                return NotFound($"Associated Job not found for PO ID {poId}.");
+
+            // 3. Update PO Status
+            po.postatusid = 1; // Set status back to 'Created'
             po.poverifiedbyid = null;
             po.poverifiedDate = null;
             po.PoAuthorizedbyid = null;
             po.poauthorizedDate = null;
 
+            // 4. Create Tracking Entry (Trackpage)
+            var currentUtcTime = DateTime.UtcNow;
 
-            // Set status to 'Created'
+            var trackingEntry = new Trackpage
+            {
+                pagename = "PO UNAUTHORIZE",
+                docno = poId.ToString(), // Use Job ID for tracking
+                createddate = currentUtcTime,
+                createdbyuser = request.UserId
+            };
+
+            dbcontext.Trackpage.Add(trackingEntry);
+
+            // 5. Save all changes (PO update and Trackpage insert)
             await dbcontext.SaveChangesAsync();
 
-            return Ok(new { message = "PO Authorized successfully.", newStatus = po.postatusid });
+            return Ok(new
+            {
+                message = $"PO ID {poId} successfully reset to Created by user {request.UserId}.",
+                newStatus = po.postatusid
+            });
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //[HttpPost("POunauthorzation/{poId}")]
+        //public async Task<IActionResult> POunauthorzation(int poId, [FromBody] UserIdDto authData)
+        //{
+        //    // Check if the User ID was successfully passed in the body
+        //    if (string.IsNullOrEmpty(authData.UserId))
+        //    {
+        //        return BadRequest("User ID is required for this action.");
+        //    }
+
+        //    var po = await dbcontext.PO.FirstOrDefaultAsync(x => x.Orderid == poId);
+
+        //    if (po == null)
+        //        return NotFound($"PO with ID {poId} not found.");
+
+        //    // --- Unauthorization Logic ---
+
+        //    // 1. Reset Authorization/Verification Fields
+        //    po.postatusid = 1; // Set status to 'Created' or 'Pending' (depending on what 1 means)
+        //    po.poverifiedbyid = null;
+        //    po.poverifiedDate = null;
+        //    po.PoAuthorizedbyid = null;
+        //    po.poauthorizedDate = null;
+
+        //    // 2. Log the User who performed the UNauthorization action (Optional but Recommended)
+        //    // You might want a separate column like PoUnAuthorizedbyid and PoUnauthorizedDate
+        //    // po.PoUnAuthorizedbyid = authData.UserId; // Assuming your model supports string ID
+        //    // po.PoUnAuthorizedDate = DateTime.Now; 
+
+        //    await dbcontext.SaveChangesAsync();
+
+        //    // Changed message to reflect the action (which is UNauthorization/reset to created)
+        //    return Ok(new
+        //    {
+        //        message = $"PO ID {poId} successfully reset to Created by user {authData.UserId}.",
+        //        newStatus = po.postatusid
+        //    });
+        //}
+
 
 
 
@@ -16850,14 +16946,101 @@ namespace WebApplication1.Controllers
             return Ok(itemwiseporeport);
         }
 
+        public class jobtobefreezed
+        {
+            public int jobid { get; set; }
+
+            public string  customername { get; set; }
+
+            public string  projectname { get; set; }
+
+            public string  jobdescription { get; set; }
+
+
+        }
+
+        [HttpGet("Getjobnostobefreezed")]
+        public async Task<ActionResult<List<jobtobefreezed>>> Getjobnostobefreezed()
+        {
+            var jobstobefreezed = new List<jobtobefreezed>();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand("SP_GetAllunfreezedjobs", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // --- CORRECTION: Pass the jobid parameter to the stored procedure ---
+
+                    // --------------------------------------------------------------------
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            jobstobefreezed.Add(new jobtobefreezed
+                            {
+                                jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+                                customername  = reader["customername"].ToString(),
+                                projectname = reader["projectname"].ToString(),
+                                jobdescription = reader["jobdescription"].ToString(),
+                              
+
+                            });
+                        }
+                    }
+                }
+            }
+            if (jobstobefreezed.Count == 0)
+            {
+                // Changed "pending PR items" to a more general message relevant to this procedure
+                return NotFound($"No Job Details  found.");
+            }
+            return Ok(jobstobefreezed);
+        }
 
 
 
 
+        [HttpGet("Getjobstobeunfreezed")]
+        public async Task<ActionResult<List<jobtobefreezed>>> Getjobstobeunfreezed()
+        {
+            var jobstobefreezed = new List<jobtobefreezed>();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand("SP_GetAllfreezedjobs", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // --- CORRECTION: Pass the jobid parameter to the stored procedure ---
+
+                    // --------------------------------------------------------------------
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            jobstobefreezed.Add(new jobtobefreezed
+                            {
+                                jobid = reader.GetInt32(reader.GetOrdinal("jobid")),
+                                customername = reader["customername"].ToString(),
+                                projectname = reader["projectname"].ToString(),
+                                jobdescription = reader["jobdescription"].ToString(),
 
 
-
-
+                            });
+                        }
+                    }
+                }
+            }
+            if (jobstobefreezed.Count == 0)
+            {
+                // Changed "pending PR items" to a more general message relevant to this procedure
+                return NotFound($"No Job Details  found.");
+            }
+            return Ok(jobstobefreezed);
+        }
 
 
     }
